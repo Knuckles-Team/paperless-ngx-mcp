@@ -1,0 +1,108 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Paperless-ngx REST API",
+    "version": "9",
+    "description": "Derived OpenAPI document for the Paperless-ngx Django REST Framework API (served live at /api/schema/). Endpoint map sourced from paperless-ngx src/paperless/urls.py DefaultRouter registrations and the documented action endpoints. Auth: 'Authorization: Token <key>'."
+  },
+  "servers": [{ "url": "https://paperless.arpa" }],
+  "components": {
+    "securitySchemes": {
+      "tokenAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "DRF TokenAuthentication: 'Token <key>'"
+      }
+    }
+  },
+  "security": [{ "tokenAuth": [] }],
+  "paths": {
+    "/api/documents/": {
+      "get": { "operationId": "documents_list", "tags": ["documents"], "summary": "List/search documents (full-text via ?query=, DRF filters)." },
+      "post": { "operationId": "documents_create", "tags": ["documents"], "summary": "Create a document." }
+    },
+    "/api/documents/{id}/": {
+      "get": { "operationId": "documents_retrieve", "tags": ["documents"], "summary": "Retrieve a document." },
+      "patch": { "operationId": "documents_partial_update", "tags": ["documents"], "summary": "Partially update a document." },
+      "delete": { "operationId": "documents_destroy", "tags": ["documents"], "summary": "Trash a document." }
+    },
+    "/api/documents/{id}/metadata/": {
+      "get": { "operationId": "documents_metadata_retrieve", "tags": ["documents"], "summary": "Retrieve parsed document metadata." }
+    },
+    "/api/documents/{id}/notes/": {
+      "get": { "operationId": "documents_notes_list", "tags": ["documents"], "summary": "List document notes." },
+      "post": { "operationId": "documents_notes_create", "tags": ["documents"], "summary": "Add a document note." }
+    },
+    "/api/documents/post_document/": {
+      "post": { "operationId": "documents_post_document", "tags": ["documents"], "summary": "Upload a document for consumption (multipart)." }
+    },
+    "/api/documents/bulk_edit/": {
+      "post": { "operationId": "documents_bulk_edit", "tags": ["documents"], "summary": "Bulk edit documents." }
+    },
+    "/api/correspondents/": {
+      "get": { "operationId": "correspondents_list", "tags": ["documents"], "summary": "List correspondents." },
+      "post": { "operationId": "correspondents_create", "tags": ["documents"], "summary": "Create a correspondent." }
+    },
+    "/api/correspondents/{id}/": {
+      "patch": { "operationId": "correspondents_partial_update", "tags": ["documents"], "summary": "Update a correspondent." },
+      "delete": { "operationId": "correspondents_destroy", "tags": ["documents"], "summary": "Delete a correspondent." }
+    },
+    "/api/tags/": {
+      "get": { "operationId": "tags_list", "tags": ["documents"], "summary": "List tags." },
+      "post": { "operationId": "tags_create", "tags": ["documents"], "summary": "Create a tag." }
+    },
+    "/api/tags/{id}/": {
+      "patch": { "operationId": "tags_partial_update", "tags": ["documents"], "summary": "Update a tag." },
+      "delete": { "operationId": "tags_destroy", "tags": ["documents"], "summary": "Delete a tag." }
+    },
+    "/api/document_types/": {
+      "get": { "operationId": "document_types_list", "tags": ["documents"], "summary": "List document types." },
+      "post": { "operationId": "document_types_create", "tags": ["documents"], "summary": "Create a document type." }
+    },
+    "/api/document_types/{id}/": {
+      "delete": { "operationId": "document_types_destroy", "tags": ["documents"], "summary": "Delete a document type." }
+    },
+    "/api/storage_paths/": {
+      "get": { "operationId": "storage_paths_list", "tags": ["documents"], "summary": "List storage paths." },
+      "post": { "operationId": "storage_paths_create", "tags": ["documents"], "summary": "Create a storage path." }
+    },
+    "/api/custom_fields/": {
+      "get": { "operationId": "custom_fields_list", "tags": ["documents"], "summary": "List custom fields." },
+      "post": { "operationId": "custom_fields_create", "tags": ["documents"], "summary": "Create a custom field." }
+    },
+    "/api/saved_views/": {
+      "get": { "operationId": "saved_views_list", "tags": ["documents"], "summary": "List saved views." }
+    },
+    "/api/search/": {
+      "get": { "operationId": "search_global", "tags": ["system"], "summary": "Global search across all objects." }
+    },
+    "/api/search/autocomplete/": {
+      "get": { "operationId": "search_autocomplete", "tags": ["system"], "summary": "Search-term autocomplete." }
+    },
+    "/api/tasks/": {
+      "get": { "operationId": "tasks_list", "tags": ["system"], "summary": "List background/consumption tasks." }
+    },
+    "/api/acknowledge_tasks/": {
+      "post": { "operationId": "tasks_acknowledge", "tags": ["system"], "summary": "Acknowledge/dismiss tasks." }
+    },
+    "/api/statistics/": {
+      "get": { "operationId": "statistics_retrieve", "tags": ["system"], "summary": "Document/inbox statistics." }
+    },
+    "/api/status/": {
+      "get": { "operationId": "status_retrieve", "tags": ["system"], "summary": "System/service health & version." }
+    },
+    "/api/remote_version/": {
+      "get": { "operationId": "remote_version_retrieve", "tags": ["system"], "summary": "Latest available Paperless-ngx version." }
+    },
+    "/api/ui_settings/": {
+      "get": { "operationId": "ui_settings_retrieve", "tags": ["system"], "summary": "Current user UI settings & permissions." }
+    },
+    "/api/token/": {
+      "post": { "operationId": "token_obtain", "tags": ["system"], "summary": "Obtain an API auth token from username/password." }
+    },
+    "/api/schema/": {
+      "get": { "operationId": "schema_retrieve", "tags": ["system"], "summary": "Live OpenAPI schema (drf-spectacular)." }
+    }
+  }
+}
