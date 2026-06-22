@@ -35,6 +35,14 @@ class ApiClientDocuments(ApiClientBase):
         }
         return self._fetch_all("/api/documents/", params=params, max_pages=max_pages)
 
+    def create_document(self, body: dict) -> Any:
+        """Create a document record (``POST /api/documents/``).
+
+        For uploading a file for OCR/consumption use :meth:`post_document` instead;
+        this creates a bare document object from a JSON body.
+        """
+        return self.request("POST", "/api/documents/", json=body)
+
     def get_document(self, document_id: int) -> Any:
         """Retrieve a single document's metadata."""
         return self._get(f"/api/documents/{document_id}/")
@@ -74,7 +82,7 @@ class ApiClientDocuments(ApiClientBase):
 
         Returns the consumption task UUID; poll ``tasks`` for completion.
         """
-        data = {
+        data: dict[str, Any] = {
             "title": title,
             "correspondent": correspondent,
             "document_type": document_type,

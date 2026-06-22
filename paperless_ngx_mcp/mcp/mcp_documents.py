@@ -9,6 +9,7 @@ from ..auth import get_client
 
 _ACTIONS = {
     "list_documents",
+    "create_document",
     "get_document",
     "get_document_metadata",
     "update_document",

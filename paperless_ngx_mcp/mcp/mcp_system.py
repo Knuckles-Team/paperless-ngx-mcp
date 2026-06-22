@@ -17,6 +17,8 @@ _ACTIONS = {
     "get_system_status",
     "get_remote_version",
     "get_ui_settings",
+    "obtain_token",
+    "get_schema",
 }
 
 
