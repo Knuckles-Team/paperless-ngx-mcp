@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   paperless-ngx-mcp-mcp:
-    image: knucklessg1/paperless-ngx-mcp:latest
+    image: knucklessg1/paperless-ngx-mcp:mcp
     container_name: paperless-ngx-mcp-mcp
     hostname: paperless-ngx-mcp-mcp
     restart: always

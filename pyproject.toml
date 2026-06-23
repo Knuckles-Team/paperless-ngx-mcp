@@ -55,7 +55,7 @@ dev = [
 ]
 
 [tool.setuptools.package-data]
-paperless_ngx_mcp = [ "mcp_config.json", "agent_data/**", "prompts/**", "skills/**", "specs/**",]
+paperless_ngx_mcp = [ "mcp_config.json", "prompts/**", "skills/**", "specs/**",]
 
 [tool.ruff.lint]
 select = [ "E", "F", "I", "UP", "B",]
