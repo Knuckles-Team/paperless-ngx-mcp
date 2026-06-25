@@ -67,19 +67,67 @@ _2 action-routed tools (default `MCP_TOOL_MODE=condensed`). Each is enabled unle
 
 ## Installation
 
+> **Install the slim `[mcp]` extra.** The MCP examples below install
+> `paperless-ngx-mcp[mcp]` — the MCP-server extra that pulls only the FastMCP /
+> FastAPI tooling (`agent-utilities[mcp]`). It deliberately **excludes** the heavy
+> agent runtime (the epistemic-graph engine, `pydantic-ai`, `dspy`, `llama-index`,
+> `tree-sitter`), so `uvx`/container installs are dramatically smaller and faster.
+> Use the full `[agent]` extra only when you need the integrated Pydantic AI agent.
+
+Pick the extra that matches what you want to run:
+
+| Extra | Installs | Use when |
+|-------|----------|----------|
+| `paperless-ngx-mcp[mcp]` | Slim MCP server only (`agent-utilities[mcp]` — FastMCP/FastAPI) | You only run the **MCP server** (smallest install / image) |
+| `paperless-ngx-mcp[agent]` | Full agent runtime (`agent-utilities[agent,logfire]` — Pydantic AI + the epistemic-graph engine) | You run the **integrated A2A agent** |
+| `paperless-ngx-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
+
 ### Install with `uvx` (no install — run on demand)
 
 ```bash
-uvx --from paperless-ngx-mcp paperless-ngx-mcp      # MCP server
+uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp      # MCP server
 uvx --from paperless-ngx-mcp paperless-ngx-agent    # A2A agent server
 ```
 
 ### Install with `pip`
 
 ```bash
-python -m pip install paperless-ngx-mcp            # core (API client)
-python -m pip install "paperless-ngx-mcp[all]"     # + MCP server + A2A agent + telemetry
+# MCP server only (recommended for tool hosting — slim deps)
+uv pip install "paperless-ngx-mcp[mcp]"
+
+# Full agent runtime (Pydantic AI + epistemic-graph engine)
+uv pip install "paperless-ngx-mcp[agent]"
+
+# Everything (development)
+uv pip install "paperless-ngx-mcp[all]"      # or: python -m pip install "paperless-ngx-mcp[all]"
 ```
+
+### Container images (`:mcp` vs `:agent`)
+
+One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `--target`:
+
+| Image tag | Build target | Contents | Entrypoint |
+|-----------|--------------|----------|------------|
+| `knucklessg1/paperless-ngx-mcp:mcp` | `--target mcp` | `paperless-ngx-mcp[mcp]` — **slim**, no engine/`pydantic-ai`/`dspy`/`llama-index`/`tree-sitter` | `paperless-ngx-mcp` |
+| `knucklessg1/paperless-ngx-mcp:latest` | `--target agent` (default) | `paperless-ngx-mcp[agent]` — **full** agent runtime + epistemic-graph engine | `paperless-ngx-agent` |
+
+```bash
+docker build --target mcp   -t knucklessg1/paperless-ngx-mcp:mcp    docker/   # slim MCP server
+docker build --target agent -t knucklessg1/paperless-ngx-mcp:latest docker/   # full agent
+```
+
+`docker/mcp.compose.yml` runs the slim `:mcp` server; `docker/agent.compose.yml` runs the
+agent (`:latest`) with a co-located `:mcp` sidecar.
+
+### Knowledge-graph database (`epistemic-graph`)
+
+The **full agent** (`[agent]` / `:latest`) embeds the **epistemic-graph** engine (pulled in
+transitively via `agent-utilities[agent]`). For production — or to share one knowledge graph
+across multiple agents — run **epistemic-graph as its own database container** and point the
+agent at it instead of embedding it. Deployment recipes (single-node + Raft HA), connection
+config, and the full database architecture (with diagrams) are documented in the
+[epistemic-graph deployment guide](https://knuckles-team.github.io/epistemic-graph/deployment/).
+The slim `[mcp]` server does **not** require the database.
 
 ### Console scripts
 
@@ -145,7 +193,7 @@ The MCP Server can be run in `stdio` (local), `streamable-http` (networked), or
   "mcpServers": {
     "paperless-ngx-mcp": {
       "command": "uvx",
-      "args": ["--from", "paperless-ngx-mcp", "paperless-ngx-mcp"],
+      "args": ["--from", "paperless-ngx-mcp[mcp]", "paperless-ngx-mcp"],
       "env": {
         "PAPERLESS_URL": "https://service.example.com",
         "PAPERLESS_TOKEN": "your_token"
@@ -162,7 +210,7 @@ The MCP Server can be run in `stdio` (local), `streamable-http` (networked), or
   "mcpServers": {
     "paperless-ngx-mcp": {
       "command": "uvx",
-      "args": ["--from", "paperless-ngx-mcp", "paperless-ngx-mcp", "--transport", "streamable-http", "--port", "8000"],
+      "args": ["--from", "paperless-ngx-mcp[mcp]", "paperless-ngx-mcp", "--transport", "streamable-http", "--port", "8000"],
       "env": {
         "TRANSPORT": "streamable-http",
         "HOST": "0.0.0.0",
@@ -195,6 +243,50 @@ copy-paste `mcp_config.json` for all four transports — **stdio**, **streamable
 ```bash
 python -m pip install paperless-ngx-mcp
 ```
+
+## Environment Variables
+
+Every variable the server reads, grouped by purpose.
+
+### Connection & Credentials
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `PAPERLESS_URL` | Base URL of the target Paperless-ngx instance. | `http://localhost:8000` |
+| `PAPERLESS_TOKEN` | DRF API token (My Profile → API Auth Token); sent as `Token <key>`. | — |
+| `PAPERLESS_SSL_VERIFY` | Verify TLS certificates on outbound requests. | `True` |
+
+### MCP server / transport
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `TRANSPORT` | `stdio`, `streamable-http`, or `sse`. | `stdio` |
+| `HOST` | Bind host (HTTP transports). | `0.0.0.0` |
+| `PORT` | Bind port (HTTP transports). | `8000` |
+| `MCP_TOOL_MODE` | Tool surface: `condensed`, `verbose`, or `both`. | `condensed` |
+| `MCP_ENABLED_TOOLS` / `MCP_DISABLED_TOOLS` | Comma-separated tool allow/deny list. | — |
+| `MCP_ENABLED_TAGS` / `MCP_DISABLED_TAGS` | Comma-separated tag allow/deny list. | — |
+
+### Tool toggles
+Each action-routed tool can be disabled individually by setting its toggle env var to `false`.
+The names match the authoritative "Toggle Env Var" column in the
+[Available MCP Tools](#available-mcp-tools) table above.
+
+| Variable | Tool | Default |
+|----------|------|---------|
+| `DOCUMENTSTOOL` | `document_operations` | `True` |
+| `SYSTEMTOOL` | `system_operations` | `True` |
+
+### Telemetry & governance
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `ENABLE_OTEL` | Enable OpenTelemetry export. | `True` |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP collector endpoint. | — |
+| `OTEL_EXPORTER_OTLP_PUBLIC_KEY` / `OTEL_EXPORTER_OTLP_SECRET_KEY` | OTLP auth keys. | — |
+| `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP protocol (e.g. `http/protobuf`). | — |
+| `EUNOMIA_TYPE` | Authorization mode: `none`, `embedded`, `remote`. | `none` |
+| `EUNOMIA_POLICY_FILE` | Embedded policy file. | `mcp_policies.json` |
+| `EUNOMIA_REMOTE_URL` | Remote Eunomia server URL. | — |
+
+See [`.env.example`](.env.example) for a copy-paste starting point.
 
 ## Documentation
 
