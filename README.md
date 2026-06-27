@@ -57,12 +57,61 @@ domains can be toggled on or off with the listed environment variable. The table
 
 <!-- MCP-TOOLS-TABLE:START -->
 
+#### Condensed action-routed tools (default — `MCP_TOOL_MODE=condensed`)
+
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
 | `document_operations` | `DOCUMENTSTOOL` | Manage Paperless-ngx documents, correspondents, tags, document types, |
 | `system_operations` | `SYSTEMTOOL` | Run Paperless-ngx full-text search, inspect background/consumption tasks, |
 
-_2 action-routed tools (default `MCP_TOOL_MODE=condensed`). Each is enabled unless its toggle is set false; set `MCP_TOOL_MODE=verbose` (or `both`) for the 1:1 per-operation surface. Auto-generated — do not edit._
+#### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
+
+<details>
+<summary>37 per-operation tools — one per public API method (click to expand)</summary>
+
+| MCP Tool | Toggle Env Var | Description |
+|----------|----------------|-------------|
+| `paperless_ngx_acknowledge_tasks` | `SYSTEMTOOL` | Acknowledge (dismiss) tasks (``POST /api/acknowledge_tasks/``). |
+| `paperless_ngx_add_document_note` | `DOCUMENTSTOOL` | Add a note to a document. |
+| `paperless_ngx_autocomplete` | `SYSTEMTOOL` | Search-term autocomplete (``GET /api/search/autocomplete/``). |
+| `paperless_ngx_bulk_edit_documents` | `DOCUMENTSTOOL` | Run a bulk edit (``set_correspondent``, ``add_tag``, ``delete``, …) over |
+| `paperless_ngx_create_correspondent` | `DOCUMENTSTOOL` | Create a correspondent. |
+| `paperless_ngx_create_custom_field` | `DOCUMENTSTOOL` | Create a custom field. |
+| `paperless_ngx_create_document` | `DOCUMENTSTOOL` | Create a document record (``POST /api/documents/``). |
+| `paperless_ngx_create_document_type` | `DOCUMENTSTOOL` | Create a document type. |
+| `paperless_ngx_create_storage_path` | `DOCUMENTSTOOL` | Create a storage path. |
+| `paperless_ngx_create_tag` | `DOCUMENTSTOOL` | Create a tag. |
+| `paperless_ngx_delete_correspondent` | `DOCUMENTSTOOL` | Delete a correspondent. |
+| `paperless_ngx_delete_document` | `DOCUMENTSTOOL` | Move a document to the trash. |
+| `paperless_ngx_delete_document_type` | `DOCUMENTSTOOL` | Delete a document type. |
+| `paperless_ngx_delete_tag` | `DOCUMENTSTOOL` | Delete a tag. |
+| `paperless_ngx_get_document` | `DOCUMENTSTOOL` | Retrieve a single document's metadata. |
+| `paperless_ngx_get_document_metadata` | `DOCUMENTSTOOL` | Retrieve raw parsed metadata (EXIF, media filename, archive checksum…). |
+| `paperless_ngx_get_document_notes` | `DOCUMENTSTOOL` | List the notes attached to a document. |
+| `paperless_ngx_get_remote_version` | `SYSTEMTOOL` | Latest available Paperless-ngx version (``GET /api/remote_version/``). |
+| `paperless_ngx_get_schema` | `SYSTEMTOOL` | Retrieve the live OpenAPI schema (``GET /api/schema/``, drf-spectacular). |
+| `paperless_ngx_get_statistics` | `SYSTEMTOOL` | Document/inbox statistics (``GET /api/statistics/``). |
+| `paperless_ngx_get_system_status` | `SYSTEMTOOL` | Backend/service health & version info (``GET /api/status/``). |
+| `paperless_ngx_get_task` | `SYSTEMTOOL` | Retrieve a single task by id (``GET /api/tasks/?task_id=...``). |
+| `paperless_ngx_get_ui_settings` | `SYSTEMTOOL` | Current user's UI settings and permissions (``GET /api/ui_settings/``). |
+| `paperless_ngx_global_search` | `SYSTEMTOOL` | Run a global search across documents, correspondents, tags, etc. |
+| `paperless_ngx_list_correspondents` | `DOCUMENTSTOOL` | List correspondents. |
+| `paperless_ngx_list_custom_fields` | `DOCUMENTSTOOL` | List custom fields. |
+| `paperless_ngx_list_document_types` | `DOCUMENTSTOOL` | List document types. |
+| `paperless_ngx_list_documents` | `DOCUMENTSTOOL` | List/search documents. ``query`` is full-text search; ``filters`` accepts |
+| `paperless_ngx_list_saved_views` | `DOCUMENTSTOOL` | List saved views. |
+| `paperless_ngx_list_storage_paths` | `DOCUMENTSTOOL` | List storage paths. |
+| `paperless_ngx_list_tags` | `DOCUMENTSTOOL` | List tags. |
+| `paperless_ngx_list_tasks` | `SYSTEMTOOL` | List background/consumption tasks (``GET /api/tasks/``). |
+| `paperless_ngx_obtain_token` | `SYSTEMTOOL` | Obtain an API auth token from username/password |
+| `paperless_ngx_post_document` | `DOCUMENTSTOOL` | Upload a new document for consumption via ``POST /api/documents/post_document/``. |
+| `paperless_ngx_update_correspondent` | `DOCUMENTSTOOL` | Update a correspondent (PATCH). |
+| `paperless_ngx_update_document` | `DOCUMENTSTOOL` | Partially update a document (PATCH) — title, tags, correspondent, etc. |
+| `paperless_ngx_update_tag` | `DOCUMENTSTOOL` | Update a tag (PATCH). |
+
+</details>
+
+_2 action-routed tool(s) (default) · 37 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (`condensed` default · `verbose` 1:1 · `both`). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
 ## Installation
