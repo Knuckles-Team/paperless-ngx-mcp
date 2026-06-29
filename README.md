@@ -8,7 +8,7 @@
 ![PyPI - License](https://img.shields.io/pypi/l/paperless-ngx-mcp)
 ![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/Knuckles-Team/paperless-ngx-mcp)
 
-*Version: 0.1.0*
+*Version: 1.0.0*
 
 > **Documentation** — Installation, deployment, usage across the API, CLI, and MCP
 > interfaces, the integrated A2A agent server, and guidance for provisioning the
