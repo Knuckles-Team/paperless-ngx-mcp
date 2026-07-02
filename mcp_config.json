@@ -8,10 +8,9 @@
       ],
       "env": {
         "MCP_TOOL_MODE": "condensed",
-        "PAPERLESS_URL": "<YOUR_PAPERLESS_URL>",
-        "PAPERLESS_TOKEN": "<YOUR_PAPERLESS_TOKEN>",
-        "PAPERLESS_SSL_VERIFY": "<YOUR_PAPERLESS_SSL_VERIFY>",
         "DOCUMENTSTOOL": "True",
+        "PAPERLESS_TOKEN": "your_token_here",
+        "PAPERLESS_URL": "http://localhost:8000",
         "SYSTEMTOOL": "True"
       }
     }
