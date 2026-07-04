@@ -8,6 +8,8 @@ document_types, storage_paths, custom_fields, saved_views and tasks.
 
 from typing import Any
 
+from agent_utilities.core.exceptions import ParameterError
+
 from .api_client_base import ApiClientBase
 
 
@@ -96,6 +98,23 @@ class ApiClientDocuments(ApiClientBase):
             return self.request(
                 "POST", "/api/documents/post_document/", data=data, files=files
             )
+
+    def download_document(self, document_id: int, original: bool = False) -> bytes:
+        """Download a document's archived (or original) file as raw bytes.
+
+        ``GET /api/documents/{id}/download/`` returns the PDF/image content itself (not
+        JSON). Used by the native blob-ingestion leg to make the scan durable in the KG.
+        """
+        params = {"original": "true"} if original else None
+        response = self._request(
+            "GET", f"/api/documents/{document_id}/download/", params=params
+        )
+        if response.status_code >= 400:
+            raise ParameterError(
+                f"Paperless-ngx download {document_id} -> {response.status_code}: "
+                f"{response.text[:200]}"
+            )
+        return response.content
 
     def bulk_edit_documents(
         self, documents: list, method: str, parameters: dict | None = None

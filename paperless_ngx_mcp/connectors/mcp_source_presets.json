@@ -1,0 +1,18 @@
+{
+  "_comment": "Tier-1 mcp_tool source preset(s) for paperless-ngx-mcp (AU-KG.ingest.mcp-tool-connector). Syncs Paperless-ngx documents into the KG as :Document nodes carrying OCR text via the paperless-ngx-mcp MCP server. Contributed presets win over the central MCP_TOOL_PRESETS. The native paperless_ingest_documents tool (kg_ingest.py) is the richer path — it also emits :Correspondent/:Tag/:DocumentType links and (optionally) scanned-PDF blobs.",
+  "paperless-documents": {
+    "server": "paperless-ngx-mcp",
+    "tool": "document_operations",
+    "action": "list_documents",
+    "records_path": "result",
+    "id_field": "id",
+    "title_field": "title",
+    "text_field": "content",
+    "updated_field": "modified",
+    "pagination": "page",
+    "page_kind": "page",
+    "page_param": "page",
+    "page_size_param": "page_size",
+    "doc_type": "document"
+  }
+}

@@ -34,6 +34,12 @@ paperless-ngx-agent = "paperless_ngx_mcp.agent_server:agent_server"
 [project.entry-points."agent_utilities.skill_providers"]
 paperless-ngx-mcp = "paperless_ngx_mcp.skills"
 
+[project.entry-points."agent_utilities.ontology_providers"]
+paperless-ngx-mcp = "paperless_ngx_mcp.ontology"
+
+[project.entry-points."agent_utilities.source_connector_providers"]
+paperless-ngx-mcp = "paperless_ngx_mcp.connectors"
+
 [project.entry-points."agent_utilities.prompt_providers"]
 paperless-ngx-mcp = "paperless_ngx_mcp.prompts"
 
@@ -55,7 +61,7 @@ dev = [
 ]
 
 [tool.setuptools.package-data]
-paperless_ngx_mcp = [ "mcp_config.json", "prompts/**", "skills/**", "specs/**",]
+paperless_ngx_mcp = [ "mcp_config.json", "prompts/**", "skills/**", "specs/**", "ontology/**", "connectors/**",]
 
 [tool.ruff.lint]
 select = [ "E", "F", "I", "UP", "B",]
