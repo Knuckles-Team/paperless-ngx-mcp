@@ -2,7 +2,7 @@
 
 > **Prefix**: `CONCEPT:PNGX-*`
 > **Version**: 0.1.0
-> **Bridge**: [`CONCEPT:ECO-4.0`](https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/concepts.md) (Unified Toolkit Ingestion)
+> **Bridge**: [`CONCEPT:AU-ECO.messaging.native-backend-abstraction`](https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/concepts.md) (Unified Toolkit Ingestion)
 
 ---
 
@@ -10,13 +10,13 @@
 
 | Concept ID | Name | Description |
 |------------|------|-------------|
-| `CONCEPT:PNGX-001` | Document Operations | MCP tool domain `documents` — documents, correspondents, tags, document types, storage paths, custom fields, saved views (action-routed) |
-| `CONCEPT:PNGX-002` | System Operations | MCP tool domain `system` — full-text search, autocomplete, tasks, statistics, system status (action-routed) |
+| `CONCEPT:PL-OS.identity.pngx` | Document Operations | MCP tool domain `documents` — documents, correspondents, tags, document types, storage paths, custom fields, saved views (action-routed) |
+| `CONCEPT:PL-OS.governance.pngx` | System Operations | MCP tool domain `system` — full-text search, autocomplete, tasks, statistics, system status (action-routed) |
 
 ## Cross-Project References (from agent-utilities)
 
 | Concept ID | Name | Origin |
 |------------|------|--------|
-| `CONCEPT:ECO-4.0` | Unified Toolkit Ingestion | agent-utilities |
-| `CONCEPT:ORCH-1.2` | Confidence-Gated Router | agent-utilities |
-| `CONCEPT:OS-5.1` | Prompt Injection Defense | agent-utilities |
+| `CONCEPT:AU-ECO.messaging.native-backend-abstraction` | Unified Toolkit Ingestion | agent-utilities |
+| `CONCEPT:AU-ORCH.adapter.hot-cache-invalidation` | Confidence-Gated Router | agent-utilities |
+| `CONCEPT:AU-OS.config.secrets-authentication` | Prompt Injection Defense | agent-utilities |

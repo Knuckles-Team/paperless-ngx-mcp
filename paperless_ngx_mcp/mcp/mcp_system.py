@@ -48,7 +48,7 @@ def register_system_tools(mcp: FastMCP):
         ),
     ) -> dict:
         """Run Paperless-ngx full-text search, inspect background/consumption tasks,
-        and read statistics & system status. CONCEPT:PNGX-002"""
+        and read statistics & system status. CONCEPT:PL-OS.governance.pngx"""
         if ctx:
             await ctx.info(f"system_operations: {action}")
 

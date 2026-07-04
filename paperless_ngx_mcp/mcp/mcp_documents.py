@@ -63,7 +63,7 @@ def register_documents_tools(mcp: FastMCP):
         ),
     ) -> dict:
         """Manage Paperless-ngx documents, correspondents, tags, document types,
-        storage paths, custom fields and saved views. CONCEPT:PNGX-001"""
+        storage paths, custom fields and saved views. CONCEPT:PL-OS.identity.pngx"""
         if ctx:
             await ctx.info(f"document_operations: {action}")
 

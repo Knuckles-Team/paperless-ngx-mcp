@@ -6,9 +6,9 @@ import paperless_ngx_mcp.auth as auth_module
 from paperless_ngx_mcp.auth import get_client
 
 
-@pytest.mark.concept("PNGX-001")
+@pytest.mark.concept("PL-OS.identity.pngx")
 def test_get_client_auth_error():
-    """Auth failure surfaces a clear error. CONCEPT:PNGX-001"""
+    """Auth failure surfaces a clear error. CONCEPT:PL-OS.identity.pngx"""
     auth_module._client = None
     with patch("paperless_ngx_mcp.auth.ApiClientSystem") as mock_client_cls:
         mock_client_cls.side_effect = Exception("Auth Failure")

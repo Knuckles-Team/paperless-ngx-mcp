@@ -5,9 +5,9 @@ import pytest
 from paperless_ngx_mcp.api import ApiClientBase
 
 
-@pytest.mark.concept("PNGX-001")
+@pytest.mark.concept("PL-OS.identity.pngx")
 def test_request_returns_json():
-    """API client returns parsed JSON. CONCEPT:PNGX-001"""
+    """API client returns parsed JSON. CONCEPT:PL-OS.identity.pngx"""
     client = ApiClientBase(base_url="http://localhost", token="t")
     response = MagicMock()
     response.status_code = 200
@@ -18,8 +18,8 @@ def test_request_returns_json():
         assert client.request("GET", "/api/status/") == {"ok": True}
 
 
-@pytest.mark.concept("PNGX-001")
+@pytest.mark.concept("PL-OS.identity.pngx")
 def test_token_auth_header():
-    """Paperless uses DRF 'Token <key>' auth, not Bearer. CONCEPT:PNGX-001"""
+    """Paperless uses DRF 'Token <key>' auth, not Bearer. CONCEPT:PL-OS.identity.pngx"""
     client = ApiClientBase(base_url="http://localhost", token="abc")
     assert client.session.headers["Authorization"] == "Token abc"
