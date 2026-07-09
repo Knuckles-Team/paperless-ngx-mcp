@@ -1,5 +1,6 @@
 ---
 name: paperless-ngx-metadata-curation
+skill_type: skill
 description: >-
   Curate the organizing taxonomy of a Paperless-ngx archive — correspondents,
   tags, document types, storage paths, and custom fields — via the

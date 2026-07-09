@@ -1,5 +1,6 @@
 ---
 name: paperless-ngx-kg-ingestion
+skill_type: skill
 description: >-
   Natively ingest a Paperless-ngx archive into the epistemic-graph knowledge
   graph via the paperless-ngx-mcp MCP server — documents become :Document nodes

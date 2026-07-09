@@ -1,5 +1,6 @@
 ---
 name: paperless-ngx-document-management
+skill_type: skill
 description: >-
   Search, read, upload, and edit documents in Paperless-ngx via the
   paperless-ngx-mcp MCP server. Use when the agent must full-text search the
