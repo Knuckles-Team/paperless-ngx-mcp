@@ -1,0 +1,160 @@
+connector: paperless-ngx-mcp
+ontology_source: paperless
+schema_version: '1'
+resources:
+- name: Correspondent
+  label: Correspondent
+  id_prefix: correspondent
+  relations: []
+- name: CustomField
+  label: Custom Field
+  id_prefix: customfield
+  relations: []
+- name: DocumentType
+  label: Document Type
+  id_prefix: documenttype
+  relations: []
+- name: StoragePath
+  label: Storage Path
+  id_prefix: storagepath
+  relations: []
+- name: Tag
+  label: Tag
+  id_prefix: tag
+  relations: []
+actions:
+- id: run_graph_flow
+  name: Graph Flow Execution
+  description: Execute a workflow through the agent's graph orchestration engine
+events:
+- name: paperless-documents.updated
+  resource: document
+  description: "Watermark event for 'paperless-documents' \u2014 advances on modified (mcp_source_presets.json)."
+identity:
+  id_field:
+    document: id
+  title_field:
+    document: title
+  text_field:
+    document: content
+  updated_field:
+    document: modified
+permissions:
+  acl_fields: []
+  tenant_field: null
+  read_roles: []
+schema_mappings:
+  Correspondent:
+    ontology_class: null
+    fields:
+      addedAt: xsd:dateTime
+      archiveSerialNumber: xsd:string
+      color: xsd:string
+      documentCount: xsd:integer
+      originalFileName: xsd:string
+      slug: xsd:string
+  CustomField:
+    ontology_class: null
+    fields:
+      addedAt: xsd:dateTime
+      archiveSerialNumber: xsd:string
+      color: xsd:string
+      documentCount: xsd:integer
+      originalFileName: xsd:string
+      slug: xsd:string
+  DocumentType:
+    ontology_class: Document
+    fields:
+      addedAt: xsd:dateTime
+      archiveSerialNumber: xsd:string
+      color: xsd:string
+      documentCount: xsd:integer
+      originalFileName: xsd:string
+      slug: xsd:string
+  StoragePath:
+    ontology_class: null
+    fields:
+      addedAt: xsd:dateTime
+      archiveSerialNumber: xsd:string
+      color: xsd:string
+      documentCount: xsd:integer
+      originalFileName: xsd:string
+      slug: xsd:string
+  Tag:
+    ontology_class: null
+    fields:
+      addedAt: xsd:dateTime
+      archiveSerialNumber: xsd:string
+      color: xsd:string
+      documentCount: xsd:integer
+      originalFileName: xsd:string
+      slug: xsd:string
+sync:
+- preset: paperless-documents
+  server: paperless-ngx-mcp
+  tool: document_operations
+  action: list_documents
+  records_path: result
+  id_field: id
+  title_field: title
+  text_field: content
+  updated_field: modified
+  pagination: page
+  doc_type: document
+  raw:
+    server: paperless-ngx-mcp
+    tool: document_operations
+    action: list_documents
+    records_path: result
+    id_field: id
+    title_field: title
+    text_field: content
+    updated_field: modified
+    pagination: page
+    page_kind: page
+    page_param: page
+    page_size_param: page_size
+    doc_type: document
+provenance:
+  generated_by: scripts/generate_connector_manifests.py
+  generated_at: '2026-07-09T00:00:00Z'
+  source_artifacts:
+  - a2a.json
+  - paperless_ngx_mcp/connectors/mcp_source_presets.json
+  - paperless_ngx_mcp/ontology/paperless.ttl
+  integrity:
+    algorithm: urdna2015-sha256
+    hash: e8f96a567c010a56b1e91356a8ce821edff7ded6c7d910b0c8f4ba4868f4bc9f
+    triple_count: 38
+  signer: ontology-manifest-generator
+  signature: b40b20816fe27aeb3473d7386eab57b0204093118a9b189a0e7cf056055b0855
+policy:
+  pii_fields: {}
+  tenant_boundary: null
+  rls: []
+review_todos:
+- "policy.rls / policy.tenant_boundary are unset \u2014 no row-level-security predicate has been reviewed\
+  \ for this connector."
+- "relation 'fromCorrespondent' has no declared rdfs:domain resolving to a known resource in this connector's\
+  \ ontology \u2014 not attached to any resource; verify its true domain manually."
+- "relation 'hasCustomField' has no declared rdfs:domain resolving to a known resource in this connector's\
+  \ ontology \u2014 not attached to any resource; verify its true domain manually."
+- "relation 'hasDocumentType' has no declared rdfs:domain resolving to a known resource in this connector's\
+  \ ontology \u2014 not attached to any resource; verify its true domain manually."
+- "relation 'hasTag' has no declared rdfs:domain resolving to a known resource in this connector's ontology\
+  \ \u2014 not attached to any resource; verify its true domain manually."
+- "relation 'scannedAs' has no declared rdfs:domain resolving to a known resource in this connector's\
+  \ ontology \u2014 not attached to any resource; verify its true domain manually."
+- "relation 'storedAt' has no declared rdfs:domain resolving to a known resource in this connector's ontology\
+  \ \u2014 not attached to any resource; verify its true domain manually."
+- "schema_mappings.Correspondent.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic]\
+  \ \u2014 verify manually before relying on this crosswalk for reasoning/joins."
+- "schema_mappings.CustomField.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic]\
+  \ \u2014 verify manually before relying on this crosswalk for reasoning/joins."
+- "schema_mappings.DocumentType.ontology_class = 'Document' [DRAFT \u2014 nearest hub-canonical-class-by-name\
+  \ heuristic (D16 residue; human sign-off required before use)] \u2014 verify manually before relying\
+  \ on this crosswalk for reasoning/joins."
+- "schema_mappings.StoragePath.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic]\
+  \ \u2014 verify manually before relying on this crosswalk for reasoning/joins."
+- "schema_mappings.Tag.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic] \u2014\
+  \ verify manually before relying on this crosswalk for reasoning/joins."
