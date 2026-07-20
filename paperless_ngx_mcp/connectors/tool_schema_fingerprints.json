@@ -1,0 +1,8 @@
+{
+  "algorithm": "agent-utilities:mcp-tool-schema-compat:v1",
+  "connector": "paperless-ngx-mcp",
+  "schema_version": "1",
+  "tools": {
+    "paperless_ingestion_projection": "03ec5eaab6d51c0db66889da13114a6d7d33c90f1a6e8b4c2606ef1131a27d92"
+  }
+}

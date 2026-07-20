@@ -86,9 +86,10 @@ extra:
 
 nav:
   - Home: index.md
+  - Configuration: configuration.md
   - Overview: overview.md
   - Installation: installation.md
   - Deployment: deployment.md
   - Usage (API / CLI / MCP): usage.md
-  - Backing Platform (Paperless-ngx MCP): platform.md
+  - Provider Boundary: platform.md
   - Concepts: concepts.md

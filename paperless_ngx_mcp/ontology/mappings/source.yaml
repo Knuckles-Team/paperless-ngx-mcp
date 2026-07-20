@@ -1,0 +1,20 @@
+schema_version: '1'
+connector: paperless-ngx-mcp
+ontology_source: paperless
+sync:
+- preset: paperless-document-structure
+  server: paperless-ngx-mcp
+  tool: paperless_ingestion_projection
+  action: null
+  records_path: records
+  id_field: id
+  title_field: null
+  text_field: null
+  updated_field: null
+  doc_type: paperless-document-reference
+  tool_schema_sha256: 03ec5eaab6d51c0db66889da13114a6d7d33c90f1a6e8b4c2606ef1131a27d92
+governance:
+  default_acl: quarantine
+  identity: opaque-reference
+  tenant: required-at-materialization
+  provenance: required-at-materialization

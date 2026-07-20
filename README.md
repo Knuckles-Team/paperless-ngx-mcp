@@ -1,79 +1,56 @@
 # Paperless-ngx MCP
-## CLI or API | MCP | Agent
-
-![PyPI - Version](https://img.shields.io/pypi/v/paperless-ngx-mcp)
-![MCP Server](https://badge.mcpx.dev?type=server 'MCP Server')
-![PyPI - Downloads](https://img.shields.io/pypi/dd/paperless-ngx-mcp)
-![GitHub Repo stars](https://img.shields.io/github/stars/Knuckles-Team/paperless-ngx-mcp)
-![PyPI - License](https://img.shields.io/pypi/l/paperless-ngx-mcp)
-![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/Knuckles-Team/paperless-ngx-mcp)
 
 *Version: 1.0.1*
 
-> **Documentation** — Installation, deployment, usage across the API, CLI, and MCP
-> interfaces, the integrated A2A agent server, and guidance for provisioning the
-> backing platform are maintained in the
-> [official documentation](https://knuckles-team.github.io/paperless-ngx-mcp/).
+`paperless-ngx-mcp` provides a typed Python client, current intent/condensed/verbose MCP
+surfaces, an optional A2A agent, and a governed epistemic-graph connector for the standard
+Paperless-ngx API.
 
----
+The package is deployment-neutral. It contains no instance profile, connection value,
+credential, certificate, user record, customized taxonomy, or durable source content.
 
-## Table of Contents
+## Capabilities
 
-- [Overview](#overview)
-- [Key Features](#key-features)
-- [Available MCP Tools](#available-mcp-tools)
-- [Installation](#installation)
-- [Usage](#usage)
-- [MCP](#mcp)
-- [Documentation](#documentation)
+- Manage documents, notes, correspondents, tags, document types, storage paths, custom
+  fields, and saved views.
+- Search, inspect tasks and statistics, acknowledge tasks, and inspect the provider
+  schema and status.
+- Upload only approved files inside the AgentConfig workspace boundary.
+- Authenticate with a fixed service token projected by the MCP fleet secret resolver or
+  with request-scoped RFC 8693 delegation.
+- Apply system trust, private CA bundles, mTLS, and proxy policy through a shared
+  mandatory-verification TLS profile.
+- Project keyed, content-free document topology for governed ChangeEnvelope ingestion.
+- Contribute one comprehensive `paperless-ngx-operations` skill and data-only ontology,
+  source-preset, and prompt providers.
 
----
+## MCP tools
 
-## Overview
-
-**Paperless-ngx MCP MCP Server + A2A Agent**
-
-Paperless-ngx API + MCP Server + A2A Server
-
-This repository is actively maintained - Contributions are welcome!
-
-## Key Features
-
-- **Action-routed MCP tools** — each domain is exposed as a single MCP tool that routes
-  to many underlying operations via an `action` argument, keeping the tool surface small.
-- **Three interfaces, one package** — use it as a Python **API client**, an **MCP server**
-  (`stdio` / `streamable-http` / `sse`), or a Pydantic-AI **A2A agent**.
-- **`agent-utilities` native** — built on the shared framework (auth, action router,
-  telemetry, governance) for fleet consistency.
-- **Per-tool toggles** — enable or disable each tool domain with environment switches.
-- **Enterprise-ready** — OTEL/Langfuse telemetry and optional Eunomia access governance.
-
-## Available MCP Tools
-
-Each tool is **action-routed**: pass an `action` and a JSON `params_json` payload. Tool
-domains can be toggled on or off with the listed environment variable. The table below is
-**auto-generated from the live server** by the `mcp-readme-table` pre-commit hook
-(`python -m agent_utilities.mcp.readme_tools`) — do not edit it by hand.
+Condensed tools accept `action` plus a JSON-object string in `params_json`. Verbose mode
+exposes the same public client methods one-to-one. The generated table is derived from
+the live server surface.
 
 <!-- MCP-TOOLS-TABLE:START -->
 
-#### Condensed action-routed tools (default — `MCP_TOOL_MODE=condensed`)
+#### Condensed action-routed tools (`MCP_TOOL_MODE=condensed`)
 
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
 | `document_operations` | `DOCUMENTSTOOL` | Manage Paperless-ngx documents, correspondents, tags, document types, |
+| `paperless_ingest_projection` | `KGTOOL` | Commit the keyed structural projection through governed ChangeEnvelope. |
+| `paperless_ingestion_projection` | `KGTOOL` | Return keyed opaque nodes and relationships for governed source sync. |
 | `system_operations` | `SYSTEMTOOL` | Run Paperless-ngx full-text search, inspect background/consumption tasks, |
 
 #### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
 
 <details>
-<summary>37 per-operation tools — one per public API method (click to expand)</summary>
+<summary>36 per-operation tools — one per public API method (click to expand)</summary>
 
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
-| `paperless_ngx_acknowledge_tasks` | `SYSTEMTOOL` | Acknowledge (dismiss) tasks (``POST /api/acknowledge_tasks/``). |
+| `paperless_ngx_acknowledge_tasks` | `GRANULARTOOL` | Acknowledge (dismiss) tasks (``POST /api/acknowledge_tasks/``). |
 | `paperless_ngx_add_document_note` | `DOCUMENTSTOOL` | Add a note to a document. |
-| `paperless_ngx_autocomplete` | `SYSTEMTOOL` | Search-term autocomplete (``GET /api/search/autocomplete/``). |
+| `paperless_ngx_autocomplete` | `GRANULARTOOL` | Search-term autocomplete (``GET /api/search/autocomplete/``). |
 | `paperless_ngx_bulk_edit_documents` | `DOCUMENTSTOOL` | Run a bulk edit (``set_correspondent``, ``add_tag``, ``delete``, …) over |
 | `paperless_ngx_create_correspondent` | `DOCUMENTSTOOL` | Create a correspondent. |
 | `paperless_ngx_create_custom_field` | `DOCUMENTSTOOL` | Create a custom field. |
@@ -88,13 +65,13 @@ domains can be toggled on or off with the listed environment variable. The table
 | `paperless_ngx_get_document` | `DOCUMENTSTOOL` | Retrieve a single document's metadata. |
 | `paperless_ngx_get_document_metadata` | `DOCUMENTSTOOL` | Retrieve raw parsed metadata (EXIF, media filename, archive checksum…). |
 | `paperless_ngx_get_document_notes` | `DOCUMENTSTOOL` | List the notes attached to a document. |
-| `paperless_ngx_get_remote_version` | `SYSTEMTOOL` | Latest available Paperless-ngx version (``GET /api/remote_version/``). |
-| `paperless_ngx_get_schema` | `SYSTEMTOOL` | Retrieve the live OpenAPI schema (``GET /api/schema/``, drf-spectacular). |
-| `paperless_ngx_get_statistics` | `SYSTEMTOOL` | Document/inbox statistics (``GET /api/statistics/``). |
-| `paperless_ngx_get_system_status` | `SYSTEMTOOL` | Backend/service health & version info (``GET /api/status/``). |
-| `paperless_ngx_get_task` | `SYSTEMTOOL` | Retrieve a single task by id (``GET /api/tasks/?task_id=...``). |
-| `paperless_ngx_get_ui_settings` | `SYSTEMTOOL` | Current user's UI settings and permissions (``GET /api/ui_settings/``). |
-| `paperless_ngx_global_search` | `SYSTEMTOOL` | Run a global search across documents, correspondents, tags, etc. |
+| `paperless_ngx_get_remote_version` | `GRANULARTOOL` | Latest available Paperless-ngx version (``GET /api/remote_version/``). |
+| `paperless_ngx_get_schema` | `GRANULARTOOL` | Retrieve the live OpenAPI schema (``GET /api/schema/``, drf-spectacular). |
+| `paperless_ngx_get_statistics` | `GRANULARTOOL` | Document/inbox statistics (``GET /api/statistics/``). |
+| `paperless_ngx_get_system_status` | `GRANULARTOOL` | Backend/service health & version info (``GET /api/status/``). |
+| `paperless_ngx_get_task` | `GRANULARTOOL` | Retrieve a single task by id (``GET /api/tasks/?task_id=...``). |
+| `paperless_ngx_get_ui_settings` | `GRANULARTOOL` | Current user's UI settings and permissions (``GET /api/ui_settings/``). |
+| `paperless_ngx_global_search` | `GRANULARTOOL` | Run a global search across documents, correspondents, tags, etc. |
 | `paperless_ngx_list_correspondents` | `DOCUMENTSTOOL` | List correspondents. |
 | `paperless_ngx_list_custom_fields` | `DOCUMENTSTOOL` | List custom fields. |
 | `paperless_ngx_list_document_types` | `DOCUMENTSTOOL` | List document types. |
@@ -102,8 +79,7 @@ domains can be toggled on or off with the listed environment variable. The table
 | `paperless_ngx_list_saved_views` | `DOCUMENTSTOOL` | List saved views. |
 | `paperless_ngx_list_storage_paths` | `DOCUMENTSTOOL` | List storage paths. |
 | `paperless_ngx_list_tags` | `DOCUMENTSTOOL` | List tags. |
-| `paperless_ngx_list_tasks` | `SYSTEMTOOL` | List background/consumption tasks (``GET /api/tasks/``). |
-| `paperless_ngx_obtain_token` | `SYSTEMTOOL` | Obtain an API auth token from username/password |
+| `paperless_ngx_list_tasks` | `GRANULARTOOL` | List background/consumption tasks (``GET /api/tasks/``). |
 | `paperless_ngx_post_document` | `DOCUMENTSTOOL` | Upload a new document for consumption via ``POST /api/documents/post_document/``. |
 | `paperless_ngx_update_correspondent` | `DOCUMENTSTOOL` | Update a correspondent (PATCH). |
 | `paperless_ngx_update_document` | `DOCUMENTSTOOL` | Partially update a document (PATCH) — title, tags, correspondent, etc. |
@@ -111,312 +87,160 @@ domains can be toggled on or off with the listed environment variable. The table
 
 </details>
 
-_2 action-routed tool(s) (default) · 37 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (`condensed` default · `verbose` 1:1 · `both`). Auto-generated — do not edit._
+_4 action-routed tool(s) · 36 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (**`intent` default** — the six verb-tools, granular set loaded on demand · `condensed` action-routed · `verbose` 1:1 · `both`). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
-## Installation
-
-> **Install the slim `[mcp]` extra.** The MCP examples below install
-> `paperless-ngx-mcp[mcp]` — the MCP-server extra that pulls only the FastMCP /
-> FastAPI tooling (`agent-utilities[mcp]`). It deliberately **excludes** the heavy
-> agent runtime (the epistemic-graph engine, `pydantic-ai`, `dspy`, `llama-index`,
-> `tree-sitter`), so `uvx`/container installs are dramatically smaller and faster.
-> Use the full `[agent]` extra only when you need the integrated Pydantic AI agent.
-
-Pick the extra that matches what you want to run:
-
-| Extra | Installs | Use when |
-|-------|----------|----------|
-| `paperless-ngx-mcp[mcp]` | Slim MCP server only (`agent-utilities[mcp]` — FastMCP/FastAPI) | You only run the **MCP server** (smallest install / image) |
-| `paperless-ngx-mcp[agent]` | Full agent runtime (`agent-utilities[agent,logfire]` — Pydantic AI + the epistemic-graph engine) | You run the **integrated A2A agent** |
-| `paperless-ngx-mcp[all]` | Everything (`mcp` + `agent` + `logfire`) | Development / both surfaces |
-
-### Install with `uvx` (no install — run on demand)
+## Install
 
 ```bash
-uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp      # MCP server
-uvx --from paperless-ngx-mcp paperless-ngx-agent    # A2A agent server
+uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp
 ```
 
-### Install with `pip`
+Use the `[agent]` extra only when running the A2A agent entry point. Agent Utilities
+supplies the full Epistemic Graph runtime on the current dependency line.
 
-```bash
-# MCP server only (recommended for tool hosting — slim deps)
-uv pip install "paperless-ngx-mcp[mcp]"
+## AgentConfig boundary
 
-# Full agent runtime (Pydantic AI + epistemic-graph engine)
-uv pip install "paperless-ngx-mcp[agent]"
-
-# Everything (development)
-uv pip install "paperless-ngx-mcp[all]"      # or: python -m pip install "paperless-ngx-mcp[all]"
-```
-
-### Container images (`:mcp` vs `:agent`)
-
-One multi-stage `docker/Dockerfile` builds two right-sized images, selected by `--target`:
-
-| Image tag | Build target | Contents | Entrypoint |
-|-----------|--------------|----------|------------|
-| `knucklessg1/paperless-ngx-mcp:mcp` | `--target mcp` | `paperless-ngx-mcp[mcp]` — **slim**, no engine/`pydantic-ai`/`dspy`/`llama-index`/`tree-sitter` | `paperless-ngx-mcp` |
-| `knucklessg1/paperless-ngx-mcp:latest` | `--target agent` (default) | `paperless-ngx-mcp[agent]` — **full** agent runtime + epistemic-graph engine | `paperless-ngx-agent` |
-
-```bash
-docker build --target mcp   -t knucklessg1/paperless-ngx-mcp:mcp    docker/   # slim MCP server
-docker build --target agent -t knucklessg1/paperless-ngx-mcp:latest docker/   # full agent
-```
-
-`docker/mcp.compose.yml` runs the slim `:mcp` server; `docker/agent.compose.yml` runs the
-agent (`:latest`) with a co-located `:mcp` sidecar.
-
-### Knowledge-graph database (`epistemic-graph`)
-
-The **full agent** (`[agent]` / `:latest`) embeds the **epistemic-graph** engine (pulled in
-transitively via `agent-utilities[agent]`). For production — or to share one knowledge graph
-across multiple agents — run **epistemic-graph as its own database container** and point the
-agent at it instead of embedding it. Deployment recipes (single-node + Raft HA), connection
-config, and the full database architecture (with diagrams) are documented in the
-[epistemic-graph deployment guide](https://knuckles-team.github.io/epistemic-graph/deployment/).
-The slim `[mcp]` server does **not** require the database.
-
-### Console scripts
-
-After installation the following entry points are available on your `PATH`:
-
-| Command | Description |
-|---------|-------------|
-| `paperless-ngx-mcp` | Launch the MCP server |
-| `paperless-ngx-agent` | Launch the A2A agent server |
-
-## Usage
-
-### As a Python API client
-
-```python
-from paperless_ngx_mcp.auth import get_client
-
-client = get_client()
-status = client.get_system_status()
-print(status)
-```
-
-### As an MCP server (CLI)
-
-```bash
-# Local stdio (for IDEs)
-paperless-ngx-mcp
-
-# Networked streamable-http
-paperless-ngx-mcp --transport streamable-http --host 0.0.0.0 --port 8000
-```
-
-### Calling an MCP tool
-
-Tools are action-routed — pass an `action` plus a JSON `params_json` string:
-
-```json
-{
-  "tool": "system_operations",
-  "arguments": {
-    "action": "status",
-    "params_json": "{}"
-  }
-}
-```
-
-## MCP
-
-### MCP Configuration Examples
-
-<!-- MCP-CONFIG-EXAMPLES:START -->
-
-> **Install the slim `[mcp]` extra.** All examples install `paperless-ngx-mcp[mcp]` — the
-> MCP-server extra that pulls only the FastMCP / FastAPI tooling (`agent-utilities[mcp]`).
-> It deliberately **excludes** the heavy agent runtime (`pydantic-ai`, the epistemic-graph
-> engine, `dspy`, `llama-index`), so `uvx` / container installs are far smaller. Use the
-> full `[agent]` extra only when you need the integrated Pydantic AI agent.
-
-#### stdio Transport (local IDEs — Cursor, Claude Desktop, VS Code)
+The checked-in MCP catalog contains references only:
 
 ```json
 {
   "mcpServers": {
     "paperless-ngx-mcp": {
       "command": "uvx",
-      "args": [
-        "--from",
-        "paperless-ngx-mcp[mcp]",
-        "paperless-ngx-mcp"
-      ],
+      "args": ["--from", "paperless-ngx-mcp[mcp]", "paperless-ngx-mcp"],
       "env": {
-        "MCP_TOOL_MODE": "condensed",
-        "DOCUMENTSTOOL": "True",
-        "PAPERLESS_TOKEN": "your_token_here",
-        "PAPERLESS_URL": "http://localhost:8000",
-        "SYSTEMTOOL": "True"
+        "PAPERLESS_URL": "env://PAPERLESS_URL",
+        "PAPERLESS_TOKEN": "env://PAPERLESS_TOKEN",
+        "PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY": "env://PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY",
+        "TLS_PROFILE": "env://TLS_PROFILE",
+        "TLS_PROFILES_REF": "env://TLS_PROFILES_REF",
+        "WORKSPACE_PATH": "env://WORKSPACE_PATH",
+        "MCP_TOOL_MODE": "intent",
+        "LANGFUSE_CAPTURE_CONTENT": "false"
       }
     }
   }
 }
 ```
 
-#### Streamable-HTTP Transport (networked / production)
+GraphOS reads this catalog through `AgentConfig.MCP_CONFIG`. Map the runtime aliases to
+approved `env://`, `vault://`, or `secret://` runtime sources with
+`AgentConfig.MCP_FLEET_SECRET_REFS`. The connector has no packaged URL or credential
+default and requires HTTPS.
 
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "paperless-ngx-mcp[mcp]",
-        "paperless-ngx-mcp",
-        "--transport",
-        "streamable-http",
-        "--port",
-        "8000"
-      ],
-      "env": {
-        "TRANSPORT": "streamable-http",
-        "HOST": "0.0.0.0",
-        "PORT": "8000",
-        "MCP_TOOL_MODE": "condensed",
-        "DOCUMENTSTOOL": "True",
-        "PAPERLESS_TOKEN": "your_token_here",
-        "PAPERLESS_URL": "http://localhost:8000",
-        "SYSTEMTOOL": "True"
-      }
-    }
-  }
-}
-```
+TLS is resolved by `resolve_configured_tls_profile("paperless")`. Select system trust or
+a runtime profile with `TLS_PROFILE` / `TLS_PROFILES_REF`; do not add a verification
+boolean or commit trust material.
 
-Alternatively, connect to a pre-deployed Streamable-HTTP instance by `url`:
-
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": {
-      "url": "http://localhost:8000/paperless-ngx-mcp/mcp"
-    }
-  }
-}
-```
-
-Deploying the Streamable-HTTP server via Docker:
+Validate the reference boundary without displaying resolved values:
 
 ```bash
-docker run -d \
-  --name paperless-ngx-mcp-mcp \
-  -p 8000:8000 \
-  -e TRANSPORT=streamable-http \
-  -e HOST=0.0.0.0 \
-  -e PORT=8000 \
-  -e MCP_TOOL_MODE=condensed \
-  -e DOCUMENTSTOOL=True \
-  -e PAPERLESS_TOKEN=your_token_here \
-  -e PAPERLESS_URL=http://localhost:8000 \
-  -e SYSTEMTOOL=True \
-  knucklessg1/paperless-ngx-mcp:mcp
+agent-utilities-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
 ```
 
-_Auto-generated from the code-read env surface (`MCP_TOOL_MODE` + package vars) — do not edit._
-<!-- MCP-CONFIG-EXAMPLES:END -->
+## Privacy-preserving graph synchronization
 
-<!-- BEGIN GENERATED: additional-deployment-options -->
-### Additional Deployment Options
+`paperless_ingestion_projection` transforms provider records in memory into keyed opaque
+references and structural relationships. `paperless_ingest_projection` commits that
+same projection through Agent Utilities' governed ChangeEnvelope path.
 
-`paperless-ngx-mcp` can also run as a **local container** (Docker / Podman / `uv`) or be
-consumed from a **remote deployment**. The
-[Deployment guide](https://knuckles-team.github.io/paperless-ngx-mcp/deployment/) has full,
-copy-paste `mcp_config.json` for all four transports — **stdio**, **streamable-http**,
-**local container / uv**, and **remote URL**:
-
-- **Local container / uv** — launch the server from `mcp_config.json` via `uvx`,
-  `docker run`, or `podman run`, or point at a local streamable-http container by `url`.
-- **Remote URL** — connect to a server deployed behind Caddy at
-  `http://paperless-ngx-mcp.arpa/mcp` using the `"url"` key.
-<!-- END GENERATED: additional-deployment-options -->
-
-## Install Python Package
-
-```bash
-python -m pip install paperless-ngx-mcp
-```
-
-## Environment Variables
-
-Every variable the server reads, grouped by purpose.
-
-### Connection & Credentials
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `PAPERLESS_URL` | Base URL of the target Paperless-ngx instance. | `http://localhost:8000` |
-| `PAPERLESS_TOKEN` | DRF API token (My Profile → API Auth Token); sent as `Token <key>`. | — |
-| `PAPERLESS_SSL_VERIFY` | Verify TLS certificates on outbound requests. | `True` |
-
-### MCP server / transport
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `TRANSPORT` | `stdio`, `streamable-http`, or `sse`. | `stdio` |
-| `HOST` | Bind host (HTTP transports). | `0.0.0.0` |
-| `PORT` | Bind port (HTTP transports). | `8000` |
-| `MCP_TOOL_MODE` | Tool surface: `condensed`, `verbose`, or `both`. | `condensed` |
-| `MCP_ENABLED_TOOLS` / `MCP_DISABLED_TOOLS` | Comma-separated tool allow/deny list. | — |
-| `MCP_ENABLED_TAGS` / `MCP_DISABLED_TAGS` | Comma-separated tag allow/deny list. | — |
-
-### Tool toggles
-Each action-routed tool can be disabled individually by setting its toggle env var to `false`.
-The names match the authoritative "Toggle Env Var" column in the
-[Available MCP Tools](#available-mcp-tools) table above.
-
-| Variable | Tool | Default |
-|----------|------|---------|
-| `DOCUMENTSTOOL` | `document_operations` | `True` |
-| `SYSTEMTOOL` | `system_operations` | `True` |
-
-### Telemetry & governance
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ENABLE_OTEL` | Enable OpenTelemetry export. | `True` |
-| `OTEL_EXPORTER_OTLP_ENDPOINT` | OTLP collector endpoint. | — |
-| `OTEL_EXPORTER_OTLP_PUBLIC_KEY` / `OTEL_EXPORTER_OTLP_SECRET_KEY` | OTLP auth keys. | — |
-| `OTEL_EXPORTER_OTLP_PROTOCOL` | OTLP protocol (e.g. `http/protobuf`). | — |
-| `EUNOMIA_TYPE` | Authorization mode: `none`, `embedded`, `remote`. | `none` |
-| `EUNOMIA_POLICY_FILE` | Embedded policy file. | `mcp_policies.json` |
-| `EUNOMIA_REMOTE_URL` | Remote Eunomia server URL. | — |
-
-See [`.env.example`](.env.example) for a copy-paste starting point.
+The durable projection excludes OCR text, titles, notes, names, filenames, storage
+locations, timestamps, URLs, raw bytes, and provider identifiers. It requires a
+deployment-owned pseudonymization key of at least 32 bytes. Activation remains blocked
+until the central capability compiler produces and validates the reviewed signed bundle;
+this repository intentionally does not manufacture signed release artifacts.
 
 ## Documentation
 
-Full documentation is published to the GitHub Pages site and mirrored under `docs/`:
-
-- [Documentation site](https://knuckles-team.github.io/paperless-ngx-mcp/)
-- [Overview](docs/overview.md)
+- [Configuration](docs/configuration.md)
 - [Installation](docs/installation.md)
 - [Usage](docs/usage.md)
 - [Deployment](docs/deployment.md)
-- [Platform](docs/platform.md)
-- [Concept Registry](docs/concepts.md)
+- [Architecture](docs/overview.md)
+- [Concepts](docs/concepts.md)
+
+## Security
+
+- No arbitrary REST escape hatch or password-to-token action is exposed.
+- Pagination is same-origin and bounded; redirects do not carry provider credentials.
+- HTTP errors omit response bodies, connection values, parameters, and record content.
+- Tool handlers do not echo malformed JSON or provider exception text.
+- Uploads are constrained to a configured workspace root and a fixed size ceiling.
+- Telemetry examples default to content capture disabled.
+
+## Environment Variables
+
+<!-- ENV-VARS-TABLE:START -->
+
+#### Package environment variables
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `PAPERLESS_URL` | — | HTTPS provider URL projected at runtime |
+| `PAPERLESS_TOKEN` | — | Runtime secret projection; never commit a token |
+| `PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY` | — | Deployment-owned secret, at least 32 bytes |
+| `TLS_PROFILE` | — | Shared mandatory-verification transport profile selector |
+| `TLS_PROFILES_REF` | — | Runtime reference to the shared transport profile catalog |
+| `WORKSPACE_PATH` | — | AgentConfig upload boundary; never commit a local path |
+| `MCP_TOOL_MODE` | `intent` | Current intent-first tool surface |
+| `DOCUMENTSTOOL` | `True` | Enable document operations |
+| `SYSTEMTOOL` | `True` | Enable system operations |
+| `KGTOOL` | `True` | Enable privacy-preserving governed projection tools |
+| `TRANSPORT` | `stdio` | Local MCP transport |
+| `HOST` | `127.0.0.1` | Loopback bind for HTTP transports |
+| `PORT` | `8000` | Bind port for HTTP transports |
+| `ENABLE_OTEL` | `False` | Enable trace export only after configuring an approved collector |
+| `LANGFUSE_CAPTURE_CONTENT` | `False` | Never capture provider record content |
+
+#### Inherited agent-utilities variables (apply to every connector)
+
+| Variable | Example | Description |
+|----------|---------|-------------|
+| `MCP_ENABLED_TOOLS` | — | Comma-separated tool allow-list |
+| `MCP_DISABLED_TOOLS` | — | Comma-separated tool deny-list |
+| `MCP_ENABLED_TAGS` | — | Comma-separated tag allow-list |
+| `MCP_DISABLED_TAGS` | — | Comma-separated tag deny-list |
+| `EUNOMIA_TYPE` | `none` | Authorization mode: `none` \| `embedded` \| `remote` |
+| `EUNOMIA_POLICY_FILE` | `mcp_policies.json` | Embedded Eunomia policy file |
+| `EUNOMIA_REMOTE_URL` | — | Remote Eunomia authorization server URL |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | — | OTLP collector endpoint |
+| `MCP_CLIENT_AUTH` | — | Outbound MCP child auth: `oidc-client-credentials` \| `basic` \| `none` |
+| `OIDC_CLIENT_ID` | — | OIDC client id (service-account auth) |
+| `OIDC_CLIENT_SECRET_REF` | `secret://identity/oidc-client-secret` | Runtime secret reference for the OIDC service account |
+| `MCP_BASIC_AUTH_USERNAME` | — | HTTP Basic username (`MCP_CLIENT_AUTH=basic`) |
+| `MCP_BASIC_AUTH_PASSWORD_REF` | `secret://identity/mcp-basic-password` | Runtime secret reference for HTTP Basic auth (`MCP_CLIENT_AUTH=basic`) |
+| `DEBUG` | `False` | Verbose logging |
+| `PYTHONUNBUFFERED` | `1` | Unbuffered stdout (recommended in containers) |
+| `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
+| `PROVIDER` | `openai` | LLM provider for the agent |
+| `MODEL_ID` | `gpt-4o` | Model id for the agent |
+| `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
+
+_15 package + 19 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+<!-- ENV-VARS-TABLE:END -->
+
+Licensed under the MIT License.
 
 
-<!-- BEGIN agent-os-genesis-deploy (generated; do not edit between markers) -->
+<!-- BEGIN agent-utilities-deployment (generated; do not edit between markers) -->
 
-## Deploy with `agent-os-genesis`
+## Deploy with `agent-utilities-deployment`
 
-This package can be provisioned for you — skill-guided — by the **`agent-os-genesis`**
-universal skill (its *single-package deploy mode*): it picks your install method, seeds
-secrets to OpenBao/Vault (or `.env`), trusts your enterprise CA, registers the MCP
-server, and verifies it — the same machinery that stands up the whole Agent OS, narrowed
-to just this package. Ask your agent to **"deploy `paperless-ngx-mcp` with agent-os-genesis"**.
+Provision this package with the consolidated **`agent-utilities-deployment`**
+workflow. It selects an installed-package, editable-source, or immutable-container
+path; records only runtime secret and TLS-profile references in `AgentConfig`; and
+runs doctor, registration, policy, observability, and rollback gates. Ask your agent
+to **"deploy `paperless-ngx-mcp` with agent-utilities-deployment"**.
 
 | Install mode | Command |
 |------|---------|
-| Bare-metal, prod (PyPI) | `uvx paperless-ngx-mcp` · or `uv tool install paperless-ngx-mcp` |
-| Bare-metal, dev (editable) | `uv pip install -e ".[all]"` · or `pip install -e ".[all]"` |
-| Container, prod | deploy `knucklessg1/paperless-ngx-mcp:latest` via docker-compose / swarm / podman / podman-compose / kubernetes |
-| Container, dev (editable) | deploy `docker/compose.dev.yml` (source-mounted at `/src`; edits live on restart) |
+| Installed package | `uv tool install "paperless-ngx-mcp[mcp]"`, then run `paperless-ngx-mcp` |
+| Editable source | `uv pip install -e ".[agent]"`, then run `paperless-ngx-mcp` |
+| Immutable container | deploy `registry.example.invalid/paperless-ngx-mcp@sha256:<digest>` through the operator-selected orchestrator |
 
-Secrets are read-existing + seeded via `vault_sync` — you are only prompted for what's missing.
+The repository embeds no deployment profile, credential value, certificate path, or
+environment-specific endpoint. Supply those at runtime through `AgentConfig` and the
+configured secret provider.
 
-<!-- END agent-os-genesis-deploy -->
+<!-- END agent-utilities-deployment -->

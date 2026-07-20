@@ -1,126 +1,48 @@
-@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
-@prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix dc: <http://purl.org/dc/terms/> .
 @prefix : <http://knuckles.team/kg#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-# Paperless-ngx document-management ontology — scanned/OCR'd documents and their
-# organizing metadata (correspondents, tags, document types, storage paths). All
-# classes and properties live in the shared `:` (kg#) namespace; only the
-# owl:Ontology node gets the per-package IRI. Backs the paperless-ngx-mcp tool
-# surface (document_operations / system_operations). The scanned PDF/image itself is
-# ingested as a shared :Blob / :MediaAsset; the OCR text rides on the reused
-# :Document class — neither is redefined here.
+# Native Paperless-ngx structural model. Instances use keyed opaque identifiers.
+# Content, names, filenames, paths, URLs, timestamps, and provider identifiers are
+# deliberately absent from the durable projection.
 
-# --- classes (owl:Class) — new to the paperless domain ---
+:PaperlessDocumentReference a owl:Class ;
+    rdfs:label "Opaque Paperless-ngx document reference" ;
+    rdfs:comment "A content-free keyed reference to a provider document." .
 
-:Correspondent a owl:Class ;
-    rdfs:label "Correspondent" ;
-    rdfs:comment "The sender/recipient a document is associated with — a person or organization (paperless correspondents). Reuse :Person for a resolved individual." .
+:PaperlessCorrespondentReference a owl:Class ;
+    rdfs:label "Opaque Paperless-ngx correspondent reference" ;
+    rdfs:comment "A name-free keyed reference to a provider correspondent." .
 
-:Tag a owl:Class ;
-    rdfs:label "Tag" ;
-    rdfs:comment "A colored label used to classify and filter documents (paperless tags)." .
+:PaperlessTagReference a owl:Class ;
+    rdfs:label "Opaque Paperless-ngx tag reference" ;
+    rdfs:comment "A label-free keyed reference to a provider tag." .
 
-:DocumentType a owl:Class ;
-    rdfs:label "Document Type" ;
-    rdfs:comment "A category describing the kind of a document — invoice, contract, letter, etc. (paperless document types)." .
+:PaperlessDocumentTypeReference a owl:Class ;
+    rdfs:label "Opaque Paperless-ngx document-type reference" ;
+    rdfs:comment "A label-free keyed reference to a provider document type." .
 
-:StoragePath a owl:Class ;
-    rdfs:label "Storage Path" ;
-    rdfs:comment "A templated filesystem location where a document's archive file is stored (paperless storage paths)." .
+:PaperlessStoragePathReference a owl:Class ;
+    rdfs:label "Opaque Paperless-ngx storage-path reference" ;
+    rdfs:comment "A path-free keyed reference to provider storage placement." .
 
-:CustomField a owl:Class ;
-    rdfs:label "Custom Field" ;
-    rdfs:comment "A user-defined metadata field attachable to documents (paperless custom fields)." .
+:hasCorrespondentReference a owl:ObjectProperty ;
+    rdfs:domain :PaperlessDocumentReference ;
+    rdfs:range :PaperlessCorrespondentReference .
 
-# NOTE: reused shared classes — NOT redefined here:
-#   :Document   — the OCR'd document record (carries content/title text for search)
-#   :Blob       — the raw scanned PDF/image bytes, content-addressed
-#   :MediaAsset — the graph node wrapping a stored :Blob
-#   :Person     — a resolved individual correspondent
+:hasTagReference a owl:ObjectProperty ;
+    rdfs:domain :PaperlessDocumentReference ;
+    rdfs:range :PaperlessTagReference .
 
-# --- links (owl:ObjectProperty) ---
+:hasDocumentTypeReference a owl:ObjectProperty ;
+    rdfs:domain :PaperlessDocumentReference ;
+    rdfs:range :PaperlessDocumentTypeReference .
 
-:fromCorrespondent a owl:ObjectProperty ;
-    rdfs:label "from correspondent" ;
-    rdfs:comment "Links a Document to the Correspondent it was sent by / to." ;
-    rdfs:domain :Document ;
-    rdfs:range :Correspondent .
-
-:hasTag a owl:ObjectProperty ;
-    rdfs:label "has tag" ;
-    rdfs:comment "Links a Document to a Tag applied to it." ;
-    rdfs:domain :Document ;
-    rdfs:range :Tag .
-
-:hasDocumentType a owl:ObjectProperty ;
-    rdfs:label "has document type" ;
-    rdfs:comment "Links a Document to its DocumentType category." ;
-    rdfs:domain :Document ;
-    rdfs:range :DocumentType .
-
-:storedAt a owl:ObjectProperty ;
-    rdfs:label "stored at" ;
-    rdfs:comment "Links a Document to the StoragePath where its archive file lives." ;
-    rdfs:domain :Document ;
-    rdfs:range :StoragePath .
-
-:scannedAs a owl:ObjectProperty ;
-    rdfs:label "scanned as" ;
-    rdfs:comment "Links a Document to the MediaAsset (raw scanned PDF/image blob) it was digitized from." ;
-    rdfs:domain :Document ;
-    rdfs:range :MediaAsset .
-
-:hasCustomField a owl:ObjectProperty ;
-    rdfs:label "has custom field" ;
-    rdfs:comment "Links a Document to a CustomField value it carries." ;
-    rdfs:domain :Document ;
-    rdfs:range :CustomField .
-
-# --- fields (owl:DatatypeProperty) ---
-
-:archiveSerialNumber a owl:DatatypeProperty ;
-    rdfs:label "archive serial number" ;
-    rdfs:comment "Human-assigned archive serial number (ASN) of a Document." ;
-    rdfs:domain :Document ;
-    rdfs:range xsd:string .
-
-:originalFileName a owl:DatatypeProperty ;
-    rdfs:label "original file name" ;
-    rdfs:comment "The original filename of the ingested source document." ;
-    rdfs:domain :Document ;
-    rdfs:range xsd:string .
-
-:addedAt a owl:DatatypeProperty ;
-    rdfs:label "added at" ;
-    rdfs:comment "Timestamp the Document was consumed/added into Paperless-ngx." ;
-    rdfs:domain :Document ;
-    rdfs:range xsd:dateTime .
-
-:documentCount a owl:DatatypeProperty ;
-    rdfs:label "document count" ;
-    rdfs:comment "Number of documents associated with a Correspondent, Tag, or DocumentType." ;
-    rdfs:range xsd:integer .
-
-:color a owl:DatatypeProperty ;
-    rdfs:label "color" ;
-    rdfs:comment "Display color of a Tag (hex)." ;
-    rdfs:domain :Tag ;
-    rdfs:range xsd:string .
-
-:slug a owl:DatatypeProperty ;
-    rdfs:label "slug" ;
-    rdfs:comment "URL-safe slug of a Correspondent, Tag, DocumentType, or StoragePath." ;
-    rdfs:range xsd:string .
+:hasStoragePathReference a owl:ObjectProperty ;
+    rdfs:domain :PaperlessDocumentReference ;
+    rdfs:range :PaperlessStoragePathReference .
 
 <http://knuckles.team/kg/paperless> a owl:Ontology ;
-    rdfs:label "Paperless-ngx Document Ontology" ;
-    rdfs:comment """Paperless-ngx document-management model — OCR'd documents and the
-    metadata that organizes them (correspondents, tags, document types, storage paths,
-    custom fields), plus the link from each document to its raw scanned blob — federated
-    into the agent-utilities knowledge-graph hub. Reuses the shared :Document, :Blob,
-    :MediaAsset and :Person classes rather than redefining them.""" ;
+    rdfs:label "Paperless-ngx zero-PII structural ontology" ;
+    rdfs:comment "Keyed opaque document and classification relationships for governed Paperless-ngx ingestion." ;
     owl:imports <http://knuckles.team/kg> .

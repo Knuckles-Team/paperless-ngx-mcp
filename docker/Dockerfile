@@ -3,20 +3,21 @@
 # slim multi-stage (build in a builder, ship only /usr/local — no dev-tools/source):
 #
 #   --target agent  (DEFAULT)  installs paperless-ngx-mcp[agent] = the FULL runtime
-#                              (agent-utilities[agent]: engine + pydantic-ai + dspy +
-#                              skills). Because [agent] also includes [mcp], this image
+#                              (agent-utilities[agent-runtime]: pydantic-ai + skills;
+#                              the full epistemic-graph engine is a base dependency).
+#                              The provider's [agent] also includes [mcp], so this image
 #                              can run EITHER the agent OR the mcp server. Push as the
 #                              default tags: latest / main / <version>.
 #
 #   --target mcp               installs paperless-ngx-mcp[mcp]   = MCP-server tooling ONLY
-#                              (agent-utilities[mcp]: fastmcp/fastapi — NO engine,
-#                              pydantic-ai, dspy, llama-index, tree-sitter). The slim
-#                              variant. Push as the :mcp / :mcp-<version> tag.
+#                              (agent-utilities[mcp]: FastMCP/FastAPI plus the mandatory
+#                              full epistemic-graph base runtime). It omits the optional
+#                              provider agent/frontends. Push as the :mcp / :mcp-<version> tag.
 #
-#   docker build --target agent -t paperless-ngx-mcp:latest .
+#   docker build --target agent -t paperless-ngx-mcp:agent-local .
 #   docker build --target mcp   -t paperless-ngx-mcp:mcp    .
-FROM python:3.11-slim AS builder-base
-COPY --from=ghcr.io/astral-sh/uv:0.11.7 /uv /uvx /bin/
+FROM python:3.11-slim@sha256:e031123e3d85762b141ad1cbc56452ba69c6e722ebf2f042cc0dc86c47c0d8b3 AS builder-base
+COPY --from=ghcr.io/astral-sh/uv:0.11.7@sha256:240fb85ab0f263ef12f492d8476aa3a2e4e1e333f7d67fbdd923d00a506a516a /uv /uvx /bin/
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy \
     UV_SYSTEM_PYTHON=1 \
@@ -35,7 +36,7 @@ FROM builder-base AS builder-agent
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system --upgrade --break-system-packages --prerelease=allow paperless-ngx-mcp[agent]>=1.0.1
 
-FROM python:3.11-slim AS runtime-base
+FROM python:3.11-slim@sha256:e031123e3d85762b141ad1cbc56452ba69c6e722ebf2f042cc0dc86c47c0d8b3 AS runtime-base
 ARG HOST=0.0.0.0
 ARG PORT=8000
 ARG TRANSPORT="stdio"

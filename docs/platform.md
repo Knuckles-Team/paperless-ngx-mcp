@@ -1,23 +1,10 @@
-# Backing Platform — Paperless-ngx MCP
+# Provider boundary
 
-`paperless-ngx-mcp` is a **client** of a backing service instance. This page provides a
-Docker recipe for deploying one locally to serve as the target of
-`PAPERLESS_URL`.
+This project is a client of the standard Paperless-ngx REST API. It does not deploy,
+patch, seed, or customize a Paperless-ngx instance.
 
-!!! note "Backing-system recipe"
-    Each connector in the ecosystem follows the same convention — a
-    `docs/platform.md` recipe for the system it integrates with, accompanied by a
-    sample Compose stack. Systems offered only as a managed service have no local
-    recipe.
-
-## Single-node deployment (Compose)
-
-```yaml
-# docker/platform.compose.yml — replace with the real backing-service recipe
-services:
-  platform:
-    image: REPLACE_ME
-    restart: unless-stopped
-    ports:
-      - "8080:8080"
-```
+The connector covers the stock document, correspondent, tag, document-type,
+storage-path, custom-field, saved-view, search, task, statistics, status, remote-version,
+UI-settings, and schema resources used by its typed client. Instance plugins and custom
+taxonomies remain external. Schema discovery can inform a reviewed future connector
+change, but it never auto-persists an instance-specific ontology into this repository.

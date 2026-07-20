@@ -5,7 +5,6 @@
     "version": "9",
     "description": "Derived OpenAPI document for the Paperless-ngx Django REST Framework API (served live at /api/schema/). Endpoint map sourced from paperless-ngx src/paperless/urls.py DefaultRouter registrations and the documented action endpoints. Auth: 'Authorization: Token <key>'."
   },
-  "servers": [{ "url": "https://paperless.arpa" }],
   "components": {
     "securitySchemes": {
       "tokenAuth": {
@@ -97,9 +96,6 @@
     },
     "/api/ui_settings/": {
       "get": { "operationId": "ui_settings_retrieve", "tags": ["system"], "summary": "Current user UI settings & permissions." }
-    },
-    "/api/token/": {
-      "post": { "operationId": "token_obtain", "tags": ["system"], "summary": "Obtain an API auth token from username/password." }
     },
     "/api/schema/": {
       "get": { "operationId": "schema_retrieve", "tags": ["system"], "summary": "Live OpenAPI schema (drf-spectacular)." }

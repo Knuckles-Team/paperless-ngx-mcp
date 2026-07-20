@@ -1,22 +1,11 @@
-# Concept Registry — paperless-ngx-mcp
+# Concept registry
 
-> **Prefix**: `CONCEPT:PNGX-*`
-> **Version**: 0.1.0
-> **Bridge**: [`CONCEPT:AU-ECO.messaging.native-backend-abstraction`](https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/concepts.md) (Unified Toolkit Ingestion)
+| Concept ID | Provider responsibility |
+| --- | --- |
+| `CONCEPT:PL-OS.identity.pngx` | Typed document and metadata operations through the current Agent Utilities MCP boundary |
+| `CONCEPT:PL-OS.governance.pngx` | Search, task, status, schema, and privacy-preserving structural ingestion operations |
+| `CONCEPT:AU-KG.ingest.enterprise-source-extractor` | Provider projection into the central governed ChangeEnvelope path |
+| `CONCEPT:AU-ECO.messaging.native-backend-abstraction` | Data-only provider discovery through ecosystem entry points |
 
----
-
-## Project-Specific Concepts
-
-| Concept ID | Name | Description |
-|------------|------|-------------|
-| `CONCEPT:PL-OS.identity.pngx` | Document Operations | MCP tool domain `documents` — documents, correspondents, tags, document types, storage paths, custom fields, saved views (action-routed) |
-| `CONCEPT:PL-OS.governance.pngx` | System Operations | MCP tool domain `system` — full-text search, autocomplete, tasks, statistics, system status (action-routed) |
-
-## Cross-Project References (from agent-utilities)
-
-| Concept ID | Name | Origin |
-|------------|------|--------|
-| `CONCEPT:AU-ECO.messaging.native-backend-abstraction` | Unified Toolkit Ingestion | agent-utilities |
-| `CONCEPT:AU-ORCH.adapter.hot-cache-invalidation` | Confidence-Gated Router | agent-utilities |
-| `CONCEPT:AU-OS.config.secrets-authentication` | Prompt Injection Defense | agent-utilities |
+The provider uses the single current `CONCEPT:PL-*` prefix. No retired concept
+identifiers or parallel names are accepted.

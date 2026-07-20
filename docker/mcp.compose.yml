@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   paperless-ngx-mcp-mcp:
-    image: knucklessg1/paperless-ngx-mcp:mcp
+    image: ${PAPERLESS_NGX_MCP_IMAGE:?set-PAPERLESS_NGX_MCP_IMAGE-to-image@sha256-digest}
     container_name: paperless-ngx-mcp-mcp
     hostname: paperless-ngx-mcp-mcp
     restart: always
@@ -13,6 +13,8 @@ services:
       - HOST=0.0.0.0
       - PORT=8000
       - TRANSPORT=streamable-http
+      - ENABLE_OTEL=False
+      - LANGFUSE_CAPTURE_CONTENT=False
     ports:
       - "8000:8000"
     healthcheck:

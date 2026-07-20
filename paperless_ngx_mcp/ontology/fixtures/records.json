@@ -1,0 +1,18 @@
+{
+  "connector": "paperless-ngx-mcp",
+  "fixtures": [
+    {
+      "expected": {
+        "acl_state": "quarantine",
+        "id": "fixture-record",
+        "title": "Synthetic certification record"
+      },
+      "preset": "paperless-document-structure",
+      "record": {
+        "acl_public": false,
+        "id": "fixture-record"
+      }
+    }
+  ],
+  "schema_version": "1"
+}

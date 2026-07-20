@@ -61,15 +61,6 @@ class ApiClientSystem(ApiClientDocuments):
         """Current user's UI settings and permissions (``GET /api/ui_settings/``)."""
         return self._get("/api/ui_settings/")
 
-    def obtain_token(self, username: str, password: str) -> Any:
-        """Obtain an API auth token from username/password
-        (``POST /api/token/``)."""
-        return self.request(
-            "POST",
-            "/api/token/",
-            json={"username": username, "password": password},
-        )
-
     def get_schema(self) -> Any:
         """Retrieve the live OpenAPI schema (``GET /api/schema/``, drf-spectacular)."""
         return self._get("/api/schema/")

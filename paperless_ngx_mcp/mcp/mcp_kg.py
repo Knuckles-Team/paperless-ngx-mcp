@@ -1,115 +1,74 @@
-"""Wire-First native KG-ingestion tool for Paperless-ngx (CONCEPT:AU-KG.ingest.enterprise-source-extractor).
+"""Privacy-preserving Paperless-ngx projection and governed ingestion tools."""
 
-Lists documents (+ the correspondents/tags/document-types/storage-paths that organize
-them) via the real client and pushes them into the epistemic-graph as typed OWL nodes —
-``:Document`` (with OCR text), ``:Correspondent`` / ``:Tag`` / ``:DocumentType`` /
-``:StoragePath`` — plus their links. Optionally downloads each document's scanned
-PDF/image and stores it as a durable ``:Blob`` / ``:MediaAsset``. Best-effort: no-ops
-(``"ingested": None``) when no engine is reachable.
-"""
+from __future__ import annotations
 
 import json
+from typing import Any
 
-from agent_utilities.mcp_utilities import run_blocking
+from agent_utilities.mcp.concurrency import invoke_client_method
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
 
 from ..auth import get_client
+from ..kg_ingest import ingest_projection, project_records
 
 
-def register_kg_tools(mcp: FastMCP):
-    """Register the native paperless→KG ingestion tool."""
+def _options(params_json: str) -> dict[str, Any]:
+    try:
+        value = json.loads(params_json or "{}")
+    except (TypeError, ValueError):
+        raise ValueError("params_json is not valid JSON") from None
+    if not isinstance(value, dict):
+        raise ValueError("params_json must be a JSON object")
+    return {key: item for key, item in value.items() if item is not None}
 
-    @mcp.tool(tags={"misc", "kg"})
-    async def paperless_ingest_documents(
+
+async def _projection(client: Any, options: dict[str, Any]) -> dict[str, Any]:
+    correspondents = await invoke_client_method(client.list_correspondents)
+    tags = await invoke_client_method(client.list_tags)
+    document_types = await invoke_client_method(client.list_document_types)
+    storage_paths = await invoke_client_method(client.list_storage_paths)
+    documents = await invoke_client_method(client.list_documents, **options)
+    return project_records(
+        documents,
+        correspondents=correspondents,
+        tags=tags,
+        document_types=document_types,
+        storage_paths=storage_paths,
+    )
+
+
+def register_kg_tools(mcp: FastMCP) -> None:
+    """Register zero-PII source projection and ChangeEnvelope ingestion."""
+
+    @mcp.tool(tags={"kg"})
+    async def paperless_ingestion_projection(
         params_json: str = Field(
             default="{}",
-            description=(
-                "JSON string of options: list_documents filters (e.g. "
-                '{"query": "invoice", "max_pages": 1}), plus optional '
-                '"include_files": true to also ingest each scanned PDF as a blob, and '
-                '"max_files": N to cap blob downloads (default 25).'
-            ),
+            description="Bounded list_documents filters encoded as a JSON object.",
         ),
         client=Depends(get_client),
         ctx: Context | None = None,
-    ) -> dict:
-        """Natively ingest Paperless-ngx documents + metadata into epistemic-graph.
-
-        Maps documents → :Document (OCR text) with :fromCorrespondent / :hasTag /
-        :hasDocumentType / :storedAt links, and (when ``include_files``) the scanned
-        bytes → :Blob/:MediaAsset via :scannedAs. CONCEPT:AU-KG.ingest.enterprise-source-extractor.
-        """
-        from ..kg_ingest import (
-            ingest_documents_records,
-            ingest_metadata,
-        )
-        from ..kg_media import ingest_document_blob
-
-        try:
-            opts = json.loads(params_json or "{}")
-        except Exception as e:  # noqa: BLE001
-            return {"error": f"Invalid params_json: {e}"}
-        if not isinstance(opts, dict):
-            return {"error": "params_json must be a JSON object"}
-
-        include_files = bool(opts.pop("include_files", False))
-        max_files = int(opts.pop("max_files", 25) or 25)
-        opts.pop("max_files", None)
-
-        base_url = getattr(client, "base_url", "")
+    ) -> dict[str, Any]:
+        """Return keyed opaque nodes and relationships for governed source sync."""
 
         if ctx:
-            await ctx.info("paperless_ingest_documents: listing documents + metadata")
+            await ctx.info("Preparing Paperless-ngx structural projection")
+        return await _projection(client, _options(params_json))
 
-        # Metadata first so the referenced nodes carry names.
-        correspondents = await run_blocking(client.list_correspondents)
-        tags = await run_blocking(client.list_tags)
-        document_types = await run_blocking(client.list_document_types)
-        storage_paths = await run_blocking(client.list_storage_paths)
-        ingest_metadata(
-            correspondents=correspondents,
-            tags=tags,
-            document_types=document_types,
-            storage_paths=storage_paths,
-        )
+    @mcp.tool(tags={"kg"})
+    async def paperless_ingest_projection(
+        params_json: str = Field(
+            default="{}",
+            description="Bounded list_documents filters encoded as a JSON object.",
+        ),
+        client=Depends(get_client),
+        ctx: Context | None = None,
+    ) -> dict[str, Any]:
+        """Commit the keyed structural projection through governed ChangeEnvelope."""
 
-        documents = await run_blocking(client.list_documents, **opts)
-        if not isinstance(documents, list):
-            documents = [documents] if documents else []
-
-        doc_result = ingest_documents_records(documents, base_url=base_url)
-
-        files_ingested = 0
-        if include_files:
-            for rec in documents[:max_files]:
-                did = rec.get("id")
-                if did is None:
-                    continue
-                try:
-                    data = await run_blocking(client.download_document, did)
-                except Exception:  # noqa: BLE001 — a single scan failing is non-fatal
-                    continue
-                res = ingest_document_blob(
-                    did,
-                    data,
-                    info=rec,
-                    source_uri=f"{base_url.rstrip('/')}/documents/{did}/"
-                    if base_url
-                    else "",
-                )
-                if res is not None:
-                    files_ingested += 1
-
-        return {
-            "listed_documents": len(documents),
-            "listed_correspondents": len(correspondents)
-            if isinstance(correspondents, list)
-            else 0,
-            "listed_tags": len(tags) if isinstance(tags, list) else 0,
-            "ingested": doc_result,
-            "files_ingested": files_ingested if include_files else None,
-        }
-
-    return None
+        if ctx:
+            await ctx.info("Ingesting Paperless-ngx structural projection")
+        projection = await _projection(client, _options(params_json))
+        return {"ingested": ingest_projection(projection)}

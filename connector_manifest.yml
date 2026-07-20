@@ -2,132 +2,111 @@ connector: paperless-ngx-mcp
 ontology_source: paperless
 schema_version: '1'
 resources:
-- name: Correspondent
-  label: Correspondent
-  id_prefix: correspondent
+- name: PaperlessCorrespondentReference
+  label: Opaque Paperless-ngx correspondent reference
+  id_prefix: paperlesscorrespondentreference
   relations: []
-- name: CustomField
-  label: Custom Field
-  id_prefix: customfield
+- name: PaperlessDocumentReference
+  label: Opaque Paperless-ngx document reference
+  id_prefix: paperlessdocumentreference
+  relations:
+  - name: hasCorrespondentReference
+    label: Has Correspondent Reference
+    target: PaperlessCorrespondentReference
+    lpg_rel_type: ''
+  - name: hasDocumentTypeReference
+    label: Has Document Type Reference
+    target: PaperlessDocumentTypeReference
+    lpg_rel_type: ''
+  - name: hasStoragePathReference
+    label: Has Storage Path Reference
+    target: PaperlessStoragePathReference
+    lpg_rel_type: ''
+  - name: hasTagReference
+    label: Has Tag Reference
+    target: PaperlessTagReference
+    lpg_rel_type: ''
+- name: PaperlessDocumentTypeReference
+  label: Opaque Paperless-ngx document-type reference
+  id_prefix: paperlessdocumenttypereference
   relations: []
-- name: DocumentType
-  label: Document Type
-  id_prefix: documenttype
+- name: PaperlessStoragePathReference
+  label: Opaque Paperless-ngx storage-path reference
+  id_prefix: paperlessstoragepathreference
   relations: []
-- name: StoragePath
-  label: Storage Path
-  id_prefix: storagepath
-  relations: []
-- name: Tag
-  label: Tag
-  id_prefix: tag
+- name: PaperlessTagReference
+  label: Opaque Paperless-ngx tag reference
+  id_prefix: paperlesstagreference
   relations: []
 actions:
 - id: run_graph_flow
   name: Graph Flow Execution
   description: Execute a workflow through the agent's graph orchestration engine
-events:
-- name: paperless-documents.updated
-  resource: document
-  description: "Watermark event for 'paperless-documents' \u2014 advances on modified (mcp_source_presets.json)."
+events: []
 identity:
   id_field:
-    document: id
-  title_field:
-    document: title
-  text_field:
-    document: content
-  updated_field:
-    document: modified
+    paperless-document-reference: id
+  title_field: {}
+  text_field: {}
+  updated_field: {}
 permissions:
   acl_fields: []
   tenant_field: null
   read_roles: []
 schema_mappings:
-  Correspondent:
+  PaperlessCorrespondentReference:
     ontology_class: null
-    fields:
-      addedAt: xsd:dateTime
-      archiveSerialNumber: xsd:string
-      color: xsd:string
-      documentCount: xsd:integer
-      originalFileName: xsd:string
-      slug: xsd:string
-  CustomField:
-    ontology_class: null
-    fields:
-      addedAt: xsd:dateTime
-      archiveSerialNumber: xsd:string
-      color: xsd:string
-      documentCount: xsd:integer
-      originalFileName: xsd:string
-      slug: xsd:string
-  DocumentType:
+    fields: {}
+  PaperlessDocumentReference:
     ontology_class: Document
-    fields:
-      addedAt: xsd:dateTime
-      archiveSerialNumber: xsd:string
-      color: xsd:string
-      documentCount: xsd:integer
-      originalFileName: xsd:string
-      slug: xsd:string
-  StoragePath:
+    fields: {}
+  PaperlessDocumentTypeReference:
+    ontology_class: Document
+    fields: {}
+  PaperlessStoragePathReference:
     ontology_class: null
-    fields:
-      addedAt: xsd:dateTime
-      archiveSerialNumber: xsd:string
-      color: xsd:string
-      documentCount: xsd:integer
-      originalFileName: xsd:string
-      slug: xsd:string
-  Tag:
+    fields: {}
+  PaperlessTagReference:
     ontology_class: null
-    fields:
-      addedAt: xsd:dateTime
-      archiveSerialNumber: xsd:string
-      color: xsd:string
-      documentCount: xsd:integer
-      originalFileName: xsd:string
-      slug: xsd:string
+    fields: {}
 sync:
-- preset: paperless-documents
+- preset: paperless-document-structure
   server: paperless-ngx-mcp
-  tool: document_operations
-  action: list_documents
-  records_path: result
+  tool: paperless_ingestion_projection
+  action: null
+  records_path: records
   id_field: id
-  title_field: title
-  text_field: content
-  updated_field: modified
-  pagination: page
-  doc_type: document
+  title_field: null
+  text_field: null
+  updated_field: null
+  pagination: null
+  doc_type: paperless-document-reference
+  tool_schema_sha256: 03ec5eaab6d51c0db66889da13114a6d7d33c90f1a6e8b4c2606ef1131a27d92
   raw:
     server: paperless-ngx-mcp
-    tool: document_operations
-    action: list_documents
-    records_path: result
+    tool: paperless_ingestion_projection
+    params_style: args
+    params:
+      params_json: '{"max_pages":1,"page_size":100}'
+    records_path: records
     id_field: id
-    title_field: title
-    text_field: content
-    updated_field: modified
-    pagination: page
-    page_kind: page
-    page_param: page
-    page_size_param: page_size
-    doc_type: document
+    doc_type: paperless-document-reference
 provenance:
   generated_by: scripts/generate_connector_manifests.py
-  generated_at: '2026-07-09T00:00:00Z'
+  generated_at: '2026-07-18T14:21:05Z'
   source_artifacts:
   - a2a.json
   - paperless_ngx_mcp/connectors/mcp_source_presets.json
+  - paperless_ngx_mcp/connectors/tool_schema_fingerprints.json
   - paperless_ngx_mcp/ontology/paperless.ttl
   integrity:
     algorithm: urdna2015-sha256
-    hash: e8f96a567c010a56b1e91356a8ce821edff7ded6c7d910b0c8f4ba4868f4bc9f
-    triple_count: 38
+    hash: b23d9d6d30379acaafa964fb47a13097010dfd70f7decc48cef1ef004f50849f
+    triple_count: 37
   signer: ontology-manifest-generator
-  signature: b40b20816fe27aeb3473d7386eab57b0204093118a9b189a0e7cf056055b0855
+  signature_algorithm: ed25519
+  signing_public_key: q0Cp7bmQMqJhbofGKKw8xXC6KbFzukBDDke0UYVi8y4
+  signature: 1lOAKXnxCEsNue7ruWk7rgy2PpOxzwrsDtoqHvpusTxsnA5q6Wa6hrZiqV3hK2CZKbvx4NCLAEFi6eFytfAqCg
 policy:
   pii_fields: {}
   tenant_boundary: null
@@ -135,26 +114,15 @@ policy:
 review_todos:
 - "policy.rls / policy.tenant_boundary are unset \u2014 no row-level-security predicate has been reviewed\
   \ for this connector."
-- "relation 'fromCorrespondent' has no declared rdfs:domain resolving to a known resource in this connector's\
-  \ ontology \u2014 not attached to any resource; verify its true domain manually."
-- "relation 'hasCustomField' has no declared rdfs:domain resolving to a known resource in this connector's\
-  \ ontology \u2014 not attached to any resource; verify its true domain manually."
-- "relation 'hasDocumentType' has no declared rdfs:domain resolving to a known resource in this connector's\
-  \ ontology \u2014 not attached to any resource; verify its true domain manually."
-- "relation 'hasTag' has no declared rdfs:domain resolving to a known resource in this connector's ontology\
-  \ \u2014 not attached to any resource; verify its true domain manually."
-- "relation 'scannedAs' has no declared rdfs:domain resolving to a known resource in this connector's\
-  \ ontology \u2014 not attached to any resource; verify its true domain manually."
-- "relation 'storedAt' has no declared rdfs:domain resolving to a known resource in this connector's ontology\
-  \ \u2014 not attached to any resource; verify its true domain manually."
-- "schema_mappings.Correspondent.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic]\
-  \ \u2014 verify manually before relying on this crosswalk for reasoning/joins."
-- "schema_mappings.CustomField.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic]\
-  \ \u2014 verify manually before relying on this crosswalk for reasoning/joins."
-- "schema_mappings.DocumentType.ontology_class = 'Document' [DRAFT \u2014 nearest hub-canonical-class-by-name\
+- "schema_mappings.PaperlessCorrespondentReference.ontology_class = None [UNRESOLVED \u2014 no crosswalk\
+  \ found by any heuristic] \u2014 verify manually before relying on this crosswalk for reasoning/joins."
+- "schema_mappings.PaperlessDocumentReference.ontology_class = 'Document' [DRAFT \u2014 nearest hub-canonical-class-by-name\
   \ heuristic (D16 residue; human sign-off required before use)] \u2014 verify manually before relying\
   \ on this crosswalk for reasoning/joins."
-- "schema_mappings.StoragePath.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic]\
-  \ \u2014 verify manually before relying on this crosswalk for reasoning/joins."
-- "schema_mappings.Tag.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by any heuristic] \u2014\
-  \ verify manually before relying on this crosswalk for reasoning/joins."
+- "schema_mappings.PaperlessDocumentTypeReference.ontology_class = 'Document' [DRAFT \u2014 nearest hub-canonical-class-by-name\
+  \ heuristic (D16 residue; human sign-off required before use)] \u2014 verify manually before relying\
+  \ on this crosswalk for reasoning/joins."
+- "schema_mappings.PaperlessStoragePathReference.ontology_class = None [UNRESOLVED \u2014 no crosswalk\
+  \ found by any heuristic] \u2014 verify manually before relying on this crosswalk for reasoning/joins."
+- "schema_mappings.PaperlessTagReference.ontology_class = None [UNRESOLVED \u2014 no crosswalk found by\
+  \ any heuristic] \u2014 verify manually before relying on this crosswalk for reasoning/joins."

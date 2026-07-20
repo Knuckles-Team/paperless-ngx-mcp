@@ -9,18 +9,17 @@ description = "Paperless-ngx API + MCP Server + A2A Server"
 readme = "README.md"
 classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: MIT License", "Environment :: Console", "Operating System :: POSIX :: Linux", "Programming Language :: Python :: 3",]
 requires-python = ">=3.11, <3.15"
-dependencies = [ "agent-utilities>=1.0.0", "python-dotenv>=1.0.0",]
+dependencies = [ "agent-utilities>=1.27.1,<2.0.0",]
 [[project.authors]]
-name = "Audel Rouhi"
-email = "knucklessg1@gmail.com"
+name = "Agent Utilities Contributors"
 
 [project.license]
 text = "MIT"
 
 [project.optional-dependencies]
-mcp = [ "agent-utilities[mcp]>=1.0.0",]
-agent = [ "agent-utilities[agent,logfire]>=1.0.0",]
-all = [ "paperless-ngx-mcp[mcp,agent,logfire]>=1.0.1",]
+mcp = [ "agent-utilities[mcp]>=1.27.1,<2.0.0",]
+agent = [ "agent-utilities[agent-runtime,logfire]>=1.27.1,<2.0.0",]
+all = [ "paperless-ngx-mcp[mcp,agent]>=1.0.1",]
 test = [
     "pytest-xdist>=3.6.0", "pytest", "pytest-asyncio", "pytest-cov",]
 
@@ -61,7 +60,7 @@ dev = [
 ]
 
 [tool.setuptools.package-data]
-paperless_ngx_mcp = [ "mcp_config.json", "prompts/**", "skills/**", "specs/**", "ontology/**", "connectors/**",]
+paperless_ngx_mcp = [ "prompts/**", "skills/**", "specs/**", "ontology/**", "connectors/**",]
 
 [tool.ruff.lint]
 select = [ "E", "F", "I", "UP", "B",]

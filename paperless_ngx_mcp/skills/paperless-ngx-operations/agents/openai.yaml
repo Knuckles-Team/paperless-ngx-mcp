@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paperless-ngx Operations"
+  short_description: "Governed Paperless-ngx document operations"
+  default_prompt: "Use $paperless-ngx-operations to complete a governed document workflow."

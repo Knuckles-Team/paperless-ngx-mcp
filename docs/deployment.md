@@ -1,120 +1,32 @@
 # Deployment
 
-This page covers running `paperless-ngx-mcp` as long-lived servers.
+## GraphOS-managed child
 
-> `paperless-ngx-mcp` ships both an **MCP server** (console script `paperless-ngx-mcp`) and an
-> **A2A agent server** (console script `paperless-ngx-agent`).
+Register the checked-in reference-only catalog with `AgentConfig.MCP_CONFIG`. Map its
+aliases through `AgentConfig.MCP_FLEET_SECRET_REFS`, select the TLS profile, and run the
+doctor gate before GraphOS launches the child. This keeps connection values and trust
+material outside the source tree and process arguments.
 
-<!-- BEGIN GENERATED: deployment-options -->
-## Deployment Options
+Use stdio for a GraphOS-owned local child. For a network transport, apply the Agent
+Utilities authentication, authorization, TLS, and egress controls and expose only the
+MCP route required by the client.
 
-`paperless-ngx-mcp` exposes its MCP server (console script `paperless-ngx-mcp`) four ways. Pick the
-row that matches where the server runs relative to your MCP client, then copy the
-matching `mcp_config.json` below.
+## Containers
 
-| # | Option | Transport | Where it runs | `mcp_config.json` key |
-|---|--------|-----------|---------------|------------------------|
-| 1 | stdio | `stdio` | client launches a subprocess | `command` |
-| 2 | Streamable-HTTP (local) | `streamable-http` | a local network port | `command` or `url` |
-| 3 | Local container / uv | `stdio` or `streamable-http` | Docker / Podman / uv on this host | `command` or `url` |
-| 4 | Remote URL | `streamable-http` | a remote host behind Caddy | `url` |
+The Dockerfile supplies separate `mcp` and `agent` targets. Compose examples consume an
+external runtime environment and default telemetry content capture off. Build and image
+publication are deployment responsibilities; the source package does not encode a
+registry account or provider instance.
 
-### 1. stdio (local subprocess)
+## A2A agent
 
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": {
-      "command": "uvx",
-      "args": ["--from", "paperless-ngx-mcp", "paperless-ngx-mcp"],
-      "env": {
-        "PAPERLESS_URL": "https://service.example.com",
-        "PAPERLESS_TOKEN": "your_token"
-      }
-    }
-  }
-}
-```
+The `paperless-ngx-agent` entry point uses the current Agent Utilities parser and server
+factory. Supply the MCP catalog through AgentConfig and use secret references for model,
+OIDC, telemetry, and provider credentials. Do not place resolved values on a command
+line.
 
-### 2. Streamable-HTTP (local process)
+## Release activation
 
-```bash
-uvx --from paperless-ngx-mcp paperless-ngx-mcp --transport streamable-http --host 0.0.0.0 --port 8000
-curl -s http://localhost:8000/health        # {"status":"OK"}
-```
-
-Connect to the running process by URL:
-
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": { "url": "http://localhost:8000/mcp" }
-  }
-}
-```
-
-### 3. Local container / uv
-
-Launch a container directly from `mcp_config.json` (swap `docker` for `podman` for a
-daemonless runtime):
-
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": {
-      "command": "docker",
-      "args": [
-        "run", "-i", "--rm",
-        "-e", "TRANSPORT=stdio",
-        "-e", "PAPERLESS_URL=https://service.example.com",
-        "-e", "PAPERLESS_TOKEN=your_token",
-        "knucklessg1/paperless-ngx-mcp:latest"
-      ]
-    }
-  }
-}
-```
-
-Or run a local streamable-http container and connect by URL:
-
-```bash
-docker compose -f docker/mcp.compose.yml up -d
-```
-
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": { "url": "http://localhost:8000/mcp" }
-  }
-}
-```
-
-### 4. Remote URL (deployed behind Caddy)
-
-When the server is deployed remotely and published through Caddy on the internal
-`*.arpa` zone, connect with the `"url"` key — no local process or image required:
-
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": { "url": "http://paperless-ngx-mcp.arpa/mcp" }
-  }
-}
-```
-
-Caddy reverse-proxies `http://paperless-ngx-mcp.arpa` to the container's `:8000`
-streamable-http listener.
-<!-- END GENERATED: deployment-options -->
-
-## Docker Compose
-
-```bash
-docker compose -f docker/mcp.compose.yml up -d      # MCP server only
-docker compose -f docker/agent.compose.yml up -d    # MCP + agent
-```
-
-## Run the A2A agent server
-
-```bash
-paperless-ngx-agent --mcp-config mcp_config.json --web
-```
+Provider installation is not graph-ingestion authorization. Enable the source preset
+only after the central compiler has generated and verified the current signed capability
+bundle and the deployment has supplied tenant, policy, and pseudonymization state.

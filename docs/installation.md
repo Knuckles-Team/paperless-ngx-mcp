@@ -1,36 +1,22 @@
 # Installation
 
-`paperless-ngx-mcp` is a standard Python package and a prebuilt container image.
+Paperless-ngx MCP supports Python 3.11 through 3.14.
 
-## Requirements
-
-- **Python 3.11 – 3.14**.
-- A reachable target service instance and access token.
-
-## From PyPI (recommended)
+## MCP server
 
 ```bash
-pip install paperless-ngx-mcp
+uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp
 ```
 
-### Optional extras
-
-| Extra | Install | Pulls in |
-|---|---|---|
-| `mcp` | `pip install "paperless-ngx-mcp[mcp]"` | FastMCP MCP-server runtime (`agent-utilities[mcp]`) |
-| `agent` | `pip install "paperless-ngx-mcp[agent]"` | Pydantic-AI agent + Logfire tracing |
-| `all` | `pip install "paperless-ngx-mcp[all]"` | Everything above |
-
-## From source
+## Installed package
 
 ```bash
-git clone https://github.com/Knuckles-Team/paperless-ngx-mcp.git
-cd paperless-ngx-mcp
-pip install -e ".[all]"
+uv pip install "paperless-ngx-mcp[mcp]"
 ```
 
-## Docker
+Use `paperless-ngx-mcp[agent]` for the optional A2A entry point or
+`paperless-ngx-mcp[all]` for both runtime surfaces. The current Agent Utilities base
+dependency includes the full Epistemic Graph feature set.
 
-```bash
-docker pull knucklessg1/paperless-ngx-mcp:latest
-```
+Installation does not configure a provider connection. Supply reference-only runtime
+configuration as described in [Configuration](configuration.md).

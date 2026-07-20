@@ -14,10 +14,12 @@ def test_concepts_doc_exists():
 @pytest.mark.concept("PL-OS.identity.pngx")
 def test_eco_bridge_present():
     """ECO-4.0 bridge concept is referenced. CONCEPT:PL-OS.identity.pngx"""
-    assert "AU-ECO.messaging.native-backend-abstraction" in CONCEPTS_DOC.read_text(encoding="utf-8")
+    assert "AU-ECO.messaging.native-backend-abstraction" in CONCEPTS_DOC.read_text(
+        encoding="utf-8"
+    )
 
 
 @pytest.mark.concept("PL-OS.identity.pngx")
 def test_prefix_registered():
     """Project concept prefix is registered. CONCEPT:PL-OS.identity.pngx"""
-    assert "CONCEPT:PNGX-" in CONCEPTS_DOC.read_text(encoding="utf-8")
+    assert "CONCEPT:PL-" in CONCEPTS_DOC.read_text(encoding="utf-8")

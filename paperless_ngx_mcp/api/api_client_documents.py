@@ -6,8 +6,10 @@ Covers the core DRF resource ViewSets exposed under ``/api/`` (see the paperless
 document_types, storage_paths, custom_fields, saved_views and tasks.
 """
 
+from pathlib import Path
 from typing import Any
 
+from agent_utilities.core.config import setting
 from agent_utilities.core.exceptions import ParameterError
 
 from .api_client_base import ApiClientBase
@@ -84,6 +86,25 @@ class ApiClientDocuments(ApiClientBase):
 
         Returns the consumption task UUID; poll ``tasks`` for completion.
         """
+        workspace = setting("WORKSPACE_PATH", "")
+        if not workspace:
+            raise ParameterError("Document upload requires a configured workspace")
+        try:
+            root = Path(workspace).expanduser().resolve(strict=True)
+            source = Path(file_path).expanduser().resolve(strict=True)
+        except (OSError, RuntimeError):
+            raise ParameterError("Document upload source is unavailable") from None
+        if not root.is_dir():
+            raise ParameterError("Document upload workspace is invalid")
+        try:
+            source.relative_to(root)
+        except ValueError:
+            raise ParameterError(
+                "Document upload source is outside the workspace"
+            ) from None
+        if not source.is_file() or source.stat().st_size > 100 * 1024 * 1024:
+            raise ParameterError("Document upload source is not an allowed file")
+
         data: dict[str, Any] = {
             "title": title,
             "correspondent": correspondent,
@@ -93,28 +114,11 @@ class ApiClientDocuments(ApiClientBase):
         data = {k: v for k, v in data.items() if v is not None}
         if tags:
             data["tags"] = tags
-        with open(file_path, "rb") as fh:
-            files = {"document": fh}
+        with source.open("rb") as fh:
+            files = {"document": (source.name, fh)}
             return self.request(
                 "POST", "/api/documents/post_document/", data=data, files=files
             )
-
-    def download_document(self, document_id: int, original: bool = False) -> bytes:
-        """Download a document's archived (or original) file as raw bytes.
-
-        ``GET /api/documents/{id}/download/`` returns the PDF/image content itself (not
-        JSON). Used by the native blob-ingestion leg to make the scan durable in the KG.
-        """
-        params = {"original": "true"} if original else None
-        response = self._request(
-            "GET", f"/api/documents/{document_id}/download/", params=params
-        )
-        if response.status_code >= 400:
-            raise ParameterError(
-                f"Paperless-ngx download {document_id} -> {response.status_code}: "
-                f"{response.text[:200]}"
-            )
-        return response.content
 
     def bulk_edit_documents(
         self, documents: list, method: str, parameters: dict | None = None

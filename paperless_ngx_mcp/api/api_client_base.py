@@ -4,9 +4,8 @@
 Handles the cross-cutting concerns shared by every domain client:
 
 * **Authentication** — Paperless-ngx uses DRF ``TokenAuthentication``: the API token
-  is sent as ``Authorization: Token <key>`` (NOT ``Bearer``). The token is obtained
-  from the Paperless web UI (My Profile → API Auth Token) or
-  ``POST /api/token/`` with username/password.
+  is sent as ``Authorization: Token <key>`` (NOT ``Bearer``). The token is
+  provisioned outside the MCP runtime.
 * **Pagination** — DRF page-number pagination: list endpoints return
   ``{"count", "next", "previous", "results": [...]}``. ``_fetch_all`` follows the
   ``next`` link until exhausted (bounded by ``max_pages``).
@@ -14,21 +13,41 @@ Handles the cross-cutting concerns shared by every domain client:
   exponential backoff and honours ``Retry-After``.
 """
 
-import logging
 import time
 from typing import Any
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlsplit
 
 import requests
-import urllib3
-from agent_utilities.base_utilities import get_logger
 from agent_utilities.core.exceptions import (
     AuthError,
     ParameterError,
     UnauthorizedError,
 )
+from agent_utilities.core.transport_security import (
+    ResolvedTLSProfile,
+    resolve_configured_tls_profile,
+)
 
-logger = get_logger(__name__)
+
+def _validated_base_url(value: str) -> str:
+    """Return an HTTPS provider base URL without disclosing it on failure."""
+
+    rendered = str(value or "").strip().rstrip("/")
+    try:
+        parsed = urlsplit(rendered)
+    except ValueError:
+        parsed = None
+    if (
+        parsed is None
+        or parsed.scheme != "https"
+        or not parsed.hostname
+        or parsed.username is not None
+        or parsed.password is not None
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError("Paperless-ngx base URL must be an absolute HTTPS URL")
+    return rendered
 
 
 class ApiClientBase:
@@ -38,16 +57,17 @@ class ApiClientBase:
         self,
         base_url: str,
         token: str,
-        verify: bool = True,
+        tls_profile: ResolvedTLSProfile | None = None,
         max_retries: int = 3,
-        debug: bool = False,
     ):
-        logger.setLevel(logging.DEBUG if debug else logging.ERROR)
-        self.base_url = base_url.rstrip("/")
-        self.token = token
-        self.verify = verify
+        self.base_url = _validated_base_url(base_url)
+        if not token or "\r" in token or "\n" in token:
+            raise ValueError("Paperless-ngx API token is required")
+        parsed = urlsplit(self.base_url)
+        self._origin = (parsed.scheme, parsed.netloc)
         self.max_retries = max_retries
-        self.session = requests.Session()
+        self.tls_profile = tls_profile or resolve_configured_tls_profile("paperless")
+        self.session = self.tls_profile.configure_requests_session(requests.Session())
         # DRF TokenAuthentication — "Token <key>", not Bearer.
         self.session.headers.update(
             {
@@ -55,15 +75,27 @@ class ApiClientBase:
                 "Accept": "application/json; version=9",
             }
         )
-        if verify is False:
-            urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+    def close(self) -> None:
+        """Release the HTTP session and any runtime-materialized trust files."""
+
+        self.session.close()
+        self.tls_profile.cleanup()
 
     # ------------------------------------------------------------------ request
     def _url(self, path: str) -> str:
-        """Build an absolute URL. ``path`` may be a full URL (paginated ``next``)."""
-        if path.startswith("http://") or path.startswith("https://"):
-            return path
-        return urljoin(self.base_url + "/", path.lstrip("/"))
+        """Build a same-origin URL, including provider pagination links."""
+
+        url = urljoin(self.base_url + "/", str(path).lstrip("/"))
+        parsed = urlsplit(url)
+        if (
+            (parsed.scheme, parsed.netloc) != self._origin
+            or parsed.username is not None
+            or parsed.password is not None
+            or parsed.fragment
+        ):
+            raise ParameterError("Paperless-ngx pagination URL was rejected")
+        return url
 
     def _request(
         self,
@@ -73,22 +105,28 @@ class ApiClientBase:
         json: Any | None = None,
         data: Any | None = None,
         files: Any | None = None,
+        **transport_overrides: Any,
     ) -> requests.Response:
         """Perform a single HTTP request with transient-error retries."""
+        if {"cert", "proxies", "verify"}.intersection(transport_overrides):
+            raise ValueError("per-request TLS policy overrides are not accepted")
         url = self._url(path)
         attempt = 0
         while True:
-            response = self.session.request(
-                method=method.upper(),
-                url=url,
-                params={k: v for k, v in (params or {}).items() if v is not None}
-                or None,
-                json=json,
-                data=data,
-                files=files,
-                verify=self.verify,
-                timeout=120,
-            )
+            try:
+                response = self.session.request(
+                    method=method.upper(),
+                    url=url,
+                    params={k: v for k, v in (params or {}).items() if v is not None}
+                    or None,
+                    json=json,
+                    data=data,
+                    files=files,
+                    timeout=120,
+                    allow_redirects=False,
+                )
+            except requests.RequestException:
+                raise ParameterError("Paperless-ngx request failed") from None
             if (
                 response.status_code in (429, 502, 503, 504)
                 and attempt < self.max_retries
@@ -97,14 +135,9 @@ class ApiClientBase:
                 attempt += 1
                 continue
             if response.status_code == 401:
-                raise AuthError(
-                    f"Paperless-ngx request to {url} was rejected (401). "
-                    "Check PAPERLESS_TOKEN."
-                )
+                raise AuthError("Paperless-ngx credentials were rejected")
             if response.status_code == 403:
-                raise UnauthorizedError(
-                    f"Paperless-ngx request to {url} was forbidden (403)."
-                )
+                raise UnauthorizedError("Paperless-ngx operation was forbidden")
             return response
 
     @staticmethod
@@ -126,7 +159,7 @@ class ApiClientBase:
             try:
                 return response.json()
             except ValueError:
-                return response.text
+                raise ParameterError("Paperless-ngx returned invalid JSON") from None
         return {"status": response.status_code, "content_type": ctype}
 
     # ----------------------------------------------------------------- helpers
@@ -135,8 +168,7 @@ class ApiClientBase:
         response = self._request(method, path, **kwargs)
         if response.status_code >= 400:
             raise ParameterError(
-                f"Paperless-ngx {method.upper()} {path} -> {response.status_code}: "
-                f"{response.text[:500]}"
+                f"Paperless-ngx request failed with status {response.status_code}"
             )
         return self._decode(response)
 
@@ -164,21 +196,3 @@ class ApiClientBase:
             nxt = body.get("next")
             pages += 1
         return items
-
-    # --------------------------------------------------------------- escape hatch
-    def api_request(
-        self,
-        method: str,
-        endpoint: str,
-        params: dict | None = None,
-        json: Any | None = None,
-        data: Any | None = None,
-    ) -> Any:
-        """Make an arbitrary Paperless-ngx REST request against the configured host.
-
-        ``endpoint`` is a path appended to the base URL, e.g. ``/api/documents/``.
-        Use this for operations not covered by a typed method.
-        """
-        if method.upper() not in ("GET", "POST", "PUT", "PATCH", "DELETE"):
-            raise ValueError(f"Unsupported HTTP method: {method.upper()}")
-        return self.request(method, endpoint, params=params, json=json, data=data)

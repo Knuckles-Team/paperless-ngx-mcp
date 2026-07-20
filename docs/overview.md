@@ -1,30 +1,40 @@
-# paperless-ngx-mcp — Concept Overview
+# Architecture
 
-> **Category**: Integration | **Ecosystem Role**: MCP Server + A2A Agent
-> Built on [`agent-utilities`](https://github.com/Knuckles-Team/agent-utilities) — the unified AGI Harness.
+## Runtime surfaces
 
-## Description
+The package has four explicit surfaces:
 
-Paperless-ngx API + MCP Server + A2A Server
+1. `paperless_ngx_mcp.api` owns typed synchronous provider methods.
+2. `paperless_ngx_mcp.mcp` owns condensed action routers and structural ingestion tools.
+3. `paperless_ngx_mcp.mcp_server` registers intent-gated, condensed, verbose, or combined
+   tools with the current Agent Utilities server factory.
+4. `paperless_ngx_mcp.agent_server` starts the optional current A2A agent runtime.
 
-## Architecture
+There is no package-root dynamic export, duplicate API facade, arbitrary request
+method, raw graph transaction, or optional best-effort ingestion implementation.
 
-This project follows the standardized agent-package pattern:
+## Request boundary
 
-- **Modular Design**: split into `api/` (client mixins) and `mcp/` (action-routed
-  tool modules) for cleaner organization.
-- **Dynamic Tool Registration**: action-routed dynamic tool tags, strictly
-  lowercase, each togglable with a `*TOOL` environment flag.
-- **A2A Agent Server**: a Pydantic-AI graph agent (console script `paperless-ngx-agent`)
-  that calls the MCP tool surface and exposes an AG-UI web interface.
+The AgentConfig/XDG loader projects runtime values before server construction. The MCP
+fleet resolver materializes only the aliases declared by the child catalog. Fixed-token
+authentication creates one process-scoped client; delegated authentication creates a
+request-scoped client and never reuses another actor's token.
 
-## Concept Registry
+The HTTP client requires an absolute HTTPS base, configures Requests from the selected
+TLS profile, pins pagination to the original origin, disables redirects, applies bounded
+retry/backoff, and emits body-free error classes.
 
-This project implements or inherits the following ecosystem concepts:
+## Tool model
 
-| Concept ID | Description | Source |
-|:-----------|:------------|:-------|
-| ECO-4.1 | MCP & Universal Skills | `agent-utilities` (inherited) |
-| AU-ECO.toolkit.journey-map-narrative | A2A Network & Consensus | `agent-utilities` (inherited) |
+`document_operations` and `system_operations` route only to explicit action sets.
+`register_tool_surface` gates those backing tools in intent mode and derives the verbose
+surface from the same public client, so every mode preserves action parity.
+`invoke_client_method` keeps synchronous provider calls off the event loop.
 
-> 📖 **Full Registry**: See [`agent-utilities/docs/overview.md`](https://github.com/Knuckles-Team/agent-utilities/blob/main/docs/overview.md) for the complete 5-Pillar concept index.
+## Graph model
+
+The provider projection uses keyed HMAC identifiers and five content-free node classes:
+document, correspondent, tag, document-type, and storage-path references. Only their
+structural relationships persist. The projection and provider-owned ontology/preset are
+inputs to the central capability compiler; deployment materialization requires its
+reviewed signed bundle and a verified GraphSession.

@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   paperless-ngx-mcp-mcp:
-    image: knucklessg1/paperless-ngx-mcp:mcp
+    image: ${PAPERLESS_NGX_MCP_IMAGE:?set-PAPERLESS_NGX_MCP_IMAGE-to-image@sha256-digest}
     container_name: paperless-ngx-mcp-mcp
     hostname: paperless-ngx-mcp-mcp
     restart: always
@@ -13,6 +13,8 @@ services:
       - HOST=0.0.0.0
       - PORT=8000
       - TRANSPORT=streamable-http
+      - ENABLE_OTEL=False
+      - LANGFUSE_CAPTURE_CONTENT=False
     ports:
       - "8000:8000"
     healthcheck:
@@ -28,7 +30,7 @@ services:
         max-file: "3"
 
   paperless-ngx-mcp-agent:
-    image: knucklessg1/paperless-ngx-mcp:latest
+    image: ${PAPERLESS_NGX_AGENT_IMAGE:?set-PAPERLESS_NGX_AGENT_IMAGE-to-image@sha256-digest}
     container_name: paperless-ngx-mcp-agent
     hostname: paperless-ngx-mcp-agent
     restart: always
@@ -45,7 +47,8 @@ services:
       - PROVIDER=${PROVIDER:-openai}
       - MODEL_ID=${MODEL_ID:-gpt-4o}
       - ENABLE_WEB_UI=True
-      - ENABLE_OTEL=True
+      - ENABLE_OTEL=False
+      - LANGFUSE_CAPTURE_CONTENT=False
     ports:
       - "9000:9000"
     healthcheck:

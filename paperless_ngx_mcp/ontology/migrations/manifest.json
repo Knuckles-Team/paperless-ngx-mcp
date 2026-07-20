@@ -1,0 +1,6 @@
+{
+  "connector": "paperless-ngx-mcp",
+  "current_ontology_source": "paperless",
+  "migrations": [],
+  "schema_version": "1"
+}
