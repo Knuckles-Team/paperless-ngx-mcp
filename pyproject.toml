@@ -21,7 +21,7 @@ mcp = [ "agent-utilities[mcp]>=1.27.1,<2.0.0",]
 agent = [ "agent-utilities[agent-runtime,logfire]>=1.27.1,<2.0.0",]
 all = [ "paperless-ngx-mcp[mcp,agent]>=1.0.1",]
 test = [
-    "pytest-xdist>=3.6.0", "pytest", "pytest-asyncio", "pytest-cov",]
+    "pytest-xdist>=3.8.0", "pytest>=9.1.1", "pytest-asyncio>=1.4.0", "pytest-cov>=7.1.0",]
 
 [project.scripts]
 paperless-ngx-mcp = "paperless_ngx_mcp.mcp_server:mcp_server"
