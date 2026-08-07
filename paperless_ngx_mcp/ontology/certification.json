@@ -1,8 +1,8 @@
 {
   "api_version": "graphos.io/v1",
   "artifacts": {
-    "a2a.json": "963709226d4447eb65146fd8e8b99d9a40188c04bcd028bfb2b7e101dfcd08b5",
-    "connector_manifest.yml": "8bb5326adc970ad90ce7bc52f7614d25f551fafce07db7b05e3608153518e0f5",
+    "a2a.json": "eb5ea16ac737606fc1a0f704f4dcf62a64fbbc095e63e59b4e14422e4b399453",
+    "connector_manifest.yml": "760943458bc3bd6e61130e77990f04d10d64c762d5807c9e51431c887a712ea7",
     "paperless_ngx_mcp/connectors/mcp_source_presets.json": "4c49621c072ad6723aba49f85cc6e08b2e47e981715dfe571e741faf5419a652",
     "paperless_ngx_mcp/connectors/tool_schema_fingerprints.json": "d42f8cf54be6887ec9e0410e72f6b763a0b68bb99767d87d8f6d5a3abb51642c",
     "paperless_ngx_mcp/ontology/fixtures/records.json": "fd2a41190c08a955939f75fc9ed345bf5338da76c3b3b9f3259b1e6d4f4b0bff",
@@ -19,19 +19,19 @@
     "synthetic_fixture_contract": "passed"
   },
   "compatibility": {
-    "agent_utilities": ">=1.27.1,<2",
+    "agent_utilities": ">=2.1.0,<3",
     "bundle_schema": "2",
-    "epistemic_graph": ">=2.23.1,<3"
+    "epistemic_graph": ">=2.23.0,<3"
   },
   "connector": "paperless-ngx-mcp",
   "kind": "ConnectorSourceAttestation",
   "live_certified": false,
   "mode": "offline-source",
   "schema_version": "2",
-  "signature": "EtUlziO59365FrtQ3MkJeIGvlFdIsoF_vhi2_ui3wF5OTlK0JlvB5fG_puRHnbW7bo2ZUMlfU1qpen6Cx2veCg",
+  "signature": "WsO2JYoY9ZIl-Xl28Mp2PzkVvBEwtltRthI-SYqk3GWZUZHPNK9Dw5wgwp0FpOKABqHW-VPWbHgfZ0ceogr9Aw",
   "signature_algorithm": "ed25519",
   "signer": "ontology-manifest-generator",
-  "signing_public_key": "q0Cp7bmQMqJhbofGKKw8xXC6KbFzukBDDke0UYVi8y4",
+  "signing_public_key": "QkigdPNpcUU7x7NcSkwCsUXIQpaFncMQbYSoiSgI2SY",
   "status": "source-validated",
-  "validated_at": "2026-07-18T14:21:05Z"
+  "validated_at": "2026-07-31T04:00:00Z"
 }
