@@ -18,11 +18,56 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from .kg_ingest import _fallback_client, media_store
-
 logger = logging.getLogger("paperless_ngx_mcp.kg.media")
 
 _SOURCE = "paperless-ngx-mcp"
+
+
+def media_store() -> Any | None:
+    """Return a ``MediaStore`` over a live engine, or ``None`` when unavailable."""
+    try:
+        from agent_utilities.knowledge_graph.memory import native_ingest
+
+        return native_ingest.media_store()
+    except Exception as e:  # noqa: BLE001 — primitive not installed yet
+        logger.debug("KG media: shared primitive unavailable: %s", e)
+    try:
+        from agent_utilities.knowledge_graph.core.graph_compute import (
+            GraphComputeEngine,
+        )
+        from agent_utilities.knowledge_graph.memory.media_store import MediaStore
+    except Exception as e:  # noqa: BLE001 — KG stack absent
+        logger.debug("KG media ingest unavailable (import): %s", e)
+        return None
+    try:
+        engine = GraphComputeEngine()
+        if getattr(engine, "_client", None) is None:
+            return None
+        return MediaStore(engine)
+    except Exception as e:  # noqa: BLE001 — no reachable engine
+        logger.debug("KG media ingest: engine unreachable: %s", e)
+        return None
+
+
+def _fallback_client() -> tuple[Any | None, str]:
+    """Return ``(engine_client, graph_name)`` or ``(None, "")`` when unavailable."""
+    try:
+        from agent_utilities.knowledge_graph.core.graph_compute import (
+            GraphComputeEngine,
+        )
+    except Exception as e:  # noqa: BLE001 — KG stack absent
+        logger.debug("KG media ingest unavailable (import): %s", e)
+        return None, ""
+    try:
+        engine = GraphComputeEngine()
+        client = getattr(engine, "_client", None)
+        if client is None:
+            return None, ""
+        return client, (getattr(engine, "graph_name", None) or "__commons__")
+    except Exception as e:  # noqa: BLE001 — engine unreachable
+        logger.debug("KG media ingest: engine unreachable: %s", e)
+        return None, ""
+
 
 # Paperless document fields worth carrying onto the :MediaAsset node.
 _INFO_FIELDS = (
