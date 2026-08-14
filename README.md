@@ -1,6 +1,6 @@
 # Paperless-ngx MCP
 
-*Version: 2.0.0*
+*Version: 2.1.0*
 
 `paperless-ngx-mcp` provides a typed Python client, current intent/condensed/verbose MCP
 surfaces, an optional A2A agent, and a governed epistemic-graph connector for the standard
@@ -178,8 +178,8 @@ this repository intentionally does not manufacture signed release artifacts.
 | Variable | Example | Description |
 |----------|---------|-------------|
 | `PAPERLESS_URL` | — | HTTPS provider URL projected at runtime |
-| `PAPERLESS_TOKEN` | — | Runtime secret projection; never commit a token |
-| `PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY` | — | Deployment-owned secret, at least 32 bytes |
+| `PAPERLESS_TOKEN` | secret-injected | Runtime secret projection; never commit a token |
+| `PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY` | secret-injected | Deployment-owned secret, at least 32 bytes |
 | `TLS_PROFILE` | — | Shared mandatory-verification transport profile selector |
 | `TLS_PROFILES_REF` | — | Runtime reference to the shared transport profile catalog |
 | `WORKSPACE_PATH` | — | AgentConfig upload boundary; never commit a local path |
