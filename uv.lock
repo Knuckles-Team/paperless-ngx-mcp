@@ -1644,7 +1644,7 @@ wheels = [
 
 [[package]]
 name = "paperless-ngx-mcp"
-version = "2.0.0"
+version = "2.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "agent-utilities" },
@@ -1677,7 +1677,7 @@ requires-dist = [
     { name = "agent-utilities", editable = ".uv-workspace-siblings/agent-utilities" },
     { name = "agent-utilities", extras = ["agent-runtime", "logfire"], marker = "extra == 'agent'", editable = ".uv-workspace-siblings/agent-utilities" },
     { name = "agent-utilities", extras = ["mcp"], marker = "extra == 'mcp'", editable = ".uv-workspace-siblings/agent-utilities" },
-    { name = "paperless-ngx-mcp", extras = ["mcp", "agent"], marker = "extra == 'all'", specifier = ">=2.0.0" },
+    { name = "paperless-ngx-mcp", extras = ["mcp", "agent"], marker = "extra == 'all'", specifier = ">=2.1.0" },
     { name = "pytest", marker = "extra == 'test'", specifier = ">=9.1.1" },
     { name = "pytest-asyncio", marker = "extra == 'test'", specifier = ">=1.4.0" },
     { name = "pytest-cov", marker = "extra == 'test'", specifier = ">=7.1.0" },
