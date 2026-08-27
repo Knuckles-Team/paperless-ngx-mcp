@@ -1,7 +1,7 @@
 {
   "api_version": "graphos.io/v1",
   "artifacts": {
-    "connector_manifest.yml": "132b05a5c56dd8bc6dcb484bbdf462161ffc1c2793d3690d254463506eabdbd4",
+    "connector_manifest.yml": "4e4335e1b5a72031e07632652f431049b14eff74d7dfb24e01fb4c5db9f34480",
     "paperless_ngx_mcp/connectors/mcp_source_presets.json": "4c49621c072ad6723aba49f85cc6e08b2e47e981715dfe571e741faf5419a652",
     "paperless_ngx_mcp/connectors/tool_schema_fingerprints.json": "d42f8cf54be6887ec9e0410e72f6b763a0b68bb99767d87d8f6d5a3abb51642c",
     "paperless_ngx_mcp/ontology/fixtures/records.json": "fd2a41190c08a955939f75fc9ed345bf5338da76c3b3b9f3259b1e6d4f4b0bff",
@@ -18,9 +18,9 @@
     "synthetic_fixture_contract": "passed"
   },
   "compatibility": {
-    "agent_utilities": ">=2.4.0,<3",
+    "agent_utilities": ">=2.5.0,<3",
     "bundle_schema": "2",
-    "epistemic_graph": ">=2.26.0,<3"
+    "epistemic_graph": ">=2.27.0,<3"
   },
   "connector": "paperless-ngx-mcp",
   "kind": "ConnectorSourceAttestation",
@@ -32,5 +32,5 @@
   "signer": "UNSIGNED-PREVIEW",
   "signing_public_key": "",
   "status": "source-validated",
-  "validated_at": "2026-08-21T04:30:39Z"
+  "validated_at": "2026-08-26T13:42:55Z"
 }
