@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   paperless-ngx-mcp-mcp:
     image: ${PAPERLESS_NGX_MCP_IMAGE:?set-PAPERLESS_NGX_MCP_IMAGE-to-image@sha256-digest}

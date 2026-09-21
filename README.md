@@ -48,9 +48,9 @@ the live server surface.
 
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
-| `paperless_ngx_acknowledge_tasks` | `GRANULARTOOL` | Acknowledge (dismiss) tasks (``POST /api/acknowledge_tasks/``). |
+| `paperless_ngx_acknowledge_tasks` | `SYSTEMTOOL` | Acknowledge (dismiss) tasks (``POST /api/acknowledge_tasks/``). |
 | `paperless_ngx_add_document_note` | `DOCUMENTSTOOL` | Add a note to a document. |
-| `paperless_ngx_autocomplete` | `GRANULARTOOL` | Search-term autocomplete (``GET /api/search/autocomplete/``). |
+| `paperless_ngx_autocomplete` | `SYSTEMTOOL` | Search-term autocomplete (``GET /api/search/autocomplete/``). |
 | `paperless_ngx_bulk_edit_documents` | `DOCUMENTSTOOL` | Run a bulk edit (``set_correspondent``, ``add_tag``, ``delete``, …) over |
 | `paperless_ngx_create_correspondent` | `DOCUMENTSTOOL` | Create a correspondent. |
 | `paperless_ngx_create_custom_field` | `DOCUMENTSTOOL` | Create a custom field. |
@@ -65,13 +65,13 @@ the live server surface.
 | `paperless_ngx_get_document` | `DOCUMENTSTOOL` | Retrieve a single document's metadata. |
 | `paperless_ngx_get_document_metadata` | `DOCUMENTSTOOL` | Retrieve raw parsed metadata (EXIF, media filename, archive checksum…). |
 | `paperless_ngx_get_document_notes` | `DOCUMENTSTOOL` | List the notes attached to a document. |
-| `paperless_ngx_get_remote_version` | `GRANULARTOOL` | Latest available Paperless-ngx version (``GET /api/remote_version/``). |
-| `paperless_ngx_get_schema` | `GRANULARTOOL` | Retrieve the live OpenAPI schema (``GET /api/schema/``, drf-spectacular). |
-| `paperless_ngx_get_statistics` | `GRANULARTOOL` | Document/inbox statistics (``GET /api/statistics/``). |
-| `paperless_ngx_get_system_status` | `GRANULARTOOL` | Backend/service health & version info (``GET /api/status/``). |
-| `paperless_ngx_get_task` | `GRANULARTOOL` | Retrieve a single task by id (``GET /api/tasks/?task_id=...``). |
-| `paperless_ngx_get_ui_settings` | `GRANULARTOOL` | Current user's UI settings and permissions (``GET /api/ui_settings/``). |
-| `paperless_ngx_global_search` | `GRANULARTOOL` | Run a global search across documents, correspondents, tags, etc. |
+| `paperless_ngx_get_remote_version` | `SYSTEMTOOL` | Latest available Paperless-ngx version (``GET /api/remote_version/``). |
+| `paperless_ngx_get_schema` | `SYSTEMTOOL` | Retrieve the live OpenAPI schema (``GET /api/schema/``, drf-spectacular). |
+| `paperless_ngx_get_statistics` | `SYSTEMTOOL` | Document/inbox statistics (``GET /api/statistics/``). |
+| `paperless_ngx_get_system_status` | `SYSTEMTOOL` | Backend/service health & version info (``GET /api/status/``). |
+| `paperless_ngx_get_task` | `SYSTEMTOOL` | Retrieve a single task by id (``GET /api/tasks/?task_id=...``). |
+| `paperless_ngx_get_ui_settings` | `SYSTEMTOOL` | Current user's UI settings and permissions (``GET /api/ui_settings/``). |
+| `paperless_ngx_global_search` | `SYSTEMTOOL` | Run a global search across documents, correspondents, tags, etc. |
 | `paperless_ngx_list_correspondents` | `DOCUMENTSTOOL` | List correspondents. |
 | `paperless_ngx_list_custom_fields` | `DOCUMENTSTOOL` | List custom fields. |
 | `paperless_ngx_list_document_types` | `DOCUMENTSTOOL` | List document types. |
@@ -79,7 +79,7 @@ the live server surface.
 | `paperless_ngx_list_saved_views` | `DOCUMENTSTOOL` | List saved views. |
 | `paperless_ngx_list_storage_paths` | `DOCUMENTSTOOL` | List storage paths. |
 | `paperless_ngx_list_tags` | `DOCUMENTSTOOL` | List tags. |
-| `paperless_ngx_list_tasks` | `GRANULARTOOL` | List background/consumption tasks (``GET /api/tasks/``). |
+| `paperless_ngx_list_tasks` | `SYSTEMTOOL` | List background/consumption tasks (``GET /api/tasks/``). |
 | `paperless_ngx_post_document` | `DOCUMENTSTOOL` | Upload a new document for consumption via ``POST /api/documents/post_document/``. |
 | `paperless_ngx_update_correspondent` | `DOCUMENTSTOOL` | Update a correspondent (PATCH). |
 | `paperless_ngx_update_document` | `DOCUMENTSTOOL` | Partially update a document (PATCH) — title, tags, correspondent, etc. |
@@ -182,7 +182,11 @@ this repository intentionally does not manufacture signed release artifacts.
 | `PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY` | secret-injected | Deployment-owned secret, at least 32 bytes |
 | `TLS_PROFILE` | — | Shared mandatory-verification transport profile selector |
 | `TLS_PROFILES_REF` | — | Runtime reference to the shared transport profile catalog |
+| `PAPERLESS_TLS_PROFILE` | — | Paperless-specific mandatory-verification transport profile selector |
+| `PAPERLESS_TLS_PROFILE_REF` | — | Runtime reference to the Paperless transport profile |
 | `WORKSPACE_PATH` | — | AgentConfig upload boundary; never commit a local path |
+| `PAPERLESS_NGX_MCP_IMAGE` | — | Deployment-owned immutable MCP image reference |
+| `PAPERLESS_NGX_AGENT_IMAGE` | — | Deployment-owned immutable agent image reference |
 | `MCP_TOOL_MODE` | `intent` | Current intent-first tool surface |
 | `DOCUMENTSTOOL` | `True` | Enable document operations |
 | `SYSTEMTOOL` | `True` | Enable system operations |
@@ -213,11 +217,11 @@ this repository intentionally does not manufacture signed release artifacts.
 | `DEBUG` | `False` | Verbose logging |
 | `PYTHONUNBUFFERED` | `1` | Unbuffered stdout (recommended in containers) |
 | `MCP_URL` | `http://localhost:8000/mcp` | URL of the MCP server the agent connects to |
-| `PROVIDER` | `openai` | LLM provider for the agent |
-| `MODEL_ID` | `gpt-4o` | Model id for the agent |
+| `PROVIDER` | — | Operator-configured LLM provider for the agent |
+| `MODEL_ID` | — | Operator-configured model id for the agent |
 | `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_15 package + 19 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+_19 package + 19 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
 
 Licensed under the MIT License.

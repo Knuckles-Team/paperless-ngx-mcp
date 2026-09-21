@@ -1,11 +1,11 @@
 {
   "api_version": "graphos.io/v1",
   "artifacts": {
-    "connector_manifest.yml": "4e4335e1b5a72031e07632652f431049b14eff74d7dfb24e01fb4c5db9f34480",
+    "connector_manifest.yml": "48c19e149b297689f5d6891a0443c2bd020c94e98bbf8fade85262209dde0a72",
     "paperless_ngx_mcp/connectors/mcp_source_presets.json": "4c49621c072ad6723aba49f85cc6e08b2e47e981715dfe571e741faf5419a652",
-    "paperless_ngx_mcp/connectors/tool_schema_fingerprints.json": "d42f8cf54be6887ec9e0410e72f6b763a0b68bb99767d87d8f6d5a3abb51642c",
+    "paperless_ngx_mcp/connectors/tool_schema_fingerprints.json": "ac7198ace66e96c89274d7495dbaae8a92241514557f45f1fe87f577c631144d",
     "paperless_ngx_mcp/ontology/fixtures/records.json": "fd2a41190c08a955939f75fc9ed345bf5338da76c3b3b9f3259b1e6d4f4b0bff",
-    "paperless_ngx_mcp/ontology/mappings/source.yaml": "490ee500eaa2ae027762a960c29e4d18603db6be1daec8ddedb21fd51b2ef693",
+    "paperless_ngx_mcp/ontology/mappings/source.yaml": "eafed30473fc19dc89fcec25f98e75b52064c91637b1050eb4f17fd3f9113aec",
     "paperless_ngx_mcp/ontology/migrations/manifest.json": "5aff13c8d81c2f8712120ae94d01d726aaf21fb2428f05873d0fc7da9d48b966",
     "paperless_ngx_mcp/ontology/paperless.ttl": "a4d539d8d468b5c83f0b5d0987f8e5f1a789b6d517eea3381d587b30f175a4de",
     "paperless_ngx_mcp/ontology/shapes/connector.shacl.ttl": "44711ed0b6d3f31138e9617fdd2b7a5cf37c0caa1eac2fe3d9adc741416c2efa"
@@ -32,5 +32,5 @@
   "signer": "UNSIGNED-PREVIEW",
   "signing_public_key": "",
   "status": "source-validated",
-  "validated_at": "2026-08-26T13:42:55Z"
+  "validated_at": "2026-09-20T00:00:00Z"
 }

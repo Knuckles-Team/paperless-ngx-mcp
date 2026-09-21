@@ -12,7 +12,7 @@ sync:
   text_field: null
   updated_field: null
   doc_type: paperless-document-reference
-  tool_schema_sha256: 03ec5eaab6d51c0db66889da13114a6d7d33c90f1a6e8b4c2606ef1131a27d92
+  tool_schema_sha256: 61f929ad0314d5eb30bb1e6519aee91ec95f0ed8a810e88c36fed344fc24a0ae
 governance:
   default_acl: quarantine
   identity: opaque-reference
