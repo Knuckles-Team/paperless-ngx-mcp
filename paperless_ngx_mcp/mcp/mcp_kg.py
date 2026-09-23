@@ -42,7 +42,22 @@ async def _projection(client: Any, options: dict[str, Any]) -> dict[str, Any]:
 def register_kg_tools(mcp: FastMCP) -> None:
     """Register zero-PII source projection and ChangeEnvelope ingestion."""
 
-    @mcp.tool(tags={"kg"})
+    @mcp.tool(
+        tags={"kg"},
+        annotations={
+            "readOnlyHint": True,
+            "destructiveHint": False,
+            "idempotentHint": True,
+            "openWorldHint": True,
+        },
+        meta={
+            "eg.annotations": {
+                "modalities_in": ["text"],
+                "modalities_out": ["text"],
+                "provides": ["eg:capability/retrieval/document-read"],
+            }
+        },
+    )
     async def paperless_ingestion_projection(
         params_json: str = Field(
             default="{}",
