@@ -18,13 +18,6 @@ external runtime environment and default telemetry content capture off. Build an
 publication are deployment responsibilities; the source package does not encode a
 registry account or provider instance.
 
-## A2A agent
-
-The `paperless-ngx-agent` entry point uses the current Agent Utilities parser and server
-factory. Supply the MCP catalog through AgentConfig and use secret references for model,
-OIDC, telemetry, and provider credentials. Do not place resolved values on a command
-line.
-
 ## Release activation
 
 Provider installation is not graph-ingestion authorization. Enable the source preset

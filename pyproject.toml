@@ -18,14 +18,12 @@ text = "MIT"
 
 [project.optional-dependencies]
 mcp = [ "agent-utilities[mcp]>=2.0.0,<3.0.0",]
-agent = [ "agent-utilities[agent-runtime,logfire]>=2.0.0,<3.0.0",]
-all = [ "paperless-ngx-mcp[mcp,agent]>=2.1.0",]
+all = [ "paperless-ngx-mcp[mcp]>=2.1.0",]
 test = [
     "pytest-xdist>=3.8.0", "pytest>=9.1.1", "pytest-asyncio>=1.4.0", "pytest-cov>=7.1.0",]
 
 [project.scripts]
 paperless-ngx-mcp = "paperless_ngx_mcp.mcp_server:mcp_server"
-paperless-ngx-agent = "paperless_ngx_mcp.agent_server:agent_server"
 
 # Fleet contribution (CONCEPT:OS-5.52): advertise this package's skills and
 # system-prompt blueprints so agent-utilities' skill-installer and KG prompt

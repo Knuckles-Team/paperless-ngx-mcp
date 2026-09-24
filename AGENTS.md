@@ -11,7 +11,6 @@
     - `paperless_ngx_mcp/api/`: Modular folder for target service client wrappers.
     - `paperless_ngx_mcp/mcp/`: Modular folder for action-routed dynamic MCP tool tags.
     - `paperless_ngx_mcp/mcp_server.py`: Main MCP server entry point and tool registration.
-    - `paperless_ngx_mcp/agent_server.py`: Pydantic AI agent definition and logic.
 
 ### Architecture Diagram
 ```mermaid
@@ -53,12 +52,9 @@ pre-commit run --all-files
 # Execution Commands
 # Run MCP Server
 paperless-ngx-mcp
-# Run Agent
-paperless-ngx-agent
 
 ## Project Structure Quick Reference
 - MCP Entry Point → `paperless_ngx_mcp/mcp_server.py`
-- Agent Entry Point → `paperless_ngx_mcp/agent_server.py`
 - Source Code → `paperless_ngx_mcp/`
 - API client mixins → `paperless_ngx_mcp/api/`
 - MCP tool modules → `paperless_ngx_mcp/mcp/`
@@ -67,7 +63,7 @@ paperless-ngx-agent
 
 ## Code Style & Conventions
 **Always:**
-- Use `agent-utilities` for common patterns (e.g., `create_mcp_server`, `create_agent_server`).
+- Use `agent-utilities` for common patterns (e.g., `create_mcp_server`).
 - Define input/output models using Pydantic.
 - Include descriptive docstrings for all tools (they are used as tool descriptions for LLMs).
 - Check for optional dependencies using `try/except ImportError`.
@@ -89,7 +85,7 @@ paperless-ngx-agent
 - Use `agent-utilities` base classes.
 
 **Ask first:**
-- Major refactors of `mcp_server.py` or `agent_server.py`.
+- Major refactors of `mcp_server.py`.
 - Deleting or renaming public tool functions.
 
 **Never do:**
