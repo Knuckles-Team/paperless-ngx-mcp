@@ -13,7 +13,7 @@ import hmac
 import re
 from typing import Any
 
-from agent_utilities.core.config import setting
+from agent_connector_sdk.config import setting
 
 _SOURCE = "paperless-ngx-mcp"
 _DOMAIN = "paperless"

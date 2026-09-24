@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from agent_utilities.mcp.concurrency import invoke_client_method
+from agent_connector_sdk.mcp.concurrency import invoke_client_method
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field

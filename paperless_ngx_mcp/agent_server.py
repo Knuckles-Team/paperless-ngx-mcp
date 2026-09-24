@@ -14,8 +14,8 @@ logger = logging.getLogger(__name__)
 
 
 def agent_server():
+    from agent_connector_sdk.config import setting
     from agent_utilities.agent.factory import create_agent_parser
-    from agent_utilities.core.config import setting
     from agent_utilities.core.workspace import initialize_workspace
     from agent_utilities.prompting.builder import (
         build_system_prompt_from_workspace,

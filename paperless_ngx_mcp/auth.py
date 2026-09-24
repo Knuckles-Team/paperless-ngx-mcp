@@ -8,13 +8,11 @@ from __future__ import annotations
 
 from typing import Any
 
-from agent_utilities.base_utilities import get_logger
-from agent_utilities.core.config import setting
-from agent_utilities.core.exceptions import AuthError, UnauthorizedError
-from agent_utilities.core.transport_security import (
-    ResolvedTLSProfile,
-    resolve_configured_tls_profile,
-)
+from agent_connector_sdk.config import setting
+from agent_connector_sdk.exceptions import AuthError, UnauthorizedError
+from agent_connector_sdk.tls.profile import ResolvedTLSProfile
+from agent_connector_sdk.tls.resolve import resolve_tls_profile
+from agent_connector_sdk.utilities import get_logger
 
 from .api import ApiClientSystem
 
@@ -48,7 +46,7 @@ def get_client(
     if not delegated and not fixed_token:
         raise RuntimeError("PAPERLESS_TOKEN is required when delegation is disabled")
 
-    profile = tls_profile or resolve_configured_tls_profile("paperless")
+    profile = tls_profile or resolve_tls_profile("paperless")
     if delegated:
         try:
             delegated_token = get_delegated_token(
