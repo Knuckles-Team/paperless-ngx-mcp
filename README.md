@@ -21,7 +21,7 @@ credential, certificate, user record, customized taxonomy, or durable source con
 - Apply system trust, private CA bundles, mTLS, and proxy policy through a shared
   mandatory-verification TLS profile.
 - Project keyed, content-free document topology for governed ChangeEnvelope ingestion.
-- Contribute one comprehensive `paperless-ngx-operations` skill and data-only ontology,
+- Contribute one complete `paperless-ngx-operations` skill and data-only ontology,
   source-preset, and prompt providers.
 
 ## MCP tools
@@ -97,7 +97,7 @@ uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp
 ```
 
 Use the `[agent]` extra only when running the A2A agent entry point. Agent Utilities
-supplies the full Epistemic Graph runtime on the current dependency line.
+provides the full Epistemic Graph runtime on the current dependency line.
 
 ## AgentConfig boundary
 
