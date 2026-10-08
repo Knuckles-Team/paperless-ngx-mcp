@@ -28,5 +28,5 @@ line.
 ## Release activation
 
 Provider installation is not graph-ingestion authorization. Enable the source preset
-only after the central compiler has generated and verified the current signed capability
+only after the central compiler has generated and checked the current signed capability
 bundle and the deployment has supplied tenant, policy, and pseudonymization state.

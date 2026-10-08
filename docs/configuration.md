@@ -50,7 +50,7 @@ signed manifest, SHACL shapes, neutral mapping and fixture, migration ledger, an
 offline source attestation. Those artifacts contain no deployment records, mapping
 customizations, source content, or external-live claim.
 
-Before activation, require a verified tenant, ACL, classification, retention, legal-hold
+Before activation, require a checked tenant, ACL, classification, retention, legal-hold
 policy, pseudonymization key, current tool-schema fingerprint, and signed capability
 bundle. Missing state fails closed.
 
