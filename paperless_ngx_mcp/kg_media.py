@@ -2,72 +2,45 @@
 
 CONCEPT:AU-KG.ingest.list-durable-media. Paperless-ngx documents are scans — the raw
 PDF/image bytes are worth making durable, deduped and queryable inside the knowledge
-graph, not just their OCR text. When a live engine is reachable this stores the file as a
-content-addressed ``:Blob`` wrapped by a ``:MediaAsset`` node (carrying the document's
-metadata) in ONE cross-modal ACID commit via the shared ``MediaStore``, and links it back
-to the ``:Document`` node with a ``:scannedAs`` edge.
+graph, not just their OCR text. This stores the file as a content-addressed ``:Blob``
+wrapped by a ``:MediaAsset`` entity in one atomic change-set submission through the
+agent-connector-sdk knowledge-ingest facade (``agent_connector_sdk.ingest``), and links
+it back to the ``:Document`` node with a ``:scannedAs`` relationship in the same
+``ChangeSet``.
 
-Best-effort and dependency-/engine-guarded: with no KG stack or no reachable engine every
-entry point **no-ops** (returns ``None``), so the connector runs with zero KG
-infrastructure. This is the blob leg of the package's "maximum ingestion" contribution;
-``kg_ingest.py`` is the typed-record leg.
+Best-effort: with no reachable engine (``IngestError``/``IngestUnavailableError``) the
+one entry point **no-ops** (returns ``None``) rather than raising, so the connector runs
+with zero KG infrastructure. This is the blob leg of the package's "maximum ingestion"
+contribution; ``kg_ingest.py`` is the typed-record leg.
+
+AU-BOUNDARY-R005: migrated off ``agent_utilities.knowledge_graph.memory.native_ingest`` /
+``media_store`` onto the SDK's ``ingest.MediaAsset`` + ``ChangeSet`` per
+plans/refactor/reconciliation-20261006/FLEET-SDK-MIGRATION-RECIPE.md.
 """
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from typing import Any
+
+from agent_connector_sdk.ingest import (
+    ChangeSet,
+    EntityRef,
+    IngestBinding,
+    IngestError,
+    KnowledgeIngest,
+    MediaAsset,
+    Relationship,
+    current_ingest,
+)
 
 logger = logging.getLogger("paperless_ngx_mcp.kg.media")
 
 _SOURCE = "paperless-ngx-mcp"
-
-
-def media_store() -> Any | None:
-    """Return a ``MediaStore`` over a live engine, or ``None`` when unavailable."""
-    try:
-        from agent_utilities.knowledge_graph.memory import native_ingest
-
-        return native_ingest.media_store()
-    except Exception as e:  # noqa: BLE001 — primitive not installed yet
-        logger.debug("KG media: shared primitive unavailable: %s", e)
-    try:
-        from agent_utilities.knowledge_graph.core.graph_compute import (
-            GraphComputeEngine,
-        )
-        from agent_utilities.knowledge_graph.memory.media_store import MediaStore
-    except Exception as e:  # noqa: BLE001 — KG stack absent
-        logger.debug("KG media ingest unavailable (import): %s", e)
-        return None
-    try:
-        engine = GraphComputeEngine()
-        if getattr(engine, "_client", None) is None:
-            return None
-        return MediaStore(engine)
-    except Exception as e:  # noqa: BLE001 — no reachable engine
-        logger.debug("KG media ingest: engine unreachable: %s", e)
-        return None
-
-
-def _fallback_client() -> tuple[Any | None, str]:
-    """Return ``(engine_client, graph_name)`` or ``(None, "")`` when unavailable."""
-    try:
-        from agent_utilities.knowledge_graph.core.graph_compute import (
-            GraphComputeEngine,
-        )
-    except Exception as e:  # noqa: BLE001 — KG stack absent
-        logger.debug("KG media ingest unavailable (import): %s", e)
-        return None, ""
-    try:
-        engine = GraphComputeEngine()
-        client = getattr(engine, "_client", None)
-        if client is None:
-            return None, ""
-        return client, (getattr(engine, "graph_name", None) or "__commons__")
-    except Exception as e:  # noqa: BLE001 — engine unreachable
-        logger.debug("KG media ingest: engine unreachable: %s", e)
-        return None, ""
-
+_BINDING = IngestBinding(
+    connector=_SOURCE, stream="document-media", tool="ingest_document_blob"
+)
 
 # Paperless document fields worth carrying onto the :MediaAsset node.
 _INFO_FIELDS = (
@@ -82,7 +55,7 @@ _INFO_FIELDS = (
 )
 
 
-def ingest_document_blob(
+async def ingest_document_blob(
     document_id: int | str,
     data: bytes | None,
     *,
@@ -90,21 +63,17 @@ def ingest_document_blob(
     mime_type: str = "application/pdf",
     source_uri: str = "",
     source: str = _SOURCE,
-    store: Any | None = None,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, Any] | None:
     """Store a scanned document's raw bytes as a ``:Blob`` / ``:MediaAsset`` in the KG.
 
     Also links the document node (``paperless:document:<id>``) to the new asset with a
-    ``:scannedAs`` edge when an engine is reachable. Returns
-    ``{asset_id, digest, size_bytes, media_type}`` on success, or ``None`` (no engine, no
-    bytes, or store failed — never raises). ``store``/``client`` may be injected (tests).
+    ``:scannedAs`` relationship in the same change set. Returns
+    ``{asset_id, digest, size_bytes, media_type}`` on success, or ``None`` (no bytes, no
+    reachable engine, or the submission failed — never raises). ``ingest`` may be
+    injected (tests); it defaults to the process-global facade.
     """
     if not data:
-        return None
-    st = store if store is not None else media_store()
-    if st is None:
         return None
 
     info = info or {}
@@ -113,46 +82,37 @@ def ingest_document_blob(
     if source_uri:
         extra["source_uri"] = source_uri
     extra["document_id"] = str(document_id)
+    extra["source"] = source
     name = (
         info.get("title") or info.get("original_file_name") or f"document-{document_id}"
     )
 
+    # A stable, caller-known id (rather than the CAS default `blob:<digest>`) so the
+    # :scannedAs relationship can name its target before the asset is stored, and so
+    # the caller gets back a deterministic asset_id.
+    asset_id = f"paperless:asset:{document_id}"
+    digest = hashlib.sha256(data).hexdigest()
+    asset = MediaAsset(
+        data=data, mime_type=mime_type, id=asset_id, name=name, properties=extra
+    )
+    document_ref = f"paperless:document:{document_id}"
+    change_set = ChangeSet(
+        media=(asset,),
+        relationships=(
+            Relationship(
+                source=EntityRef(document_ref, node_type="document"),
+                target=EntityRef(asset_id, node_type=_BINDING.media_type),
+                relationship="scannedAs",
+            ),
+        ),
+    )
+
+    service = ingest if ingest is not None else current_ingest()
     try:
-        stored = st.store_media(
-            data,
-            media_type=media_type,
-            mime_type=mime_type,
-            source=source,
-            name=name,
-            extra=extra,
-        )
-    except Exception as e:  # noqa: BLE001 — engine/store failure is non-fatal
-        logger.warning("KG media ingest: store_media failed: %s", e)
+        await service.submit(_BINDING, change_set)
+    except IngestError as e:  # noqa: BLE001 — best-effort, engine/store failure is non-fatal
+        logger.debug("KG media ingest: submission failed: %s", e)
         return None
-    if stored is None:
-        return None
-
-    asset_id = getattr(stored, "asset_id", None) or (
-        stored.get("asset_id") if isinstance(stored, dict) else None
-    )
-    digest = getattr(stored, "digest", None) or (
-        stored.get("digest") if isinstance(stored, dict) else None
-    )
-
-    # Best-effort :scannedAs edge from the document node to the stored asset.
-    if asset_id:
-        try:
-            edge_client = client
-            if edge_client is None:
-                edge_client, _ = _fallback_client()
-            if edge_client is not None:
-                edge_client.edges.add(
-                    f"paperless:document:{document_id}",
-                    asset_id,
-                    {"type": "scannedAs"},
-                )
-        except Exception as e:  # noqa: BLE001 — pure link, best-effort
-            logger.debug("KG media ingest: scannedAs edge skipped: %s", e)
 
     logger.info(
         "KG media ingest: stored document %s (%s bytes) as asset %s",
