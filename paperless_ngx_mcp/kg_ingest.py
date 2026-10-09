@@ -2,8 +2,8 @@
 
 Provider records are reduced in memory to opaque typed nodes and structural edges.
 OCR content, titles, names, filenames, storage paths, timestamps, URLs, raw bytes, and
-provider identifiers never cross this boundary.  Writes use Agent Utilities' sole
-ChangeEnvelope authority; no raw transaction or best-effort path exists.
+provider identifiers never cross this boundary. Writes use ``agent_connector_sdk.ingest``
+-- the generated ``SourceIngest`` client, not a local ingestion helper.
 """
 
 from __future__ import annotations
@@ -13,10 +13,17 @@ import hmac
 import re
 from typing import Any
 
-from agent_utilities.core.config import setting
+from agent_connector_sdk.config import setting
+from agent_connector_sdk.ingest import (
+    ChangeSet,
+    Entity,
+    IngestBinding,
+    KnowledgeIngest,
+    Relationship,
+    current_ingest,
+)
 
-_SOURCE = "paperless-ngx-mcp"
-_DOMAIN = "paperless"
+_BINDING = IngestBinding(connector="paperless-ngx-mcp", stream="paperless")
 _NODE_TYPES = frozenset(
     {
         "PaperlessDocumentReference",
@@ -37,12 +44,16 @@ _RELATIONSHIPS = frozenset(
 _DIGEST = re.compile(r"^[0-9a-f]{64}$")
 
 
-def _native_ingest_entities(*args: Any, **kwargs: Any) -> dict[str, int]:
-    """Resolve the governed engine boundary only when an ingest is requested."""
+def _to_entity(record: dict[str, Any]) -> Entity:
+    return Entity(id=record.get("id"), node_type=record.get("node_type"))
 
-    from agent_utilities.knowledge_graph.memory.native_ingest import ingest_entities
 
-    return ingest_entities(*args, **kwargs)
+def _to_relationship(record: dict[str, Any]) -> Relationship:
+    return Relationship(
+        source=record["source"],
+        target=record["target"],
+        relationship=record["relationship"],
+    )
 
 
 def _projection_key(explicit: bytes | None = None) -> bytes:
@@ -155,11 +166,10 @@ def project_records(
     return {"records": entities, "relationships": relationships}
 
 
-def ingest_projection(
+async def ingest_projection(
     projection: dict[str, list[dict[str, str]]],
     *,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int]:
     """Commit one previously projected structural slice through ChangeEnvelope."""
 
@@ -223,25 +233,25 @@ def ingest_projection(
         )
     if not entities:
         return {"nodes": 0, "edges": 0}
-    return _native_ingest_entities(
-        entities,
-        relationships,
-        source=_SOURCE,
-        domain=_DOMAIN,
-        client=client,
-        graph=graph,
+    change_set = ChangeSet(
+        entities=tuple(_to_entity(entity) for entity in entities),
+        relationships=tuple(
+            _to_relationship(relationship) for relationship in relationships
+        ),
     )
+    service = ingest or current_ingest()
+    receipt = await service.submit(_BINDING, change_set)
+    return {"nodes": receipt.affected_count, "edges": receipt.relationship_count}
 
 
-def ingest_documents_records(
+async def ingest_documents_records(
     documents: list[dict[str, Any]],
     *,
     correspondents: list[dict[str, Any]] | None = None,
     tags: list[dict[str, Any]] | None = None,
     document_types: list[dict[str, Any]] | None = None,
     storage_paths: list[dict[str, Any]] | None = None,
-    client: Any | None = None,
-    graph: str | None = None,
+    ingest: KnowledgeIngest | None = None,
 ) -> dict[str, int]:
     """Project and commit a content-free Paperless-ngx graph slice."""
 
@@ -252,4 +262,4 @@ def ingest_documents_records(
         document_types=document_types,
         storage_paths=storage_paths,
     )
-    return ingest_projection(projection, client=client, graph=graph)
+    return await ingest_projection(projection, ingest=ingest)

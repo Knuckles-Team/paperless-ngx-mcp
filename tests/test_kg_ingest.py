@@ -1,11 +1,36 @@
 import json
-from unittest.mock import patch
+from types import SimpleNamespace
 
 import pytest
+from agent_connector_sdk.ingest import KnowledgeIngest
 
 from paperless_ngx_mcp.kg_ingest import ingest_projection, project_records
 
 KEY = b"k" * 32
+
+
+class _FakeTransport:
+    def __init__(self):
+        self.requests = []
+
+    async def source_status(self, connector, stream):
+        return SimpleNamespace(accepted_checkpoint=None)
+
+    async def submit(self, request):
+        self.requests.append(request)
+        return SimpleNamespace(
+            affected_count=len(request.records),
+            relationship_count=len(request.relationships),
+        )
+
+    async def store_blob(self, data):
+        raise AssertionError("this connector's structural ingestion carries no media")
+
+
+@pytest.fixture
+def ingest():
+    transport = _FakeTransport()
+    return KnowledgeIngest(transport, loop=None), transport
 
 
 def _projection(key: bytes = KEY):
@@ -65,40 +90,38 @@ def test_projection_requires_deployment_key(monkeypatch):
         project_records([{"id": 1}])
 
 
-def test_ingest_projection_uses_only_governed_native_boundary():
+async def test_ingest_projection_uses_only_governed_native_boundary(ingest):
+    service, transport = ingest
     projection = _projection()
-    with patch("paperless_ngx_mcp.kg_ingest._native_ingest_entities") as native:
-        native.return_value = {"nodes": 6, "edges": 5}
-        result = ingest_projection(projection)
+    result = await ingest_projection(projection, ingest=service)
     assert result == {"nodes": 6, "edges": 5}
-    native.assert_called_once_with(
-        projection["records"],
-        projection["relationships"],
-        source="paperless-ngx-mcp",
-        domain="paperless",
-        client=None,
-        graph=None,
-    )
+    request = transport.requests[0]
+    assert {record.record_id for record in request.records} == {
+        node["id"] for node in projection["records"]
+    }
 
 
-def test_ingest_projection_rejects_unprojected_content_and_invalid_edges():
+async def test_ingest_projection_rejects_unprojected_content_and_invalid_edges(ingest):
+    service, transport = ingest
     projection = _projection()
     projection["records"][0]["title"] = "must not persist"
-    with patch("paperless_ngx_mcp.kg_ingest._native_ingest_entities") as native:
-        with pytest.raises(ValueError, match="invalid node"):
-            ingest_projection(projection)
-    native.assert_not_called()
+    with pytest.raises(ValueError, match="invalid node"):
+        await ingest_projection(projection, ingest=service)
+    assert transport.requests == []
 
     projection = _projection()
     projection["relationships"][0]["target"] = "paperless:unknown:record"
-    with patch("paperless_ngx_mcp.kg_ingest._native_ingest_entities") as native:
-        with pytest.raises(ValueError, match="invalid relationship"):
-            ingest_projection(projection)
-    native.assert_not_called()
+    with pytest.raises(ValueError, match="invalid relationship"):
+        await ingest_projection(projection, ingest=service)
+    assert transport.requests == []
 
 
-def test_empty_projection_is_an_explicit_zero_write():
-    assert ingest_projection({"records": [], "relationships": []}) == {
+async def test_empty_projection_is_an_explicit_zero_write(ingest):
+    service, transport = ingest
+    assert await ingest_projection(
+        {"records": [], "relationships": []}, ingest=service
+    ) == {
         "nodes": 0,
         "edges": 0,
     }
+    assert transport.requests == []

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from agent_utilities.mcp.concurrency import invoke_client_method
+from agent_connector_sdk.mcp.concurrency import invoke_client_method
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
@@ -71,4 +71,4 @@ def register_kg_tools(mcp: FastMCP) -> None:
         if ctx:
             await ctx.info("Ingesting Paperless-ngx structural projection")
         projection = await _projection(client, _options(params_json))
-        return {"ingested": ingest_projection(projection)}
+        return {"ingested": await ingest_projection(projection)}

@@ -9,8 +9,8 @@ document_types, storage_paths, custom_fields, saved_views and tasks.
 from pathlib import Path
 from typing import Any
 
-from agent_utilities.core.config import setting
-from agent_utilities.core.exceptions import ParameterError
+from agent_connector_sdk.config import setting
+from agent_connector_sdk.exceptions import ParameterError
 
 from .api_client_base import ApiClientBase
 
