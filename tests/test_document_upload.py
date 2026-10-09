@@ -1,7 +1,7 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-from agent_utilities.core.exceptions import ParameterError
+from agent_connector_sdk.exceptions import ParameterError
 
 from paperless_ngx_mcp.api import ApiClientDocuments
 

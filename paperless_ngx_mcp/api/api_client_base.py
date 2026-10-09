@@ -18,15 +18,13 @@ from typing import Any
 from urllib.parse import urljoin, urlsplit
 
 import requests
-from agent_utilities.core.exceptions import (
+from agent_connector_sdk.exceptions import (
     AuthError,
     ParameterError,
     UnauthorizedError,
 )
-from agent_utilities.core.transport_security import (
-    ResolvedTLSProfile,
-    resolve_configured_tls_profile,
-)
+from agent_connector_sdk.tls.profile import ResolvedTLSProfile
+from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
 
 def _validated_base_url(value: str) -> str:
@@ -66,7 +64,7 @@ class ApiClientBase:
         parsed = urlsplit(self.base_url)
         self._origin = (parsed.scheme, parsed.netloc)
         self.max_retries = max_retries
-        self.tls_profile = tls_profile or resolve_configured_tls_profile("paperless")
+        self.tls_profile = tls_profile or resolve_tls_profile("paperless")
         self.session = self.tls_profile.configure_requests_session(requests.Session())
         # DRF TokenAuthentication — "Token <key>", not Bearer.
         self.session.headers.update(

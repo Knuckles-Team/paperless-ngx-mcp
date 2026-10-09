@@ -57,20 +57,23 @@ def test_get_client_error_is_sanitized_and_cleans_profile():
     profile.cleanup.assert_called_once_with()
 
 
-def test_delegated_client_is_request_scoped():
+def test_delegated_client_is_request_scoped(monkeypatch):
     profile = MagicMock()
-    config = {
-        "enable_delegation": True,
-        "audience": "paperless-api",
-        "delegated_scopes": "api",
-    }
-    with (
-        patch("paperless_ngx_mcp.auth.ApiClientSystem") as client_type,
-        patch(
-            "agent_utilities.mcp.delegated_auth.get_delegated_token",
-            side_effect=["first-token", "second-token"],
-        ),
-    ):
+    config = {"enable_delegation": True}
+
+    import agent_connector_sdk.auth.delegation as delegation
+
+    monkeypatch.setattr(delegation, "current_user_token", lambda: "caller-token")
+    tokens = iter(["first-token", "second-token"])
+
+    def _fake_exchange(settings, *, subject_token, http_client, resolver=None):
+        from agent_connector_sdk.auth.tokens import AccessToken
+
+        return AccessToken(value=next(tokens), ttl_seconds=3600, expires_at=0.0)
+
+    monkeypatch.setattr(delegation, "exchange_token", _fake_exchange)
+
+    with patch("paperless_ngx_mcp.auth.ApiClientSystem") as client_type:
         first = get_client(
             url="https://service.example.invalid",
             tls_profile=profile,
