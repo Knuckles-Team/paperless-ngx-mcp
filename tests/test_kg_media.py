@@ -1,93 +1,88 @@
 """Native epistemic-graph blob ingestion — Wire-First live-path coverage.
 
-Exercises the real ``ingest_document_blob`` seam with a fake ``MediaStore`` + engine
-client (no engine required), asserting the store_media call + the :scannedAs edge.
+Exercises the real ``ingest_document_blob`` seam against a fake SDK ingest
+transport (no engine required), asserting the media asset + :scannedAs
+relationship the SDK's own request builder produces.
 CONCEPT:AU-KG.ingest.list-durable-media.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from types import SimpleNamespace
+
+import pytest
+from agent_connector_sdk.ingest import KnowledgeIngest
 
 from paperless_ngx_mcp.kg_media import ingest_document_blob
 
 
-@dataclass
-class _Stored:
-    asset_id: str
-    digest: str
-
-
-class _FakeMediaStore:
+class _FakeTransport:
     def __init__(self):
-        self.calls = []
+        self.requests = []
 
-    def store_media(self, data, **kw):
-        self.calls.append((data, kw))
-        return _Stored(asset_id="paperless:asset:deadbeef", digest="deadbeef")
+    async def source_status(self, _connector, _stream):
+        return SimpleNamespace(accepted_checkpoint=None)
 
+    async def submit(self, request):
+        self.requests.append(request)
+        return SimpleNamespace(
+            affected_count=len(request.records),
+            relationship_count=len(request.relationships),
+        )
 
-class _FakeEdges:
-    def __init__(self):
-        self.edges = []
+    async def store_blob(self, data):
+        import hashlib
 
-    def add(self, src, dst, props):
-        self.edges.append((src, dst, props))
-
-
-class _FakeClient:
-    def __init__(self):
-        self.edges = _FakeEdges()
+        return hashlib.sha256(data).hexdigest()
 
 
-def test_ingest_document_blob_stores_bytes_and_links():
-    store = _FakeMediaStore()
-    client = _FakeClient()
-    res = ingest_document_blob(
+@pytest.fixture
+def ingest():
+    transport = _FakeTransport()
+    return KnowledgeIngest(transport, loop=None), transport
+
+
+@pytest.mark.asyncio
+async def test_ingest_document_blob_stores_bytes_and_links(ingest):
+    service, transport = ingest
+    res = await ingest_document_blob(
         42,
         b"%PDF-1.7 scan-bytes",
         info={"id": 42, "title": "Acme Invoice", "correspondent": 2},
         mime_type="application/pdf",
         source_uri="https://paperless.example/documents/42/",
-        store=store,
-        client=client,
+        ingest=service,
     )
     assert res is not None
-    assert res["asset_id"] == "paperless:asset:deadbeef"
-    assert res["digest"] == "deadbeef"
+    assert res["asset_id"] == "paperless:asset:42"
     assert res["media_type"] == "file"
     assert res["size_bytes"] == len(b"%PDF-1.7 scan-bytes")
 
-    # store_media got the raw bytes + propagated metadata.
-    assert len(store.calls) == 1
-    data, kw = store.calls[0]
-    assert data == b"%PDF-1.7 scan-bytes"
-    assert kw["source"] == "paperless-ngx-mcp"
-    assert kw["mime_type"] == "application/pdf"
-    assert kw["name"] == "Acme Invoice"
-    assert kw["extra"]["document_id"] == "42"
-    assert kw["extra"]["source_uri"] == "https://paperless.example/documents/42/"
+    assert len(transport.requests) == 1
+    request = transport.requests[0]
+    assert len(request.records) == 1
+    assert request.records[0].record_id == "paperless:asset:42"
+    assert request.records[0].payload["name"] == "Acme Invoice"
+    assert request.records[0].payload["document_id"] == "42"
+    # the SDK's PersistencePrivacyGuard redacts URL-shaped property values.
+    assert "source_uri" in request.records[0].payload
 
-    # the document was linked to the stored asset via :scannedAs.
-    assert client.edges.edges == [
-        ("paperless:document:42", "paperless:asset:deadbeef", {"type": "scannedAs"})
-    ]
+    assert len(request.relationships) == 1
+    rel = request.relationships[0]
+    assert rel.source.record_id == "paperless:document:42"
+    assert rel.target.record_id == "paperless:asset:42"
 
 
-def test_ingest_document_blob_image_mime():
-    store = _FakeMediaStore()
-    res = ingest_document_blob(
-        7, b"\x89PNG scan", mime_type="image/png", store=store, client=_FakeClient()
-    )
+@pytest.mark.asyncio
+async def test_ingest_document_blob_image_mime(ingest):
+    service, _ = ingest
+    res = await ingest_document_blob(7, b"\x89PNG scan", mime_type="image/png", ingest=service)
     assert res is not None
     assert res["media_type"] == "image"
 
 
-def test_ingest_document_blob_noops_without_store():
-    # No injected store + no reachable engine -> clean no-op (never raises).
-    assert ingest_document_blob(1, b"bytes") is None
-
-
-def test_ingest_document_blob_noops_on_empty_bytes():
-    assert ingest_document_blob(1, b"", store=_FakeMediaStore()) is None
-    assert ingest_document_blob(1, None, store=_FakeMediaStore()) is None
+@pytest.mark.asyncio
+async def test_ingest_document_blob_noops_on_empty_bytes(ingest):
+    service, _ = ingest
+    assert await ingest_document_blob(1, b"", ingest=service) is None
+    assert await ingest_document_blob(1, None, ingest=service) is None
