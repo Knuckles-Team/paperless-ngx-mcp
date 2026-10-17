@@ -123,7 +123,7 @@ The checked-in MCP catalog contains references only:
 }
 ```
 
-GraphOS reads this catalog through `AgentConfig.MCP_CONFIG`. Map the runtime aliases to
+Arbora reads this catalog through `AgentConfig.MCP_CONFIG`. Map the runtime aliases to
 approved `env://`, `vault://`, or `secret://` runtime sources with
 `AgentConfig.MCP_FLEET_SECRET_REFS`. The connector has no packaged URL or credential
 default and requires HTTPS.
@@ -240,5 +240,5 @@ historical per-task skill wrappers.
 Runtime endpoints, credentials, certificate trust, tenant identity, retention,
 and observability policy are deployment inputs and are never packaged values.
 See [Configuration, trust, and privacy](docs/configuration.md) before enabling a
-network transport, connector ingestion, GraphOS delegation, or trace export.
+network transport, connector ingestion, Arbora delegation, or trace export.
 <!-- GOVERNED-CAPABILITY:END -->

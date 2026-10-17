@@ -1,17 +1,17 @@
 ---
 name: paperless-ngx-operations
 skill_type: skill
-description: Operate Paperless-ngx through its governed MCP and GraphOS capabilities, including document discovery, intake, metadata curation, task monitoring, privacy-preserving structural ingestion, and verification. Use when a request involves Paperless-ngx documents, correspondents, tags, document types, storage paths, custom fields, saved views, search, tasks, system inspection, or epistemic-graph synchronization.
+description: Operate Paperless-ngx through its governed MCP and Arbora capabilities, including document discovery, intake, metadata curation, task monitoring, privacy-preserving structural ingestion, and verification. Use when a request involves Paperless-ngx documents, correspondents, tags, document types, storage paths, custom fields, saved views, search, tasks, system inspection, or epistemic-graph synchronization.
 ---
 
 # Paperless-ngx Operations
 
-Use the provider's governed MCP tools through GraphOS delegation.
+Use the provider's governed MCP tools through Arbora delegation.
 
 ## Workflow
 
 1. Establish the verified GraphSession and tenant before discovery or retrieval.
-2. Discover the current capability through GraphOS intent delegation and load only the
+2. Discover the current capability through Arbora intent delegation and load only the
    required backing tool; do not assume a cached schema.
 3. Begin with a bounded read. Resolve metadata labels to current provider identifiers
    before issuing a mutation.
