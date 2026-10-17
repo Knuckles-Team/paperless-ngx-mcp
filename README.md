@@ -96,7 +96,6 @@ _4 action-routed tool(s) · 36 verbose 1:1 tool(s). Each is enabled unless its `
 uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp
 ```
 
-Use the `[agent]` extra only when running the A2A agent entry point. Agent Utilities
 provides the full Epistemic Graph runtime on the current dependency line.
 
 ## AgentConfig boundary
@@ -136,14 +135,14 @@ boolean or commit trust material.
 Validate the reference boundary without displaying resolved values:
 
 ```bash
-agent-utilities-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
+agent-connector-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
 ```
 
 ## Privacy-preserving graph synchronization
 
 `paperless_ingestion_projection` transforms provider records in memory into keyed opaque
 references and structural relationships. `paperless_ingest_projection` commits that
-same projection through Agent Utilities' governed ChangeEnvelope path.
+same projection through Agent Connector SDK' governed ChangeEnvelope path.
 
 The durable projection excludes OCR text, titles, notes, names, filenames, storage
 locations, timestamps, URLs, raw bytes, and provider identifiers. It requires a
@@ -197,7 +196,7 @@ this repository intentionally does not manufacture signed release artifacts.
 | `ENABLE_OTEL` | `False` | Enable trace export only after configuring an approved collector |
 | `LANGFUSE_CAPTURE_CONTENT` | `False` | Never capture provider record content |
 
-#### Inherited agent-utilities variables (apply to every connector)
+#### Inherited agent-connector-sdk variables (apply to every connector)
 
 | Variable | Example | Description |
 |----------|---------|-------------|
@@ -221,33 +220,12 @@ this repository intentionally does not manufacture signed release artifacts.
 | `MODEL_ID` | — | Operator-configured model id for the agent |
 | `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_19 package + 19 inherited variable(s). Auto-generated from `.env.example` + the shared agent-utilities set — do not edit._
+_19 package + 19 inherited variable(s). Auto-generated from `.env.example` + the shared agent-connector-sdk set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
 
 Licensed under the MIT License.
 
 
-<!-- BEGIN agent-utilities-deployment (generated; do not edit between markers) -->
-
-## Deploy with `agent-utilities-deployment`
-
-Provision this package with the consolidated **`agent-utilities-deployment`**
-workflow. It selects an installed-package, editable-source, or immutable-container
-path; records only runtime secret and TLS-profile references in `AgentConfig`; and
-runs doctor, registration, policy, observability, and rollback gates. Ask your agent
-to **"deploy `paperless-ngx-mcp` with agent-utilities-deployment"**.
-
-| Install mode | Command |
-|------|---------|
-| Installed package | `uv tool install "paperless-ngx-mcp[mcp]"`, then run `paperless-ngx-mcp` |
-| Editable source | `uv pip install -e ".[agent]"`, then run `paperless-ngx-mcp` |
-| Immutable container | deploy `registry.example.invalid/paperless-ngx-mcp@sha256:<digest>` through the operator-selected orchestrator |
-
-The repository embeds no deployment profile, credential value, certificate path, or
-environment-specific endpoint. Supply those at runtime through `AgentConfig` and the
-configured secret provider.
-
-<!-- END agent-utilities-deployment -->
 
 <!-- GOVERNED-CAPABILITY:START -->
 ## Governed capability contract

@@ -20,7 +20,7 @@ registry account or provider instance.
 
 ## A2A agent
 
-The `paperless-ngx-agent` entry point uses the current Agent Utilities parser and server
+The `paperless-ngx-agent` entry point uses the current Agent Connector SDK parser and server
 factory. Supply the MCP catalog through AgentConfig and use secret references for model,
 OIDC, telemetry, and provider credentials. Do not place resolved values on a command
 line.

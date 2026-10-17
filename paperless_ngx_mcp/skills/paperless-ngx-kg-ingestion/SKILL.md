@@ -80,5 +80,5 @@ Ingest a page of documents AND their scanned PDFs:
 ## Related
 - `paperless-ngx-document-management` / `paperless-ngx-metadata-curation` — the
   operational tools whose records this ingests.
-- The `agent-utilities-source-integration` universal skill — the fleet-wide
+- The `agent-connector-sdk-source-integration` universal skill — the fleet-wide
   `source_sync` path that can drive the `paperless-documents` preset.
