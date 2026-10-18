@@ -1,6 +1,6 @@
 # Paperless-ngx MCP
 
-*Version: 2.1.0*
+*Version: 2.2.0*
 
 `paperless-ngx-mcp` provides a typed Python client, current intent/condensed/verbose MCP
 surfaces, an optional A2A agent, and a governed epistemic-graph connector for the standard
