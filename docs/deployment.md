@@ -1,13 +1,13 @@
 # Deployment
 
-## GraphOS-managed child
+## Arbora-managed child
 
 Register the checked-in reference-only catalog with `AgentConfig.MCP_CONFIG`. Map its
 aliases through `AgentConfig.MCP_FLEET_SECRET_REFS`, select the TLS profile, and run the
-doctor gate before GraphOS launches the child. This keeps connection values and trust
+doctor gate before Arbora launches the child. This keeps connection values and trust
 material outside the source tree and process arguments.
 
-Use stdio for a GraphOS-owned local child. For a network transport, apply the Agent
+Use stdio for an Arbora-owned local child. For a network transport, apply the Agent
 Utilities authentication, authorization, TLS, and egress controls and expose only the
 MCP route required by the client.
 
@@ -20,7 +20,7 @@ registry account or provider instance.
 
 ## A2A agent
 
-The `paperless-ngx-agent` entry point uses the current Agent Utilities parser and server
+The `paperless-ngx-agent` entry point uses the current Agent Connector SDK parser and server
 factory. Supply the MCP catalog through AgentConfig and use secret references for model,
 OIDC, telemetry, and provider credentials. Do not place resolved values on a command
 line.

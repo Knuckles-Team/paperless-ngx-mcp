@@ -2,14 +2,14 @@
 
 ## Discover first
 
-Use the default GraphOS intent verbs to discover the current Paperless-ngx capability.
+Use the default Arbora intent verbs to discover the current Paperless-ngx capability.
 The provider registers `document_operations`, `system_operations`,
 `paperless_ingestion_projection`, and `paperless_ingest_projection` as gated backing
-tools that GraphOS can load on demand. Do not cache action schemas across deployments.
+tools that Arbora can load on demand. Do not cache action schemas across deployments.
 
 ## Bounded reads
 
-After GraphOS loads `document_operations`, pass an explicit action and a serialized JSON
+After Arbora loads `document_operations`, pass an explicit action and a serialized JSON
 object:
 
 ```json

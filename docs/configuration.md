@@ -3,7 +3,7 @@
 ## Configuration boundary
 
 The connector reads deployment values only after the shared AgentConfig/XDG loader has
-projected them. Its checked-in `mcp_config.json` uses `env://` aliases; GraphOS resolves
+projected them. Its checked-in `mcp_config.json` uses `env://` aliases; Arbora resolves
 those aliases from `MCP_FLEET_SECRET_REFS` at the child-process boundary.
 
 | Reference | Purpose | Durable package value |
@@ -66,7 +66,7 @@ not trace attributes.
 Validate configuration without printing resolved values:
 
 ```bash
-agent-utilities-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
+agent-connector-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
 ```
 
 Use live doctor checks only when bounded access to the configured provider and telemetry

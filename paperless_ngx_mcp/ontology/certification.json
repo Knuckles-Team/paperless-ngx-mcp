@@ -1,5 +1,5 @@
 {
-  "api_version": "graphos.io/v1",
+  "api_version": "arbora.io/v1",
   "artifacts": {
     "connector_manifest.yml": "48c19e149b297689f5d6891a0443c2bd020c94e98bbf8fade85262209dde0a72",
     "paperless_ngx_mcp/connectors/mcp_source_presets.json": "4c49621c072ad6723aba49f85cc6e08b2e47e981715dfe571e741faf5419a652",
@@ -18,7 +18,7 @@
     "synthetic_fixture_contract": "passed"
   },
   "compatibility": {
-    "agent_utilities": ">=2.5.0,<3",
+    "agent_connector_sdk": ">=2.5.0,<3",
     "bundle_schema": "2",
     "epistemic_graph": ">=2.27.0,<3"
   },
