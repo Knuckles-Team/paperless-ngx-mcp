@@ -46,7 +46,7 @@ def register_documents_tools(mcp: FastMCP):
         action: str = Field(
             description=(
                 "Action to perform on Paperless-ngx documents and metadata. One of: "
-                + ", ".join(sorted(_ACTIONS))
+                + ", ".join(f"'{name}'" for name in sorted(_ACTIONS))
                 + "."
             )
         ),

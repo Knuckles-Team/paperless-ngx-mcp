@@ -30,7 +30,7 @@ def register_system_tools(mcp: FastMCP):
         action: str = Field(
             description=(
                 "Search, task and system action for Paperless-ngx. One of: "
-                + ", ".join(sorted(_ACTIONS))
+                + ", ".join(f"'{name}'" for name in sorted(_ACTIONS))
                 + "."
             )
         ),
