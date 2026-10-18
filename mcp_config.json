@@ -8,14 +8,10 @@
         "paperless-ngx-mcp"
       ],
       "env": {
-        "MCP_TOOL_MODE": "intent",
         "PAPERLESS_URL": "env://PAPERLESS_URL",
         "PAPERLESS_TOKEN": "env://PAPERLESS_TOKEN",
         "PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY": "env://PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY",
-        "TLS_PROFILE": "env://TLS_PROFILE",
-        "TLS_PROFILES_REF": "env://TLS_PROFILES_REF",
-        "WORKSPACE_PATH": "env://WORKSPACE_PATH",
-        "LANGFUSE_CAPTURE_CONTENT": "false"
+        "WORKSPACE_PATH": "env://WORKSPACE_PATH"
       }
     }
   }
