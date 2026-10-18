@@ -13,10 +13,7 @@ async def test_mcp_instance_registration(monkeypatch):
     mcp, args, middlewares = get_mcp_instance()
     assert mcp is not None
     names = {tool.name for tool in await mcp.list_tools()}
-    assert names == {
-        "document_operations",
-        "system_operations",
-        "paperless_ingestion_projection",
-        "paperless_ingest_projection",
-    }
-    assert set(mcp._intent_gated_tools) == names
+    assert {"paperless_ingestion_projection", "paperless_ingest_projection"} <= names
+    assert not {"document_operations", "system_operations"} & names
+    operations = [t for t in await mcp.list_tools() if "operation" in (t.tags or set())]
+    assert len(operations) == 36

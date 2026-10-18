@@ -12,7 +12,6 @@ services:
       - PORT=8000
       - TRANSPORT=streamable-http
       - ENABLE_OTEL=False
-      - LANGFUSE_CAPTURE_CONTENT=False
     ports:
       - "8000:8000"
     healthcheck:
