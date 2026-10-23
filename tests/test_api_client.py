@@ -1,3 +1,4 @@
+from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
@@ -8,7 +9,7 @@ from agent_connector_sdk.tls.resolve import resolve_tls_profile
 from paperless_ngx_mcp.api import ApiClientBase
 
 
-def _client() -> tuple[ApiClientBase, MagicMock]:
+def _client() -> tuple[ApiClientBase, Any]:
     profile = resolve_tls_profile("paperless")
     object.__setattr__(profile, "cleanup", MagicMock())
     return (
@@ -40,7 +41,7 @@ def test_request_returns_json_without_transport_override():
 def test_token_auth_header_and_tls_profile_cleanup():
     client, profile = _client()
     request = client.session.build_request("GET", "https://service.example.invalid/")
-    request = next(client.session.auth.auth_flow(request))
+    request = next(client.session.auth.auth_flow(request))  # type: ignore[union-attr]
     assert request.headers["Authorization"] == "Token runtime-value"
     client.close()
     profile.cleanup.assert_called_once_with()
@@ -118,7 +119,7 @@ def test_client_is_governed_with_token_auth():
     client, _ = _client()
     assert isinstance(client.session, httpx.Client)
     request = client.session.build_request("GET", "https://service.example.invalid/")
-    request = next(client.session.auth.auth_flow(request))
+    request = next(client.session.auth.auth_flow(request))  # type: ignore[union-attr]
     assert request.headers["Authorization"] == "Token runtime-value"
     assert client.session.follow_redirects is False
 
@@ -150,5 +151,5 @@ def test_dependencies_carry_sdk_floor_and_no_requests_pin():
 
     root = pathlib.Path(__file__).resolve().parents[1]
     deps = tomllib.loads((root / "pyproject.toml").read_text())["project"]["dependencies"]
-    assert any(d.startswith("agent-connector-sdk[mcp]>=0.3.11") for d in deps)
+    assert any(d.startswith("agent-connector-sdk[mcp]>=0.3.18") for d in deps)
     assert not any(d.lower().startswith("requests") for d in deps)
