@@ -12,4 +12,4 @@ Read the existing specs first. Extend the spec that owns the behavior. Create a 
 
 ## Local specifications
 
-This repository has no local spec yet.
+- [`CONN-PAPERLESS-NGX-MCP-SDK`](sdk/spec.md) — Shared SDK capabilities in paperless-ngx-mcp

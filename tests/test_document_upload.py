@@ -2,13 +2,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from agent_connector_sdk.exceptions import ParameterError
+from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
 from paperless_ngx_mcp.api import ApiClientDocuments
 
 
 def _client() -> ApiClientDocuments:
-    profile = MagicMock()
-    profile.configure_requests_session.side_effect = lambda session: session
+    profile = resolve_tls_profile("paperless")
     return ApiClientDocuments(
         "https://service.example.invalid",
         "runtime-value",

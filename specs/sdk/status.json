@@ -1,0 +1,50 @@
+{
+  "schema_version": 2,
+  "spec_id": "CONN-PAPERLESS-NGX-MCP-SDK",
+  "owner_repo": "paperless-ngx-mcp",
+  "delivery_state": "SPECIFIED",
+  "requirement_ids": [
+    "CONN-PAPERLESS-NGX-MCP-SDK-R001",
+    "CONN-PAPERLESS-NGX-MCP-SDK-R002",
+    "CONN-PAPERLESS-NGX-MCP-SDK-R003",
+    "CONN-PAPERLESS-NGX-MCP-SDK-R004",
+    "CONN-PAPERLESS-NGX-MCP-SDK-R005"
+  ],
+  "requirements": [
+    {
+      "id": "CONN-PAPERLESS-NGX-MCP-SDK-R001",
+      "title": "Requests use the governed SDK client",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-PAPERLESS-NGX-MCP-SDK-R002",
+      "title": "Retries come from the SDK retry policy",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-PAPERLESS-NGX-MCP-SDK-R003",
+      "title": "SDK floor and dependency set",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-PAPERLESS-NGX-MCP-SDK-R004",
+      "title": "Production wiring",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    },
+    {
+      "id": "CONN-PAPERLESS-NGX-MCP-SDK-R005",
+      "title": "Hot-path proof",
+      "delivery_state": "SPECIFIED",
+      "landed_in": [],
+      "verified_by": []
+    }
+  ]
+}
