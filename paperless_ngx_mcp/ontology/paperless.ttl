@@ -44,5 +44,4 @@
 
 <http://knuckles.team/kg/paperless> a owl:Ontology ;
     rdfs:label "Paperless-ngx zero-PII structural ontology" ;
-    rdfs:comment "Keyed opaque document and classification relationships for governed Paperless-ngx ingestion." ;
-    owl:imports <http://knuckles.team/kg> .
+    rdfs:comment "Keyed opaque document and classification relationships for governed Paperless-ngx ingestion." .
