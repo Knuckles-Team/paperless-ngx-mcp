@@ -22,4 +22,6 @@ def test_request_returns_json():
 def test_token_auth_header():
     """Paperless uses DRF 'Token <key>' auth, not Bearer. CONCEPT:PL-OS.identity.pngx"""
     client = ApiClientBase(base_url="https://localhost", token="abc")
-    assert client.session.headers["Authorization"] == "Token abc"
+    request = client.session.build_request("GET", "https://localhost/")
+    request = next(client.session.auth.auth_flow(request))
+    assert request.headers["Authorization"] == "Token abc"

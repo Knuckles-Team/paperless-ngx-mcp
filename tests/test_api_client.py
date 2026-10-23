@@ -1,15 +1,16 @@
 from unittest.mock import MagicMock, patch
 
 import pytest
-import requests
+import httpx
 from agent_connector_sdk.exceptions import ParameterError
+from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
 from paperless_ngx_mcp.api import ApiClientBase
 
 
 def _client() -> tuple[ApiClientBase, MagicMock]:
-    profile = MagicMock()
-    profile.configure_requests_session.side_effect = lambda session: session
+    profile = resolve_tls_profile("paperless")
+    object.__setattr__(profile, "cleanup", MagicMock())
     return (
         ApiClientBase(
             base_url="https://service.example.invalid",
@@ -21,6 +22,7 @@ def _client() -> tuple[ApiClientBase, MagicMock]:
 
 
 @pytest.mark.concept("PL-OS.identity.pngx")
+# spec: CONN-PAPERLESS-NGX-MCP-SDK-R001, CONN-PAPERLESS-NGX-MCP-SDK-R004
 def test_request_returns_json_without_transport_override():
     client, _ = _client()
     response = MagicMock()
@@ -31,13 +33,15 @@ def test_request_returns_json_without_transport_override():
     with patch.object(client.session, "request", return_value=response) as request:
         assert client.request("GET", "/api/status/") == {"ok": True}
     assert "verify" not in request.call_args.kwargs
-    assert request.call_args.kwargs["allow_redirects"] is False
+    assert client.session.follow_redirects is False
 
 
 @pytest.mark.concept("PL-OS.identity.pngx")
 def test_token_auth_header_and_tls_profile_cleanup():
     client, profile = _client()
-    assert client.session.headers["Authorization"] == "Token runtime-value"
+    request = client.session.build_request("GET", "https://service.example.invalid/")
+    request = next(client.session.auth.auth_flow(request))
+    assert request.headers["Authorization"] == "Token runtime-value"
     client.close()
     profile.cleanup.assert_called_once_with()
 
@@ -90,8 +94,61 @@ def test_transport_error_omits_connection_value():
     with patch.object(
         client.session,
         "request",
-        side_effect=requests.ConnectionError("connection details"),
+        side_effect=httpx.ConnectError("connection details"),
     ):
         with pytest.raises(ParameterError) as error:
             client.request("GET", "/api/status/")
     assert str(error.value) == "Paperless-ngx request failed"
+
+
+def _mock_client(handler):
+    from unittest.mock import patch as _patch
+
+    from agent_connector_sdk.http.client import create_http_client as real
+
+    def build(options):
+        return real(options, transport=httpx.MockTransport(handler))
+
+    with _patch("paperless_ngx_mcp.api.api_client_base.create_http_client", build):
+        return _client()[0]
+
+
+# spec: CONN-PAPERLESS-NGX-MCP-SDK-R001, CONN-PAPERLESS-NGX-MCP-SDK-R004
+def test_client_is_governed_with_token_auth():
+    client, _ = _client()
+    assert isinstance(client.session, httpx.Client)
+    request = client.session.build_request("GET", "https://service.example.invalid/")
+    request = next(client.session.auth.auth_flow(request))
+    assert request.headers["Authorization"] == "Token runtime-value"
+    assert client.session.follow_redirects is False
+
+
+# spec: CONN-PAPERLESS-NGX-MCP-SDK-R002, CONN-PAPERLESS-NGX-MCP-SDK-R005
+def test_transient_status_is_retried_by_the_sdk_client(monkeypatch):
+    monkeypatch.setattr("time.sleep", lambda _s: None)
+    calls = []
+
+    def handler(request):
+        calls.append(request)
+        if len(calls) == 1:
+            return httpx.Response(503, headers={"Retry-After": "0"})
+        return httpx.Response(200, json={"results": []})
+
+    from paperless_ngx_mcp.api import ApiClientDocuments
+
+    client = _mock_client(handler)
+    documents = ApiClientDocuments.__new__(ApiClientDocuments)
+    documents.__dict__.update(client.__dict__)
+    assert documents.request("GET", "/api/documents/") == {"results": []}
+    assert len(calls) == 2
+
+
+# spec: CONN-PAPERLESS-NGX-MCP-SDK-R003
+def test_dependencies_carry_sdk_floor_and_no_requests_pin():
+    import pathlib
+    import tomllib
+
+    root = pathlib.Path(__file__).resolve().parents[1]
+    deps = tomllib.loads((root / "pyproject.toml").read_text())["project"]["dependencies"]
+    assert any(d.startswith("agent-connector-sdk[mcp]>=0.3.11") for d in deps)
+    assert not any(d.lower().startswith("requests") for d in deps)

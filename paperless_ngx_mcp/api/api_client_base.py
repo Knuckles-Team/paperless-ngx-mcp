@@ -9,20 +9,24 @@ Handles the cross-cutting concerns shared by every domain client:
 * **Pagination** — DRF page-number pagination: list endpoints return
   ``{"count", "next", "previous", "results": [...]}``. ``_fetch_all`` follows the
   ``next`` link until exhausted (bounded by ``max_pages``).
-* **Transient errors** — retries ``429``/``502``/``503``/``504`` with bounded
-  exponential backoff and honours ``Retry-After``.
+* **Transient errors** — the SDK governed client retries ``408``/``429``/``502``/
+  ``503``/``504`` for idempotent methods with bounded backoff and honours
+  ``Retry-After``.
 """
 
-import time
 from typing import Any
 from urllib.parse import urljoin, urlsplit
 
-import requests
+import httpx
+from agent_connector_sdk.auth.static import ApiKeyAuth
 from agent_connector_sdk.exceptions import (
     AuthError,
     ParameterError,
     UnauthorizedError,
 )
+from agent_connector_sdk.http.client import create_http_client
+from agent_connector_sdk.http.options import HttpClientOptions
+from agent_connector_sdk.http.retry import RetryPolicy
 from agent_connector_sdk.tls.profile import ResolvedTLSProfile
 from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
@@ -65,13 +69,16 @@ class ApiClientBase:
         self._origin = (parsed.scheme, parsed.netloc)
         self.max_retries = max_retries
         self.tls_profile = tls_profile or resolve_tls_profile("paperless")
-        self.session = self.tls_profile.configure_requests_session(requests.Session())
         # DRF TokenAuthentication — "Token <key>", not Bearer.
-        self.session.headers.update(
-            {
-                "Authorization": f"Token {token}",
-                "Accept": "application/json; version=9",
-            }
+        self.session = create_http_client(
+            HttpClientOptions(
+                base_url=self.base_url,
+                timeout=120,
+                retry=RetryPolicy(max_attempts=max_retries + 1),
+                tls=self.tls_profile,
+                auth=ApiKeyAuth(token, header="Authorization", prefix="Token "),
+                headers={"Accept": "application/json; version=9"},
+            )
         )
 
     def close(self) -> None:
@@ -104,52 +111,31 @@ class ApiClientBase:
         data: Any | None = None,
         files: Any | None = None,
         **transport_overrides: Any,
-    ) -> requests.Response:
-        """Perform a single HTTP request with transient-error retries."""
+    ) -> httpx.Response:
+        """Perform a single HTTP request; the SDK client retries transient errors."""
         if {"cert", "proxies", "verify"}.intersection(transport_overrides):
             raise ValueError("per-request TLS policy overrides are not accepted")
         url = self._url(path)
-        attempt = 0
-        while True:
-            try:
-                response = self.session.request(
-                    method=method.upper(),
-                    url=url,
-                    params={k: v for k, v in (params or {}).items() if v is not None}
-                    or None,
-                    json=json,
-                    data=data,
-                    files=files,
-                    timeout=120,
-                    allow_redirects=False,
-                )
-            except requests.RequestException:
-                raise ParameterError("Paperless-ngx request failed") from None
-            if (
-                response.status_code in (429, 502, 503, 504)
-                and attempt < self.max_retries
-            ):
-                time.sleep(self._retry_delay(response, attempt))
-                attempt += 1
-                continue
-            if response.status_code == 401:
-                raise AuthError("Paperless-ngx credentials were rejected")
-            if response.status_code == 403:
-                raise UnauthorizedError("Paperless-ngx operation was forbidden")
-            return response
+        try:
+            response = self.session.request(
+                method.upper(),
+                url,
+                params={k: v for k, v in (params or {}).items() if v is not None}
+                or None,
+                json=json,
+                data=data,
+                files=files,
+            )
+        except httpx.HTTPError:
+            raise ParameterError("Paperless-ngx request failed") from None
+        if response.status_code == 401:
+            raise AuthError("Paperless-ngx credentials were rejected")
+        if response.status_code == 403:
+            raise UnauthorizedError("Paperless-ngx operation was forbidden")
+        return response
 
     @staticmethod
-    def _retry_delay(response: requests.Response, attempt: int) -> float:
-        retry_after = response.headers.get("Retry-After")
-        if retry_after:
-            try:
-                return min(float(retry_after), 60.0)
-            except ValueError:
-                pass
-        return min(2.0**attempt, 30.0)
-
-    @staticmethod
-    def _decode(response: requests.Response) -> Any:
+    def _decode(response: httpx.Response) -> Any:
         if not response.content:
             return {"status": response.status_code}
         ctype = response.headers.get("Content-Type", "")
