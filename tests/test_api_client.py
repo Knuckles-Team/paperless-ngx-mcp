@@ -150,5 +150,5 @@ def test_dependencies_carry_sdk_floor_and_no_requests_pin():
 
     root = pathlib.Path(__file__).resolve().parents[1]
     deps = tomllib.loads((root / "pyproject.toml").read_text())["project"]["dependencies"]
-    assert any(d.startswith("agent-connector-sdk[mcp]>=0.3.11") for d in deps)
+    assert any(d.startswith("agent-connector-sdk[mcp]>=0.3.18") for d in deps)
     assert not any(d.lower().startswith("requests") for d in deps)
