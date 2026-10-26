@@ -33,8 +33,10 @@
     {
       "id": "CONN-PAPERLESS-NGX-MCP-SDK-R003",
       "title": "SDK floor and dependency set",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "b716e31a5316"
+      ],
       "verified_by": [
         "tests/test_api_client.py:147"
       ]
