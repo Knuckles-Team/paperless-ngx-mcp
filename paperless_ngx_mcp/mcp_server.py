@@ -1,43 +1,25 @@
 #!/usr/bin/python
-
 import logging
 import sys
-from typing import Any
+from typing import Any, NamedTuple
 
 from agent_connector_sdk.config import load_config
-from agent_connector_sdk.mcp.server import create_mcp_server
+from agent_connector_sdk.connector import build_server
+from agent_connector_sdk.connector_identity import connector_version
 from agent_connector_sdk.mcp.tool_surface import register_tool_surface
 
 from . import mcp as tool_modules
 from .api import ApiClientSystem
 from .auth import get_client
 
-__version__ = "2.3.3"
+__version__ = connector_version("paperless_ngx_mcp")
 
 logger = logging.getLogger("MCP_Server")
 logger.setLevel(logging.INFO)
 
 
-def get_mcp_instance() -> tuple[Any, Any, Any]:
-    """Initialize and return the Paperless-ngx MCP instance, args, and middlewares.
-
-    The whole tool surface is wired by the shared ``register_tool_surface`` helper
-    per ``MCP_TOOL_MODE`` (read from AgentConfig): ``intent`` (default),
-    ``condensed`` (action-routed), ``verbose`` (one named tool per API method), or
-    ``both``. To add a domain, drop a ``register_<domain>_tools(mcp)`` into the
-    ``mcp/`` package and re-export it from ``mcp/__init__.py`` — it is auto-discovered
-    and gated by ``setting("<DOMAIN>TOOL", True)``; no edit here is needed. For
-    fully-typed verbose tools, vendor an OpenAPI/Swagger spec under ``specs/`` and
-    generate ``api/_operation_manifest.py``, then pass ``manifest=OPERATIONS`` below.
-    """
-    load_config()
-
-    args, mcp, middlewares = create_mcp_server(
-        name="Paperless-ngx MCP",
-        version=__version__,
-        instructions="Paperless-ngx tools exposed through the configured current tool surface.",
-    )
-
+def register_server_surface(mcp):
+    """Register the existing Paperless API tool surface unchanged."""
     register_tool_surface(
         mcp,
         service="paperless-ngx-mcp",
@@ -46,10 +28,20 @@ def get_mcp_instance() -> tuple[Any, Any, Any]:
         tools_module=tool_modules,
     )
 
-    for mw in middlewares:
-        mcp.add_middleware(mw)
 
-    return mcp, args, middlewares
+class ServerComponents(NamedTuple):
+    """Preserve the legacy startup tuple with named collaborators."""
+
+    server: Any
+    args: Any
+    middlewares: list[Any]
+
+
+def get_mcp_instance(*, command_args=None) -> ServerComponents:
+    """Load legacy configuration and compose the declared SDK connector."""
+    load_config()
+    args, mcp = build_server("paperless_ngx_mcp", command_args=command_args)
+    return ServerComponents(mcp, args, list(mcp.middleware))
 
 
 def mcp_server():

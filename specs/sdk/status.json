@@ -17,8 +17,8 @@
       "delivery_state": "SPECIFIED",
       "landed_in": [],
       "verified_by": [
-        "tests/test_api_client.py:116",
-        "tests/test_api_client.py:25"
+        "tests/test_api_client.py:117",
+        "tests/test_api_client.py:26"
       ]
     },
     {
@@ -27,16 +27,18 @@
       "delivery_state": "SPECIFIED",
       "landed_in": [],
       "verified_by": [
-        "tests/test_api_client.py:126"
+        "tests/test_api_client.py:127"
       ]
     },
     {
       "id": "CONN-PAPERLESS-NGX-MCP-SDK-R003",
       "title": "SDK floor and dependency set",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "b716e31a5316"
+      ],
       "verified_by": [
-        "tests/test_api_client.py:146"
+        "tests/test_api_client.py:147"
       ]
     },
     {
@@ -45,8 +47,8 @@
       "delivery_state": "SPECIFIED",
       "landed_in": [],
       "verified_by": [
-        "tests/test_api_client.py:116",
-        "tests/test_api_client.py:25"
+        "tests/test_api_client.py:117",
+        "tests/test_api_client.py:26"
       ]
     },
     {
@@ -55,7 +57,7 @@
       "delivery_state": "SPECIFIED",
       "landed_in": [],
       "verified_by": [
-        "tests/test_api_client.py:126"
+        "tests/test_api_client.py:127"
       ]
     }
   ]
