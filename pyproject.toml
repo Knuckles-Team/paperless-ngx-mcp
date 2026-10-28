@@ -11,7 +11,8 @@ classifiers = [ "Development Status :: 4 - Beta", "License :: OSI Approved :: MI
 requires-python = ">=3.12, <3.15"
 dependencies = [ "scion-sdk[mcp]>=0.5.6,<1.0.0", ]
 [[project.authors]]
-name = "Agent Connector SDK Contributors"
+name = "Repository Maintainers"
+email = "maintainers@knuckles.team"
 
 [project.license]
 text = "MIT"
