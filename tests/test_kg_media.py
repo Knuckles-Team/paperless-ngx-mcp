@@ -21,7 +21,9 @@ class _FakeTransport:
         self.requests = []
 
     async def source_status(self, _connector, _stream):
-        return SimpleNamespace(accepted_checkpoint=None)
+        return SimpleNamespace(
+            connector=_connector, stream=_stream, accepted_checkpoint=None
+        )
 
     async def submit(self, request):
         self.requests.append(request)
@@ -76,7 +78,9 @@ async def test_ingest_document_blob_stores_bytes_and_links(ingest):
 @pytest.mark.asyncio
 async def test_ingest_document_blob_image_mime(ingest):
     service, _ = ingest
-    res = await ingest_document_blob(7, b"\x89PNG scan", mime_type="image/png", ingest=service)
+    res = await ingest_document_blob(
+        7, b"\x89PNG scan", mime_type="image/png", ingest=service
+    )
     assert res is not None
     assert res["media_type"] == "image"
 

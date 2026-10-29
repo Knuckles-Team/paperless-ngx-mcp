@@ -1,8 +1,8 @@
 from typing import Any
 from unittest.mock import MagicMock, patch
 
-import pytest
 import httpx
+import pytest
 from agent_connector_sdk.exceptions import ParameterError
 from agent_connector_sdk.tls.resolve import resolve_tls_profile
 
@@ -147,9 +147,12 @@ def test_transient_status_is_retried_by_the_sdk_client(monkeypatch):
 # spec: CONN-PAPERLESS-NGX-MCP-SDK-R003
 def test_dependencies_carry_sdk_floor_and_no_requests_pin():
     import pathlib
+
     import tomllib
 
     root = pathlib.Path(__file__).resolve().parents[1]
-    deps = tomllib.loads((root / "pyproject.toml").read_text())["project"]["dependencies"]
-    assert any(d.startswith("scion-sdk[mcp]>=0.5.6") for d in deps)
+    deps = tomllib.loads((root / "pyproject.toml").read_text())["project"][
+        "dependencies"
+    ]
+    assert any(d.startswith("scion-sdk[mcp]>=0.5.9") for d in deps)
     assert not any(d.lower().startswith("requests") for d in deps)

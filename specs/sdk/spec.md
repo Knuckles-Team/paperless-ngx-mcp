@@ -10,7 +10,7 @@ paperless-ngx-mcp must use the agent-connector-sdk capability for each concern t
 
 ## Why a new spec
 
-Search: `git grep -n "SDK" -- specs` found no row that owns SDK capability use in paperless-ngx-mcp. The SDK index spec `SDK-CENTRALIZED-CAPABILITIES` owns the capabilities. This spec owns the connector side of each one.
+Search: `git grep -n "SDK" -- specs` found no row that owns SDK capability use in paperless-ngx-mcp. The SDK index spec `SCION-CENTRALIZED-CAPABILITIES` owns the capabilities. This spec owns the connector side of each one.
 
 ## Requirements
 
