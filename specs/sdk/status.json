@@ -2,7 +2,7 @@
   "schema_version": 2,
   "spec_id": "CONN-PAPERLESS-NGX-MCP-SDK",
   "owner_repo": "paperless-ngx-mcp",
-  "delivery_state": "SPECIFIED",
+  "delivery_state": "VERIFIED",
   "requirement_ids": [
     "CONN-PAPERLESS-NGX-MCP-SDK-R001",
     "CONN-PAPERLESS-NGX-MCP-SDK-R002",
@@ -14,8 +14,10 @@
     {
       "id": "CONN-PAPERLESS-NGX-MCP-SDK-R001",
       "title": "Requests use the governed SDK client",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "1a3451d02a32"
+      ],
       "verified_by": [
         "tests/test_api_client.py:117",
         "tests/test_api_client.py:26"
@@ -24,8 +26,10 @@
     {
       "id": "CONN-PAPERLESS-NGX-MCP-SDK-R002",
       "title": "Retries come from the SDK retry policy",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "1a3451d02a32"
+      ],
       "verified_by": [
         "tests/test_api_client.py:127"
       ]
@@ -35,6 +39,7 @@
       "title": "SDK floor and dependency set",
       "delivery_state": "VERIFIED",
       "landed_in": [
+        "1a3451d02a32",
         "b716e31a5316"
       ],
       "verified_by": [
@@ -44,8 +49,10 @@
     {
       "id": "CONN-PAPERLESS-NGX-MCP-SDK-R004",
       "title": "Production wiring",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "1a3451d02a32"
+      ],
       "verified_by": [
         "tests/test_api_client.py:117",
         "tests/test_api_client.py:26"
@@ -54,8 +61,10 @@
     {
       "id": "CONN-PAPERLESS-NGX-MCP-SDK-R005",
       "title": "Hot-path proof",
-      "delivery_state": "SPECIFIED",
-      "landed_in": [],
+      "delivery_state": "VERIFIED",
+      "landed_in": [
+        "1a3451d02a32"
+      ],
       "verified_by": [
         "tests/test_api_client.py:127"
       ]
