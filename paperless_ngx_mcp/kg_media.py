@@ -13,7 +13,7 @@ one entry point **no-ops** (returns ``None``) rather than raising, so the connec
 with zero KG infrastructure. This is the blob leg of the package's "maximum ingestion"
 contribution; ``kg_ingest.py`` is the typed-record leg.
 
-AU-BOUNDARY-R005: migrated off ``agent_connector_sdk.knowledge_graph.memory.native_ingest`` /
+MERISTEM-BOUNDARY-R005: migrated off ``agent_connector_sdk.knowledge_graph.memory.native_ingest`` /
 ``media_store`` onto the SDK's ``ingest.MediaAsset`` + ``ChangeSet`` per
 plans/refactor/reconciliation-20261006/FLEET-SDK-MIGRATION-RECIPE.md.
 """
