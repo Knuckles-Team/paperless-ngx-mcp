@@ -74,7 +74,7 @@ def test_sdk_floor_supports_content_identity_and_current_pack_protocol() -> None
     assert sdk
     for requirement in sdk:
         assert requirement.specifier.contains("0.5.9")
-        assert not requirement.specifier.contains("0.5.5")
+        assert not requirement.specifier.contains("0.5.8")
 
 
 def test_production_pack_binds_packaged_ontology_and_shapes():
