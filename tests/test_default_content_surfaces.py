@@ -18,7 +18,9 @@ pytestmark = pytest.mark.spec("CONN-PAPERLESS-NGX-MCP-CONNECTOR-CONTENT-R001")
 def _server():
     from paperless_ngx_mcp.mcp_server import get_mcp_instance
 
-    return get_mcp_instance(command_args=["--transport", "stdio", "--auth-type", "none"])[0]
+    return get_mcp_instance(
+        command_args=["--transport", "stdio", "--auth-type", "none"]
+    )[0]
 
 
 async def _listings():
@@ -60,7 +62,6 @@ def _no_outbound_network(monkeypatch):
     monkeypatch.setattr(socket.socket, "connect", refuse)
 
 
-
 def test_sdk_floor_supports_content_identity_and_current_pack_protocol() -> None:
     import tomllib
 
@@ -73,7 +74,7 @@ def test_sdk_floor_supports_content_identity_and_current_pack_protocol() -> None
     sdk = [Requirement(value) for value in declared if value.startswith("scion-sdk")]
     assert sdk
     for requirement in sdk:
-        assert requirement.specifier.contains("0.5.6")
+        assert requirement.specifier.contains("0.5.9")
         assert not requirement.specifier.contains("0.5.5")
 
 
