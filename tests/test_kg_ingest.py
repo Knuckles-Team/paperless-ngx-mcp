@@ -2,7 +2,7 @@ import json
 from types import SimpleNamespace
 
 import pytest
-from agent_connector_sdk.ingest import KnowledgeIngest
+from scion_sdk.ingest import KnowledgeIngest
 
 from paperless_ngx_mcp.kg_ingest import ingest_projection, project_records
 

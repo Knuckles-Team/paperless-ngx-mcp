@@ -2,7 +2,7 @@
 
 Provider records are reduced in memory to opaque typed nodes and structural edges.
 OCR content, titles, names, filenames, storage paths, timestamps, URLs, raw bytes, and
-provider identifiers never cross this boundary. Writes use ``agent_connector_sdk.ingest``
+provider identifiers never cross this boundary. Writes use ``scion_sdk.ingest``
 -- the generated ``SourceIngest`` client, not a local ingestion helper.
 """
 
@@ -13,8 +13,8 @@ import hmac
 import re
 from typing import Any
 
-from agent_connector_sdk.config import setting
-from agent_connector_sdk.ingest import (
+from scion_sdk.config import setting
+from scion_sdk.ingest import (
     ChangeSet,
     Entity,
     IngestBinding,

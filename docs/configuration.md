@@ -66,7 +66,7 @@ not trace attributes.
 Validate configuration without printing resolved values:
 
 ```bash
-agent-connector-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
+scion-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
 ```
 
 Use live doctor checks only when bounded access to the configured provider and telemetry

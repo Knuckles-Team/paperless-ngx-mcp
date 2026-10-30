@@ -135,14 +135,14 @@ boolean or commit trust material.
 Validate the reference boundary without displaying resolved values:
 
 ```bash
-agent-connector-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
+scion-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
 ```
 
 ## Privacy-preserving graph synchronization
 
 `paperless_ingestion_projection` transforms provider records in memory into keyed opaque
 references and structural relationships. `paperless_ingest_projection` commits that
-same projection through Agent Connector SDK' governed ChangeEnvelope path.
+same projection through Scion SDK' governed ChangeEnvelope path.
 
 The durable projection excludes OCR text, titles, notes, names, filenames, storage
 locations, timestamps, URLs, raw bytes, and provider identifiers. It requires a
@@ -196,7 +196,7 @@ this repository intentionally does not manufacture signed release artifacts.
 | `ENABLE_OTEL` | `False` | Enable trace export only after configuring an approved collector |
 | `LANGFUSE_CAPTURE_CONTENT` | `False` | Never capture provider record content |
 
-#### Inherited agent-connector-sdk variables (apply to every connector)
+#### Inherited scion-sdk variables (apply to every connector)
 
 | Variable | Example | Description |
 |----------|---------|-------------|
@@ -220,7 +220,7 @@ this repository intentionally does not manufacture signed release artifacts.
 | `MODEL_ID` | — | Operator-configured model id for the agent |
 | `ENABLE_WEB_UI` | `True` | Serve the AG-UI web interface |
 
-_19 package + 19 inherited variable(s). Auto-generated from `.env.example` + the shared agent-connector-sdk set — do not edit._
+_19 package + 19 inherited variable(s). Auto-generated from `.env.example` + the shared scion-sdk set — do not edit._
 <!-- ENV-VARS-TABLE:END -->
 
 Licensed under the MIT License.

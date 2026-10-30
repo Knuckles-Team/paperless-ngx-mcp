@@ -4,14 +4,14 @@ Runtime surfaces are imported from their owning modules. The package root does n
 probe optional dependencies or manufacture cross-module exports.
 """
 
-from agent_connector_sdk.connector_identity import connector_version
+from scion_sdk.connector_identity import connector_version
 
 __version__ = connector_version("paperless_ngx_mcp")
 
 __all__ = ["__version__"]
 
-from agent_connector_sdk.connector import Connector
-from agent_connector_sdk.connector_hooks import RegistrationContext
+from scion_sdk.connector import Connector
+from scion_sdk.connector_hooks import RegistrationContext
 
 
 def _register_legacy_surface(context: RegistrationContext) -> None:

@@ -5,10 +5,10 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from agent_connector_sdk.mcp.concurrency import invoke_client_method
 from fastmcp import Context, FastMCP
 from fastmcp.dependencies import Depends
 from pydantic import Field
+from scion_sdk.mcp.concurrency import invoke_client_method
 
 from ..auth import get_client
 from ..kg_ingest import ingest_projection, project_records
