@@ -154,5 +154,5 @@ def test_dependencies_carry_sdk_floor_and_no_requests_pin():
     deps = tomllib.loads((root / "pyproject.toml").read_text())["project"][
         "dependencies"
     ]
-    assert any(d.startswith("scion-sdk[mcp]>=0.6.2") for d in deps)
+    assert any(d.startswith("scion-sdk[mcp]>=0.6.3") for d in deps)
     assert not any(d.lower().startswith("requests") for d in deps)
