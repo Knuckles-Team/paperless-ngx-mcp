@@ -1,8 +1,8 @@
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
-from agent_connector_sdk.exceptions import ParameterError
-from agent_connector_sdk.tls.resolve import resolve_tls_profile
+from scion_sdk.exceptions import ParameterError
+from scion_sdk.tls.resolve import resolve_tls_profile
 
 from paperless_ngx_mcp.api import ApiClientDocuments
 

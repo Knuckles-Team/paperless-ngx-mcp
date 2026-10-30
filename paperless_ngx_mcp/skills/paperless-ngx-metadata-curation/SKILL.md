@@ -12,7 +12,7 @@ description: >-
 license: MIT
 tags: [paperless-ngx, correspondents, tags, taxonomy, metadata, mcp]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 

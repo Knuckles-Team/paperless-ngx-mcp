@@ -10,4 +10,4 @@ The SDK owns every capability named in the rows. paperless-ngx-mcp adds no modul
 
 ## Compatibility
 
-Tool names, arguments, and results stay identical. The SDK floor is `agent-connector-sdk>=0.3.11`.
+Tool names, arguments, and results stay identical. The SDK floor is `scion-sdk>=0.3.11`.

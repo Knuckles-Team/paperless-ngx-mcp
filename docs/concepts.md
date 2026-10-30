@@ -2,7 +2,7 @@
 
 | Concept ID | Provider responsibility |
 | --- | --- |
-| `CONCEPT:PL-OS.identity.pngx` | Typed document and metadata operations through the current Agent Connector SDK MCP boundary |
+| `CONCEPT:PL-OS.identity.pngx` | Typed document and metadata operations through the current Scion SDK MCP boundary |
 | `CONCEPT:PL-OS.governance.pngx` | Search, task, status, schema, and privacy-preserving structural ingestion operations |
 | `CONCEPT:AU-KG.ingest.enterprise-source-extractor` | Provider projection into the central governed ChangeEnvelope path |
 | `CONCEPT:AU-ECO.messaging.native-backend-abstraction` | Data-only provider discovery through ecosystem entry points |

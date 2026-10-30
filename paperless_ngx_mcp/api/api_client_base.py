@@ -18,17 +18,17 @@ from typing import Any
 from urllib.parse import urljoin, urlsplit
 
 import httpx
-from agent_connector_sdk.auth.static import ApiKeyAuth
-from agent_connector_sdk.exceptions import (
+from scion_sdk.auth.static import ApiKeyAuth
+from scion_sdk.exceptions import (
     AuthError,
     ParameterError,
     UnauthorizedError,
 )
-from agent_connector_sdk.http.client import create_http_client
-from agent_connector_sdk.http.options import HttpClientOptions
-from agent_connector_sdk.http.retry import RetryPolicy
-from agent_connector_sdk.tls.profile import ResolvedTLSProfile
-from agent_connector_sdk.tls.resolve import resolve_tls_profile
+from scion_sdk.http.client import create_http_client
+from scion_sdk.http.options import HttpClientOptions
+from scion_sdk.http.retry import RetryPolicy
+from scion_sdk.tls.profile import ResolvedTLSProfile
+from scion_sdk.tls.resolve import resolve_tls_profile
 
 
 def _validated_base_url(value: str) -> str:

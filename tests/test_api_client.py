@@ -3,8 +3,8 @@ from unittest.mock import MagicMock, patch
 
 import httpx
 import pytest
-from agent_connector_sdk.exceptions import ParameterError
-from agent_connector_sdk.tls.resolve import resolve_tls_profile
+from scion_sdk.exceptions import ParameterError
+from scion_sdk.tls.resolve import resolve_tls_profile
 
 from paperless_ngx_mcp.api import ApiClientBase
 
@@ -105,7 +105,7 @@ def test_transport_error_omits_connection_value():
 def _mock_client(handler):
     from unittest.mock import patch as _patch
 
-    from agent_connector_sdk.http.client import create_http_client as real
+    from scion_sdk.http.client import create_http_client as real
 
     def build(options):
         return real(options, transport=httpx.MockTransport(handler))
@@ -154,5 +154,5 @@ def test_dependencies_carry_sdk_floor_and_no_requests_pin():
     deps = tomllib.loads((root / "pyproject.toml").read_text())["project"][
         "dependencies"
     ]
-    assert any(d.startswith("scion-sdk[mcp]>=0.5.9") for d in deps)
+    assert any(d.startswith("scion-sdk[mcp]>=0.6.2") for d in deps)
     assert not any(d.lower().startswith("requests") for d in deps)

@@ -4,7 +4,7 @@ CONCEPT:AU-KG.ingest.list-durable-media. Paperless-ngx documents are scans — t
 PDF/image bytes are worth making durable, deduped and queryable inside the knowledge
 graph, not just their OCR text. This stores the file as a content-addressed ``:Blob``
 wrapped by a ``:MediaAsset`` entity in one atomic change-set submission through the
-agent-connector-sdk knowledge-ingest facade (``agent_connector_sdk.ingest``), and links
+scion-sdk knowledge-ingest facade (``scion_sdk.ingest``), and links
 it back to the ``:Document`` node with a ``:scannedAs`` relationship in the same
 ``ChangeSet``.
 
@@ -13,7 +13,7 @@ one entry point **no-ops** (returns ``None``) rather than raising, so the connec
 with zero KG infrastructure. This is the blob leg of the package's "maximum ingestion"
 contribution; ``kg_ingest.py`` is the typed-record leg.
 
-MERISTEM-BOUNDARY-R005: migrated off ``agent_connector_sdk.knowledge_graph.memory.native_ingest`` /
+MERISTEM-BOUNDARY-R005: migrated off ``scion_sdk.knowledge_graph.memory.native_ingest`` /
 ``media_store`` onto the SDK's ``ingest.MediaAsset`` + ``ChangeSet`` per
 plans/refactor/reconciliation-20261006/FLEET-SDK-MIGRATION-RECIPE.md.
 """
@@ -24,7 +24,7 @@ import hashlib
 import logging
 from typing import Any
 
-from agent_connector_sdk.ingest import (
+from scion_sdk.ingest import (
     ChangeSet,
     EntityRef,
     IngestBinding,

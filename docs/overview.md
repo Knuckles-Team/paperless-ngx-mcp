@@ -7,7 +7,7 @@ The package has four explicit surfaces:
 1. `paperless_ngx_mcp.api` owns typed synchronous provider methods.
 2. `paperless_ngx_mcp.mcp` owns condensed action routers and structural ingestion tools.
 3. `paperless_ngx_mcp.mcp_server` registers intent-gated, condensed, verbose, or combined
-   tools with the current Agent Connector SDK server factory.
+   tools with the current Scion SDK server factory.
 4. `paperless_ngx_mcp.agent_server` starts the optional current A2A agent runtime.
 
 There is no package-root dynamic export, duplicate API facade, arbitrary request

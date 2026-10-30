@@ -13,7 +13,7 @@ description: >-
 license: MIT
 tags: [paperless-ngx, knowledge-graph, ingestion, blob, ocr, mcp]
 metadata:
-  author: Genius
+  author: Knuckles-Team
   version: '0.1.0'
 ---
 
@@ -80,5 +80,5 @@ Ingest a page of documents AND their scanned PDFs:
 ## Related
 - `paperless-ngx-document-management` / `paperless-ngx-metadata-curation` — the
   operational tools whose records this ingests.
-- The `agent-connector-sdk-source-integration` universal skill — the fleet-wide
+- The `scion-sdk-source-integration` universal skill — the fleet-wide
   `source_sync` path that can drive the `paperless-documents` preset.

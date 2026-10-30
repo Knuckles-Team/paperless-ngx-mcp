@@ -61,13 +61,13 @@ def test_delegated_client_is_request_scoped(monkeypatch):
     profile = MagicMock()
     config = {"enable_delegation": True}
 
-    import agent_connector_sdk.auth.delegation as delegation
+    import scion_sdk.auth.delegation as delegation
 
     monkeypatch.setattr(delegation, "current_user_token", lambda: "caller-token")
     tokens = iter(["first-token", "second-token"])
 
     def _fake_exchange(settings, *, subject_token, http_client, resolver=None):  # noqa: V107
-        from agent_connector_sdk.auth.tokens import AccessToken
+        from scion_sdk.auth.tokens import AccessToken
 
         return AccessToken(value=next(tokens), ttl_seconds=3600, expires_at=0.0)
 

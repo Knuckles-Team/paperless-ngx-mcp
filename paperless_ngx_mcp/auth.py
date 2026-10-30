@@ -2,7 +2,7 @@
 
 Connection values arrive through the AgentConfig/XDG projection.  TLS always uses
 the shared mandatory-verification profile resolver; there is no boolean bypass.
-Delegation (RFC 8693 token exchange) runs on ``agent_connector_sdk.auth.delegation``
+Delegation (RFC 8693 token exchange) runs on ``scion_sdk.auth.delegation``
 (see onetrust-api's ``auth.py``, the proven reference for this path).
 """
 
@@ -11,10 +11,10 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agent_connector_sdk.config import setting
-from agent_connector_sdk.exceptions import AuthError, UnauthorizedError
-from agent_connector_sdk.tls.profile import ResolvedTLSProfile
-from agent_connector_sdk.tls.resolve import resolve_tls_profile
+from scion_sdk.config import setting
+from scion_sdk.exceptions import AuthError, UnauthorizedError
+from scion_sdk.tls.profile import ResolvedTLSProfile
+from scion_sdk.tls.resolve import resolve_tls_profile
 
 from .api import ApiClientSystem
 
@@ -27,11 +27,11 @@ def _is_delegation_enabled(config: dict[str, Any] | None) -> bool:
 
     An explicit ``config`` dict (test injection only -- no production caller
     passes one) wins outright; otherwise reads the real ``ENABLE_DELEGATION``
-    setting through ``agent_connector_sdk.auth.delegation.DelegationSettings``.
+    setting through ``scion_sdk.auth.delegation.DelegationSettings``.
     """
     if config is not None:
         return bool(config.get("enable_delegation", False))
-    from agent_connector_sdk.auth.delegation import DelegationSettings
+    from scion_sdk.auth.delegation import DelegationSettings
 
     return DelegationSettings.from_settings().enabled
 
@@ -39,12 +39,12 @@ def _is_delegation_enabled(config: dict[str, Any] | None) -> bool:
 def _delegated_client(base_url: str, profile: ResolvedTLSProfile) -> ApiClientSystem:
     """Path 1: OIDC Delegation (RFC 8693 Token Exchange)."""
     import httpx
-    from agent_connector_sdk.auth.delegation import (
+    from scion_sdk.auth.delegation import (
         DelegationSettings,
         current_user_token,
         exchange_token,
     )
-    from agent_connector_sdk.exceptions import LoginRequiredError
+    from scion_sdk.exceptions import LoginRequiredError
 
     try:
         settings = DelegationSettings.from_settings()
