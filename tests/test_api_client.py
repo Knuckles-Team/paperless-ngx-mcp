@@ -157,9 +157,7 @@ def test_dependencies_carry_sdk_floor_and_no_requests_pin():
     from packaging.requirements import Requirement
     from packaging.version import Version
 
-    requirement = Requirement(
-        next(d for d in deps if d.startswith("scion-sdk[mcp]"))
-    )
+    requirement = Requirement(next(d for d in deps if d.startswith("scion-sdk[mcp]")))
     floor = max(Version(s.version) for s in requirement.specifier if s.operator == ">=")
     assert floor >= Version("0.6.3")
     assert not requirement.specifier.contains("0.7.0")
