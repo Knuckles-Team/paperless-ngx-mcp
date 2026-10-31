@@ -823,7 +823,7 @@ wheels = [
 
 [[package]]
 name = "paperless-ngx-mcp"
-version = "2.3.5"
+version = "2.3.6"
 source = { editable = "." }
 dependencies = [
     { name = "scion-sdk", extra = ["mcp"] },
