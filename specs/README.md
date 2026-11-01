@@ -8,8 +8,9 @@ This repository owns the specs with the ID prefix `CONN-PAPERLESS-NGX-MCP`. The 
 
 ## Add a spec
 
-Read the existing specs first. Extend the spec that owns the behavior. Create a spec only for a capability that no spec owns. Copy [`_template/`](_template/) to `specs/<area>/`, set the ID to `CONN-PAPERLESS-NGX-MCP` or `CONN-PAPERLESS-NGX-MCP-<AREA>`, and add one index line below.
+Read the existing specs first. Extend the spec that owns the behavior. Create a spec only for a capability that no spec owns. Copy the files of `.specify/templates/` to `specs/<area>/`, set the ID to `CONN-PAPERLESS-NGX-MCP` or `CONN-PAPERLESS-NGX-MCP-<AREA>`, and add one index line below.
 
 ## Local specifications
 
 - [`CONN-PAPERLESS-NGX-MCP-SDK`](sdk/spec.md) — Shared SDK capabilities in paperless-ngx-mcp
+- [`CONN-PAPERLESS-NGX-MCP-CONNECTOR-CONTENT`](connector-content/spec.md) — The connector serves its packaged content.

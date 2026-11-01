@@ -1,9 +1,11 @@
-# CONN-PAPERLESS-NGX-MCP-SDK tasks
+# CONN-PAPERLESS-NGX-MCP-SDK — Implementation tasks
 
-| Task | Deliverable | Proof |
-|---|---|---|
-| T01 | Requests use the governed SDK client | A unit test shows the API client holds a governed client with redirects off and token auth |
-| T02 | Retries come from the SDK retry policy | A unit test sends 503 then 200 through a mock transport and sees one result |
-| T03 | SDK floor and dependency set | pyproject.toml shows the floor and no requests pin |
-| T04 | Production wiring | A test enters at the production entry point and reaches the wired call site. |
-| T05 | Hot-path proof | The named integration test passes. |
+Governing spec: [spec.md](spec.md). Design: [plan.md](plan.md). Rows: [requirements.md](requirements.md).
+
+Each task line reads `- [ ] T001 [P] [US1] <ID>-R012.4 description`. Tasks run producer first; a checked task has landed.
+
+- [x] T001 [US1] CONN-PAPERLESS-NGX-MCP-SDK-R001 Requests use the governed SDK client.
+- [x] T002 [US2] CONN-PAPERLESS-NGX-MCP-SDK-R002 Retries come from the SDK retry policy.
+- [x] T003 [US3] CONN-PAPERLESS-NGX-MCP-SDK-R003 SDK floor and dependency set.
+- [x] T004 [US4] CONN-PAPERLESS-NGX-MCP-SDK-R004 Production wiring.
+- [x] T005 [US5] CONN-PAPERLESS-NGX-MCP-SDK-R005 Hot-path proof.
