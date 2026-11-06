@@ -29,7 +29,6 @@ match `paperless_ngx_mcp/ontology/paperless.ttl`.
 ## When to use
 - Make the document archive searchable / joinable inside the knowledge graph.
 - Seed or refresh the KG with documents + their correspondents/tags/types links.
-- Also make the scanned PDFs durable and deduped as blobs (`include_files`).
 
 ## When NOT to use
 - Interactive document search / read / edit → `paperless-ngx-document-management`.
@@ -47,35 +46,29 @@ call it.
 ## Tools & actions
 | Tool | Purpose |
 |------|---------|
-| `paperless_ingest_documents` | List documents + metadata via the client and push typed nodes/links (and optionally scanned blobs) into the KG. |
+| `paperless_ingestion_projection` | Read-only: return the keyed, opaque structural projection (documents, correspondents, tags, document types, storage paths and their relationships) for governed source sync. No document content or titles leave Paperless. |
+| `paperless_ingest_projection` | Commit that same projection through a governed ChangeEnvelope; returns the ingest receipt. |
 
 ### Key parameters (`params_json`, a JSON string)
-- Any `list_documents` filter (`query`, `tags__id__in`, `created__gte`, `max_pages`, `page_size`).
-- `include_files`: `true` to also download each scan and store it as a `:Blob`/`:MediaAsset`.
-- `max_files`: cap on blob downloads per run (default 25).
+- Any bounded `list_documents` filter (`query`, `tags__id__in`, `created__gte`, `max_pages`, `page_size`).
 
 ## Recipes (`params_json`)
-Ingest all recent invoices as typed document nodes (no blobs):
+Preview the projection for recent invoices, then commit it:
 ```json
 {"query": "invoice", "created__gte": "2026-01-01", "max_pages": 2}
 ```
-Ingest a page of documents AND their scanned PDFs:
-```json
-{"page_size": 20, "max_pages": 1, "include_files": true, "max_files": 20}
-```
+Call `paperless_ingestion_projection` first to inspect it, then `paperless_ingest_projection` with the same parameters.
 
 ## Gotchas
 - `params_json` is a **string** of JSON, not an object.
 - The tool lists correspondents/tags/types/storage-paths first so the referenced
   nodes carry real names — expect those metadata nodes to appear even for a small
   document page.
-- `include_files` downloads the archived PDF per document (bandwidth + engine
-  writes) — bound it with `max_files` and a tight document filter.
 - Node ids are stable (`paperless:document:<id>`), so re-running **MERGEs**
   (updates) rather than duplicating — safe to schedule as a delta sync.
-- Under the hood this uses `paperless_ngx_mcp.kg_ingest` (typed records +
-  documents) and `paperless_ngx_mcp.kg_media` (blobs) — the same code the Tier-1
-  `paperless-documents` source preset drives for a text-only sync.
+- Under the hood this uses `paperless_ngx_mcp.kg_ingest` — the same projection the
+  Tier-1 `paperless-documents` source preset drives for a structural sync. Scanned
+  files are not copied into the graph.
 
 ## Related
 - `paperless-ngx-document-management` / `paperless-ngx-metadata-curation` — the
