@@ -17,6 +17,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+
+### Fixed
+- `paperless-ngx-kg-ingestion` skill named the retired `paperless_ingest_documents` tool; it now documents `paperless_ingestion_projection` and `paperless_ingest_projection`.
+
 ## [0.1.0] - 2026-06-22
 
 ### Added
