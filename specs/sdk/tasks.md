@@ -9,3 +9,4 @@ Each task line reads `- [ ] T001 [P] [US1] <ID>-R012.4 description`. Tasks run p
 - [x] T003 [US3] CONN-PAPERLESS-NGX-MCP-SDK-R003 SDK floor and dependency set.
 - [x] T004 [US4] CONN-PAPERLESS-NGX-MCP-SDK-R004 Production wiring.
 - [x] T005 [US5] CONN-PAPERLESS-NGX-MCP-SDK-R005 Hot-path proof.
+- [ ] T006 [US1] CONN-PAPERLESS-NGX-MCP-SDK-R006 Adopt scion-sdk 0.10.0 import paths. Size: S, 1 PR, 30 minutes.
