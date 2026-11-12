@@ -5,7 +5,7 @@
 The package has four explicit surfaces:
 
 1. `paperless_ngx_mcp.api` owns typed synchronous provider methods.
-2. `paperless_ngx_mcp.mcp` owns condensed action routers and structural ingestion tools.
+2. `paperless_ngx_mcp.mcp` owns the structural ingestion tools; the API tools are derived from the client.
 3. `paperless_ngx_mcp.mcp_server` registers intent-gated, condensed, verbose, or combined
    tools with the current Scion SDK server factory.
 4. `paperless_ngx_mcp.agent_server` starts the optional current A2A agent runtime.
@@ -26,9 +26,8 @@ retry/backoff, and emits body-free error classes.
 
 ## Tool model
 
-`document_operations` and `system_operations` route only to explicit action sets.
-`register_tool_surface` gates those backing tools in intent mode and derives the verbose
-surface from the same public client, so every mode preserves action parity.
+Every public client method is served as its own typed tool (`paperless_ngx_<operation>`),
+derived from the client class declared on the connector.
 `invoke_client_method` keeps synchronous provider calls off the event loop.
 
 ## Graph model

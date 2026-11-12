@@ -7,24 +7,34 @@
 # deliberately absent from the durable projection.
 
 :PaperlessDocumentReference a owl:Class ;
+    rdfs:subClassOf :Document ;
     rdfs:label "Opaque Paperless-ngx document reference" ;
     rdfs:comment "A content-free keyed reference to a provider document." .
 
 :PaperlessCorrespondentReference a owl:Class ;
+    rdfs:subClassOf :Concept ;
     rdfs:label "Opaque Paperless-ngx correspondent reference" ;
     rdfs:comment "A name-free keyed reference to a provider correspondent." .
 
 :PaperlessTagReference a owl:Class ;
+    rdfs:subClassOf :Concept ;
     rdfs:label "Opaque Paperless-ngx tag reference" ;
     rdfs:comment "A label-free keyed reference to a provider tag." .
 
 :PaperlessDocumentTypeReference a owl:Class ;
+    rdfs:subClassOf :Concept ;
     rdfs:label "Opaque Paperless-ngx document-type reference" ;
     rdfs:comment "A label-free keyed reference to a provider document type." .
 
 :PaperlessStoragePathReference a owl:Class ;
+    rdfs:subClassOf :Place ;
     rdfs:label "Opaque Paperless-ngx storage-path reference" ;
     rdfs:comment "A path-free keyed reference to provider storage placement." .
+
+:PaperlessConsumptionTask a owl:Class ;
+    rdfs:subClassOf :Event ;
+    rdfs:label "Paperless-ngx consumption task" ;
+    rdfs:comment "A background task that consumes an uploaded file into a document." .
 
 :hasCorrespondentReference a owl:ObjectProperty ;
     rdfs:domain :PaperlessDocumentReference ;

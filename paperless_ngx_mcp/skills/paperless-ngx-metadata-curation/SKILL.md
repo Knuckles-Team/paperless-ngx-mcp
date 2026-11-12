@@ -32,27 +32,41 @@ then apply them to documents with `paperless-ngx-document-management`.
 ## When NOT to use
 - Searching, reading, uploading, or editing documents → `paperless-ngx-document-management`.
 - Pushing the taxonomy + documents into the epistemic-graph → `paperless-ngx-kg-ingestion`.
-- Consumption tasks, statistics, system status → the `system_operations` tool.
+- Consumption tasks, statistics, system status → `paperless-ngx-system-status`.
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`paperless-ngx-mcp`** MCP server.
 Same env as document management (`PAPERLESS_URL`, `PAPERLESS_TOKEN`,
-`PAPERLESS_SSL_VERIFY`). `MCP_TOOL_MODE` selects condensed vs. verbose tools.
+`PAPERLESS_SSL_VERIFY`).
 
-## Tools & actions
-The same condensed `document_operations` tool exposes the metadata resources.
+## Tools
+One typed tool per API operation.
 
-| Condensed tool | Actions |
-|----------------|---------|
-| `document_operations` | `list_correspondents`, `create_correspondent`, `update_correspondent`, `delete_correspondent`, `list_tags`, `create_tag`, `update_tag`, `delete_tag`, `list_document_types`, `create_document_type`, `delete_document_type`, `list_storage_paths`, `create_storage_path`, `list_custom_fields`, `create_custom_field`, `list_saved_views` |
+| Tool | Purpose |
+|------|---------|
+| `paperless_ngx_list_correspondents` | List correspondents (filter with `name__icontains`). |
+| `paperless_ngx_create_correspondent` | Create a correspondent. |
+| `paperless_ngx_update_correspondent` | Rename or retune a correspondent. |
+| `paperless_ngx_delete_correspondent` | Delete a correspondent (documents stay). |
+| `paperless_ngx_list_tags` | List tags. |
+| `paperless_ngx_create_tag` | Create a tag. |
+| `paperless_ngx_update_tag` | Rename or recolor a tag. |
+| `paperless_ngx_delete_tag` | Delete a tag. |
+| `paperless_ngx_list_document_types` | List document types. |
+| `paperless_ngx_create_document_type` | Create a document type. |
+| `paperless_ngx_delete_document_type` | Delete a document type. |
+| `paperless_ngx_list_storage_paths` | List storage paths. |
+| `paperless_ngx_create_storage_path` | Create a storage path. |
+| `paperless_ngx_list_custom_fields` | List custom fields. |
+| `paperless_ngx_create_custom_field` | Create a custom field. |
+| `paperless_ngx_list_saved_views` | List saved views. |
 
 ### Key parameters
-- `body` — object for the create/update actions (e.g. `{"name": "Acme Corp"}`,
-  or a tag `{"name": "Invoices", "color": "#ff8800"}`).
-- `correspondent_id` / `tag_id` / `document_type_id` — required for the update/delete actions.
-- List actions accept DRF filters as keyword args (e.g. `{"name__icontains": "acme"}`).
+- `body` - object for the create and update tools (for example `{"name": "Acme Corp"}`, or a tag `{"name": "Invoices", "color": "#ff8800"}`).
+- `correspondent_id`, `tag_id`, `document_type_id` - required for update and delete.
+- List tools accept DRF filters such as `name__icontains`.
 
-## Recipes (`params_json`)
+## Recipes
 Find a correspondent id by name:
 ```json
 {"name__icontains": "acme"}
@@ -71,7 +85,6 @@ Rename a correspondent:
 ```
 
 ## Gotchas
-- `params_json` is a **string** of JSON, not an object.
 - These objects are **referenced by numeric id** from documents — always list to
   resolve the id before setting it on a document via `paperless-ngx-document-management`.
 - Tag `color` is a hex string; some instances also accept a legacy `colour` field.

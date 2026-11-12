@@ -49,7 +49,7 @@ call it.
 | `paperless_ingestion_projection` | Read-only: return the keyed, opaque structural projection (documents, correspondents, tags, document types, storage paths and their relationships) for governed source sync. No document content or titles leave Paperless. |
 | `paperless_ingest_projection` | Commit that same projection through a governed ChangeEnvelope; returns the ingest receipt. |
 
-### Key parameters (`params_json`, a JSON string)
+### Key parameters (`params_json`, a JSON string of `list_documents` filters)
 - Any bounded `list_documents` filter (`query`, `tags__id__in`, `created__gte`, `max_pages`, `page_size`).
 
 ## Recipes (`params_json`)

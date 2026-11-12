@@ -1,4 +1,11 @@
 #!/usr/bin/python
+"""Server entry points for the Paperless-ngx connector.
+
+The SDK derives one typed tool per public client operation from the API class
+declared in the package root. This module binds the connector's own governed
+ingestion tools for the SDK's tool discovery.
+"""
+
 import logging
 import sys
 from typing import Any, NamedTuple
@@ -6,31 +13,19 @@ from typing import Any, NamedTuple
 from scion_sdk.config import load_config
 from scion_sdk.connector import build_server
 from scion_sdk.connector_identity import connector_version
-from scion_sdk.mcp.tool_surface import register_tool_surface
 
-from . import mcp as tool_modules
-from .api import ApiClientSystem
-from .auth import get_client
+from .mcp import register_kg_tools  # noqa: F401
 
 __version__ = connector_version("paperless_ngx_mcp")
 
 logger = logging.getLogger("MCP_Server")
 logger.setLevel(logging.INFO)
 
-
-def register_server_surface(mcp):
-    """Register the existing Paperless API tool surface unchanged."""
-    register_tool_surface(
-        mcp,
-        service="paperless-ngx-mcp",
-        client_cls=ApiClientSystem,
-        get_client=get_client,
-        tools_module=tool_modules,
-    )
+__all__ = ["register_kg_tools", "get_mcp_instance", "mcp_server"]
 
 
 class ServerComponents(NamedTuple):
-    """Preserve the legacy startup tuple with named collaborators."""
+    """Preserve the startup tuple with named collaborators."""
 
     server: Any
     args: Any
@@ -38,7 +33,7 @@ class ServerComponents(NamedTuple):
 
 
 def get_mcp_instance(*, command_args=None) -> ServerComponents:
-    """Load legacy configuration and compose the declared SDK connector."""
+    """Load configuration and compose the declared SDK connector."""
     load_config()
     args, mcp = build_server("paperless_ngx_mcp", command_args=command_args)
     return ServerComponents(mcp, args, list(mcp.middleware))

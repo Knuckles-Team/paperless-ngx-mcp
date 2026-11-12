@@ -26,22 +26,19 @@ credential, certificate, user record, customized taxonomy, or durable source con
 
 ## MCP tools
 
-Condensed tools accept `action` plus a JSON-object string in `params_json`. Verbose mode
-exposes the same public client methods one-to-one. The generated table is derived from
-the live server surface.
+Each public client method is served as its own typed tool. The generated table is derived
+from the live server surface.
 
 <!-- MCP-TOOLS-TABLE:START -->
 
-#### Condensed action-routed tools (`MCP_TOOL_MODE=condensed`)
+#### Tools
 
 | MCP Tool | Toggle Env Var | Description |
 |----------|----------------|-------------|
-| `document_operations` | `DOCUMENTSTOOL` | Manage Paperless-ngx documents, correspondents, tags, document types, |
 | `paperless_ingest_projection` | `KGTOOL` | Commit the keyed structural projection through governed ChangeEnvelope. |
 | `paperless_ingestion_projection` | `KGTOOL` | Return keyed opaque nodes and relationships for governed source sync. |
-| `system_operations` | `SYSTEMTOOL` | Run Paperless-ngx full-text search, inspect background/consumption tasks, |
 
-#### Verbose 1:1 API-mapped tools (`MCP_TOOL_MODE=verbose` or `both`)
+#### Per-operation API tools
 
 <details>
 <summary>36 per-operation tools — one per public API method (click to expand)</summary>
@@ -87,7 +84,7 @@ the live server surface.
 
 </details>
 
-_4 action-routed tool(s) · 36 verbose 1:1 tool(s). Each is enabled unless its `<DOMAIN>TOOL` toggle is set false; `MCP_TOOL_MODE` selects the surface (**`intent` default** — the six verb-tools, granular set loaded on demand · `condensed` action-routed · `verbose` 1:1 · `both`). Auto-generated — do not edit._
+_36 per-operation tool(s) · 2 ingestion tool(s). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
 ## Install

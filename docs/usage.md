@@ -3,19 +3,19 @@
 ## Discover first
 
 Use the default Arbora intent verbs to discover the current Paperless-ngx capability.
-The provider registers `document_operations`, `system_operations`,
-`paperless_ingestion_projection`, and `paperless_ingest_projection` as gated backing
-tools that Arbora can load on demand. Do not cache action schemas across deployments.
+The provider registers one typed tool per API operation (`paperless_ngx_<operation>`)
+plus `paperless_ingestion_projection` and `paperless_ingest_projection` as gated backing
+tools that Arbora can load on demand. Do not cache tool schemas across deployments.
 
 ## Bounded reads
 
-After Arbora loads `document_operations`, pass an explicit action and a serialized JSON
-object:
+After Arbora loads `paperless_ngx_list_documents`, pass bounded arguments:
 
 ```json
 {
-  "action": "list_documents",
-  "params_json": "{\"query\":\"<authorized-query>\",\"page_size\":20,\"max_pages\":1}"
+  "query": "<authorized-query>",
+  "page_size": 20,
+  "max_pages": 1
 }
 ```
 

@@ -11,17 +11,17 @@ __version__ = connector_version("paperless_ngx_mcp")
 __all__ = ["__version__"]
 
 from scion_sdk.connector import Connector
-from scion_sdk.connector_hooks import RegistrationContext
 
-
-def _register_legacy_surface(context: RegistrationContext) -> None:
-    """Reuse the existing API registrar through the public SDK hook."""
-    from paperless_ngx_mcp.mcp_server import register_server_surface
-
-    register_server_surface(context.server)
-
+from paperless_ngx_mcp.api import ApiClientSystem
+from paperless_ngx_mcp.auth import get_client
 
 connector = Connector(
-    instructions="Paperless-ngx tools exposed through the configured current tool surface.",
-    extra_registrations=(_register_legacy_surface,),
+    api=ApiClientSystem,
+    get_client=get_client,
+    tools="paperless_ngx_mcp.mcp_server",
+    instructions=(
+        "Paperless-ngx document archive: one typed tool per API operation for "
+        "documents, taxonomy, search, tasks and system status, plus governed "
+        "structural ingestion."
+    ),
 )
