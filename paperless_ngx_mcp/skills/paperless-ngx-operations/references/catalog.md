@@ -1,27 +1,30 @@
 # Paperless-ngx operation catalog
 
-## Condensed tools
+## Tools
 
-`document_operations` accepts `action` and a JSON-object string in `params_json`.
-Its current actions are:
+Every operation is its own typed tool, named `paperless_ngx_<operation>`:
 
-- document reads and changes: `list_documents`, `create_document`, `get_document`,
-  `get_document_metadata`, `update_document`, `delete_document`,
-  `get_document_notes`, `add_document_note`, `post_document`, and
-  `bulk_edit_documents`;
-- correspondent actions: `list_correspondents`, `create_correspondent`,
-  `update_correspondent`, and `delete_correspondent`;
-- tag actions: `list_tags`, `create_tag`, `update_tag`, and `delete_tag`;
-- taxonomy actions: `list_document_types`, `create_document_type`,
-  `delete_document_type`, `list_storage_paths`, `create_storage_path`,
-  `list_custom_fields`, `create_custom_field`, and `list_saved_views`.
+- document reads and changes: `paperless_ngx_list_documents`, `paperless_ngx_create_document`,
+  `paperless_ngx_get_document`, `paperless_ngx_get_document_metadata`,
+  `paperless_ngx_update_document`, `paperless_ngx_delete_document`,
+  `paperless_ngx_get_document_notes`, `paperless_ngx_add_document_note`,
+  `paperless_ngx_post_document`, and `paperless_ngx_bulk_edit_documents`;
+- correspondents: `paperless_ngx_list_correspondents`, `paperless_ngx_create_correspondent`,
+  `paperless_ngx_update_correspondent`, and `paperless_ngx_delete_correspondent`;
+- tags: `paperless_ngx_list_tags`, `paperless_ngx_create_tag`, `paperless_ngx_update_tag`,
+  and `paperless_ngx_delete_tag`;
+- taxonomy: `paperless_ngx_list_document_types`, `paperless_ngx_create_document_type`,
+  `paperless_ngx_delete_document_type`, `paperless_ngx_list_storage_paths`,
+  `paperless_ngx_create_storage_path`, `paperless_ngx_list_custom_fields`,
+  `paperless_ngx_create_custom_field`, and `paperless_ngx_list_saved_views`;
+- search, tasks and system: `paperless_ngx_global_search`, `paperless_ngx_autocomplete`,
+  `paperless_ngx_list_tasks`, `paperless_ngx_get_task`, `paperless_ngx_acknowledge_tasks`,
+  `paperless_ngx_get_statistics`, `paperless_ngx_get_system_status`,
+  `paperless_ngx_get_remote_version`, `paperless_ngx_get_ui_settings`, and
+  `paperless_ngx_get_schema`;
+- graph sync: `paperless_ingestion_projection` and `paperless_ingest_projection`.
 
-`system_operations` accepts the same envelope. Its current actions are
-`global_search`, `autocomplete`, `list_tasks`, `get_task`, `acknowledge_tasks`,
-`get_statistics`, `get_system_status`, `get_remote_version`, `get_ui_settings`, and
-`get_schema`.
-
-No action accepts arbitrary HTTP methods or mints a credential from a username and
+No tool accepts arbitrary HTTP methods or mints a credential from a username and
 password.
 
 ## Safe discovery
@@ -40,9 +43,9 @@ identities unless the authorized user explicitly needs that value in the respons
 
 ## Intake
 
-`post_document` accepts a file already inside the AgentConfig workspace boundary. The
+`paperless_ngx_post_document` accepts a file already inside the AgentConfig workspace boundary. The
 client rejects absent workspace policy, traversal outside that root, non-files, and
-oversized inputs. Poll the returned task with `get_task`; do not infer successful OCR
+oversized inputs. Poll the returned task with `paperless_ngx_get_task`; do not infer successful OCR
 from upload acceptance alone.
 
 ## Structural graph synchronization

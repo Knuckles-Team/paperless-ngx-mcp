@@ -19,8 +19,8 @@ metadata:
 # Paperless-ngx Document Management
 
 Domain-typed access to the Paperless-ngx **documents** resource — the OCR'd
-archive of scanned PDFs and images. Prefer the condensed `document_operations`
-tool over raw HTTP; it carries the DRF field conventions and returns
+archive of scanned PDFs and images. Use the typed per-operation
+tools below instead of raw HTTP; they carry the DRF field conventions and return
 document-shaped records.
 
 ## When to use
@@ -33,7 +33,7 @@ document-shaped records.
 - Creating/renaming the taxonomy (correspondents, tags, document types, storage
   paths) → `paperless-ngx-metadata-curation`.
 - Pushing documents + their scans into the epistemic-graph → `paperless-ngx-kg-ingestion`.
-- System health, tasks, statistics, global search → the `system_operations` tool.
+- System health, tasks, statistics, global search → `paperless-ngx-system-status`.
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`paperless-ngx-mcp`** MCP server.
@@ -44,25 +44,37 @@ Connect via the `mcp-client` skill against the **`paperless-ngx-mcp`** MCP serve
 | `PAPERLESS_TOKEN` | ✅ | DRF API token (My Profile → API Auth Token); sent as `Authorization: Token <key>` |
 | `PAPERLESS_SSL_VERIFY` | optional | TLS verification toggle |
 
-`MCP_TOOL_MODE` (`condensed`|`verbose`|`both`) selects the condensed surface
-(used below) vs. the 1:1 verbose tools.
 
-## Tools & actions
-Prefer the **condensed** tool; it takes `action` + a `params_json` **JSON string**
-whose keys are passed straight to the client method.
+## Tools
+One typed tool per API operation. Parameters are passed as named arguments; extra DRF
+filters on the list tools go in `params_json`.
 
-| Condensed tool | Actions |
-|----------------|---------|
-| `document_operations` | `list_documents`, `get_document`, `get_document_metadata`, `update_document`, `create_document`, `delete_document`, `post_document`, `get_document_notes`, `add_document_note`, `bulk_edit_documents` |
+| Tool | Purpose |
+|------|---------|
+| `paperless_ngx_global_search` | Search documents, correspondents, tags and other objects at once. |
+| `paperless_ngx_autocomplete` | Complete a search term. |
+| `paperless_ngx_list_documents` | List or full-text search documents with DRF filters. |
+| `paperless_ngx_get_document` | Read one document's metadata and content. |
+| `paperless_ngx_get_document_metadata` | Read raw parsed metadata and checksums. |
+| `paperless_ngx_get_document_notes` | List a document's notes. |
+| `paperless_ngx_add_document_note` | Add a note to a document. |
+| `paperless_ngx_update_document` | Patch title, tags, correspondent, type or storage path. |
+| `paperless_ngx_create_document` | Create a bare document record from a JSON body. |
+| `paperless_ngx_post_document` | Upload a workspace file for OCR consumption; returns a task id. |
+| `paperless_ngx_bulk_edit_documents` | Apply one bulk method over a list of document ids. |
+| `paperless_ngx_delete_document` | Move a document to the trash. |
+| `paperless_ngx_get_task` | Poll a consumption task after an upload. |
+| `paperless_ngx_list_tasks` | List consumption tasks. |
+| `paperless_ngx_acknowledge_tasks` | Dismiss finished tasks. |
 
 ### Key parameters
-- `query` — full-text search string for `list_documents`.
-- `document_id` — required for `get_document` / `update_document` / notes.
-- `body` — object of field→value for `update_document` (e.g. `{"title": "...", "tags": [3,4]}`).
-- `file_path` — local path for `post_document` (returns a consumption task UUID).
-- `documents` + `method` + `parameters` — for `bulk_edit_documents`.
+- `query` - full-text search string for `paperless_ngx_list_documents`.
+- `document_id` - required for get, update, delete, notes and metadata.
+- `body` - object of field to value for `paperless_ngx_update_document` (for example `{"title": "...", "tags": [3,4]}`).
+- `file_path` - local workspace path for `paperless_ngx_post_document`.
+- `documents`, `method`, `parameters` - for `paperless_ngx_bulk_edit_documents`.
 
-## Recipes (`params_json`)
+## Recipes
 Full-text search, newest first, a few fields:
 ```json
 {"query": "invoice acme", "ordering": "-created", "page_size": 25}
@@ -81,7 +93,6 @@ Bulk add a tag to many documents:
 ```
 
 ## Gotchas
-- `params_json` is a **string** of JSON, not an object — serialize it.
 - Auth is DRF **`Token <key>`**, NOT `Bearer` — a `Bearer` token yields 401.
 - List endpoints are **page-number paginated**; the client follows `next` up to
   `max_pages` (default 50). Pass `page_size` and a filter to bound big reads.
