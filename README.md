@@ -3,7 +3,7 @@
 *Version: 2.3.4*
 
 `paperless-ngx-mcp` provides a typed Python client, current intent/condensed/verbose MCP
-surfaces, an optional A2A agent, and a governed epistemic-graph connector for the standard
+surfaces, an optional A2A agent, and a governed medulla connector for the standard
 Paperless-ngx API.
 
 The package is deployment-neutral. It contains no instance profile, connection value,
@@ -93,7 +93,7 @@ _36 per-operation tool(s) · 2 ingestion tool(s). Auto-generated — do not edit
 uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp
 ```
 
-provides the full Epistemic Graph runtime on the current dependency line.
+provides the full Medulla runtime on the current dependency line.
 
 ## AgentConfig boundary
 

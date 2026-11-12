@@ -32,7 +32,7 @@ document-shaped records.
 ## When NOT to use
 - Creating/renaming the taxonomy (correspondents, tags, document types, storage
   paths) → `paperless-ngx-metadata-curation`.
-- Pushing documents + their scans into the epistemic-graph → `paperless-ngx-kg-ingestion`.
+- Pushing documents + their scans into the medulla → `paperless-ngx-kg-ingestion`.
 - System health, tasks, statistics, global search → `paperless-ngx-system-status`.
 
 ## Prerequisites & environment

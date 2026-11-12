@@ -1,4 +1,4 @@
-"""Native epistemic-graph blob ingestion for Paperless-ngx scanned documents.
+"""Native medulla blob ingestion for Paperless-ngx scanned documents.
 
 CONCEPT:AU-KG.ingest.list-durable-media. Paperless-ngx documents are scans — the raw
 PDF/image bytes are worth making durable, deduped and queryable inside the knowledge

@@ -31,7 +31,7 @@ then apply them to documents with `paperless-ngx-document-management`.
 
 ## When NOT to use
 - Searching, reading, uploading, or editing documents → `paperless-ngx-document-management`.
-- Pushing the taxonomy + documents into the epistemic-graph → `paperless-ngx-kg-ingestion`.
+- Pushing the taxonomy + documents into the medulla → `paperless-ngx-kg-ingestion`.
 - Consumption tasks, statistics, system status → `paperless-ngx-system-status`.
 
 ## Prerequisites & environment

@@ -24,7 +24,7 @@ from scion_sdk.exceptions import (
     ParameterError,
     UnauthorizedError,
 )
-from scion_sdk.http.client import create_http_client
+from scion_sdk.http.client import build_http_client
 from scion_sdk.http.options import HttpClientOptions
 from scion_sdk.http.retry import RetryPolicy
 from scion_sdk.tls.profile import ResolvedTLSProfile
@@ -70,7 +70,7 @@ class ApiClientBase:
         self.max_retries = max_retries
         self.tls_profile = tls_profile or resolve_tls_profile("paperless")
         # DRF TokenAuthentication — "Token <key>", not Bearer.
-        self.session = create_http_client(
+        self.session = build_http_client(
             HttpClientOptions(
                 base_url=self.base_url,
                 timeout=120,

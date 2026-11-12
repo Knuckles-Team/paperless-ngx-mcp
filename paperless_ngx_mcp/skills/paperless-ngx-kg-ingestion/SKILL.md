@@ -2,7 +2,7 @@
 name: paperless-ngx-kg-ingestion
 skill_type: skill
 description: >-
-  Natively ingest a Paperless-ngx archive into the epistemic-graph knowledge
+  Natively ingest a Paperless-ngx archive into the medulla knowledge
   graph via the paperless-ngx-mcp MCP server — documents become :Document nodes
   (with OCR text) linked to :Correspondent / :Tag / :DocumentType / :StoragePath,
   and the scanned PDF/image bytes become durable :Blob / :MediaAsset. Use when the
@@ -19,7 +19,7 @@ metadata:
 
 # Paperless-ngx Knowledge-Graph Ingestion
 
-Push a Paperless-ngx archive into the ONE epistemic-graph engine as typed OWL
+Push a Paperless-ngx archive into the ONE medulla engine as typed OWL
 nodes, in every modality: **documents** → `:Document` (carrying OCR text for
 semantic search), their **metadata** → `:Correspondent` / `:Tag` /
 `:DocumentType` / `:StoragePath`, and the **raw scans** → content-addressed
@@ -33,7 +33,7 @@ match `paperless_ngx_mcp/ontology/paperless.ttl`.
 ## When NOT to use
 - Interactive document search / read / edit → `paperless-ngx-document-management`.
 - Curating correspondents/tags/types → `paperless-ngx-metadata-curation`.
-- When no epistemic-graph engine is reachable — ingestion cleanly no-ops
+- When no medulla engine is reachable — ingestion cleanly no-ops
   (`"ingested": null`); it never blocks the connector.
 
 ## Prerequisites & environment

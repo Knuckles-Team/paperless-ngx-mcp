@@ -1,4 +1,4 @@
-"""Native epistemic-graph blob ingestion — Wire-First live-path coverage.
+"""Native medulla blob ingestion — Wire-First live-path coverage.
 
 Exercises the real ``ingest_document_blob`` seam against a fake SDK ingest
 transport (no engine required), asserting the media asset + :scannedAs
