@@ -1,7 +1,7 @@
 ---
 name: paperless-ngx-operations
 skill_type: skill
-description: Operate Paperless-ngx through its governed MCP and Arbora capabilities, including document discovery, intake, metadata curation, task monitoring, privacy-preserving structural ingestion, and verification. Use when a request involves Paperless-ngx documents, correspondents, tags, document types, storage paths, custom fields, saved views, search, tasks, system inspection, or epistemic-graph synchronization.
+description: Operate Paperless-ngx through its governed MCP and Arbora capabilities, including document discovery, intake, metadata curation, task monitoring, privacy-preserving structural ingestion, and verification. Use when a request involves Paperless-ngx documents, correspondents, tags, document types, storage paths, custom fields, saved views, search, tasks, system inspection, or medulla synchronization.
 ---
 
 # Paperless-ngx Operations

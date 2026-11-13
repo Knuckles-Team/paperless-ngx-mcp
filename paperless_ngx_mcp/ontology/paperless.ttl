@@ -1,4 +1,5 @@
-@prefix : <http://knuckles.team/kg#> .
+@prefix : <https://knuckles-team.github.io/ontology/connector/paperless-ngx#> .
+@prefix core: <https://knuckles-team.github.io/ontology/core#> .
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 
@@ -7,32 +8,32 @@
 # deliberately absent from the durable projection.
 
 :PaperlessDocumentReference a owl:Class ;
-    rdfs:subClassOf :Document ;
+    rdfs:subClassOf core:Document ;
     rdfs:label "Opaque Paperless-ngx document reference" ;
     rdfs:comment "A content-free keyed reference to a provider document." .
 
 :PaperlessCorrespondentReference a owl:Class ;
-    rdfs:subClassOf :Concept ;
+    rdfs:subClassOf core:Concept ;
     rdfs:label "Opaque Paperless-ngx correspondent reference" ;
     rdfs:comment "A name-free keyed reference to a provider correspondent." .
 
 :PaperlessTagReference a owl:Class ;
-    rdfs:subClassOf :Concept ;
+    rdfs:subClassOf core:Concept ;
     rdfs:label "Opaque Paperless-ngx tag reference" ;
     rdfs:comment "A label-free keyed reference to a provider tag." .
 
 :PaperlessDocumentTypeReference a owl:Class ;
-    rdfs:subClassOf :Concept ;
+    rdfs:subClassOf core:Concept ;
     rdfs:label "Opaque Paperless-ngx document-type reference" ;
     rdfs:comment "A label-free keyed reference to a provider document type." .
 
 :PaperlessStoragePathReference a owl:Class ;
-    rdfs:subClassOf :Place ;
+    rdfs:subClassOf core:Place ;
     rdfs:label "Opaque Paperless-ngx storage-path reference" ;
     rdfs:comment "A path-free keyed reference to provider storage placement." .
 
 :PaperlessConsumptionTask a owl:Class ;
-    rdfs:subClassOf :Event ;
+    rdfs:subClassOf core:Event ;
     rdfs:label "Paperless-ngx consumption task" ;
     rdfs:comment "A background task that consumes an uploaded file into a document." .
 
@@ -52,6 +53,6 @@
     rdfs:domain :PaperlessDocumentReference ;
     rdfs:range :PaperlessStoragePathReference .
 
-<http://knuckles.team/kg/paperless> a owl:Ontology ;
+<https://knuckles-team.github.io/ontology/connector/paperless> a owl:Ontology ;
     rdfs:label "Paperless-ngx zero-PII structural ontology" ;
     rdfs:comment "Keyed opaque document and classification relationships for governed Paperless-ngx ingestion." .

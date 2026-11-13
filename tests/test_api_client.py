@@ -105,12 +105,12 @@ def test_transport_error_omits_connection_value():
 def _mock_client(handler):
     from unittest.mock import patch as _patch
 
-    from scion_sdk.http.client import create_http_client as real
+    from scion_sdk.http.client import build_http_client as real
 
     def build(options):
         return real(options, transport=httpx.MockTransport(handler))
 
-    with _patch("paperless_ngx_mcp.api.api_client_base.create_http_client", build):
+    with _patch("paperless_ngx_mcp.api.api_client_base.build_http_client", build):
         return _client()[0]
 
 
