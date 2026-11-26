@@ -2,13 +2,7 @@
 name: paperless-ngx-document-management
 skill_type: skill
 description: >-
-  Search, read, upload, and edit documents in Paperless-ngx via the
-  paperless-ngx-mcp MCP server. Use when the agent must full-text search the
-  archive, fetch a document's metadata or OCR content, upload a file for
-  consumption/OCR, add notes, or bulk-edit tags/correspondents on documents. Do
-  NOT use for curating the correspondents/tags/document-types taxonomy (use
-  paperless-ngx-metadata-curation) or for pushing documents into the knowledge
-  graph (use paperless-ngx-kg-ingestion).
+  Search, read, upload, and edit documents in Paperless-ngx via the paperless-ngx-mcp MCP server. Use when the agent must full-text search the archive, fetch a document's metadata or OCR content, upload a file for consumption/OCR, add notes, or bulk-edit tags/correspondents on documents. Not for taxonomy curation or KG ingestion.
 license: MIT
 tags: [paperless-ngx, documents, dms, ocr, rest-api, mcp]
 metadata:
@@ -17,6 +11,8 @@ metadata:
 ---
 
 # Paperless-ngx Document Management
+
+Scope: Search, read, upload, and edit documents in Paperless-ngx via the paperless-ngx-mcp MCP server. Use when the agent must full-text search the archive, fetch a document's metadata or OCR content, upload a file for consumption/OCR, add notes, or bulk-edit tags/correspondents on documents. Do NOT use for curating the correspondents/tags/document-types taxonomy (use paperless-ngx-metadata-curation) or for pushing documents into the knowledge graph (use paperless-ngx-kg-ingestion).
 
 Domain-typed access to the Paperless-ngx **documents** resource — the OCR'd
 archive of scanned PDFs and images. Use the typed per-operation
@@ -34,6 +30,27 @@ document-shaped records.
   paths) → `paperless-ngx-metadata-curation`.
 - Pushing documents + their scans into the medulla → `paperless-ngx-kg-ingestion`.
 - System health, tasks, statistics, global search → `paperless-ngx-system-status`.
+
+## Steps
+
+1. Find candidate documents with `paperless_ngx_list_documents` (`query`, `page_size`) or `paperless_ngx_global_search`.
+   Verify the result count is small enough to act on, adding a filter if not.
+2. Read the chosen document with `paperless_ngx_get_document` (`document_id`).
+   Verify the title and ids match the request before changing anything.
+3. Upload a new file with `paperless_ngx_post_document` (`file_path`) and poll the returned task with `paperless_ngx_get_task`.
+   Verify the task status is SUCCESS and carries a document id.
+4. Edit with `paperless_ngx_update_document` (`document_id`, `body`) or `paperless_ngx_bulk_edit_documents` (`documents`, `method`, `parameters`) using numeric ids.
+   Verify by calling `paperless_ngx_get_document` and checking the changed fields.
+5. Delete with `paperless_ngx_delete_document` only on explicit request.
+   Verify with `paperless_ngx_get_document` that the document no longer resolves.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| HTTP 401 on every call | `PAPERLESS_TOKEN` is missing or sent as Bearer instead of a DRF Token | Set `PAPERLESS_URL` and `PAPERLESS_TOKEN` for the `paperless-ngx-mcp` server, and use the `Token <key>` form |
+| Update rejected or tags wrong | Names were passed where numeric ids are required | Resolve ids with `paperless-ngx-metadata-curation` (list tools), and resend `body` with the numeric ids |
+| Uploaded file never appears | The consumption task failed or `file_path` is outside the workspace | Inspect `paperless_ngx_get_task` for the failure, and re-upload a file located inside the workspace |
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`paperless-ngx-mcp`** MCP server.

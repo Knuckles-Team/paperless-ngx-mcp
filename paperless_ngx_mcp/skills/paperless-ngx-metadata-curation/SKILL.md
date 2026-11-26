@@ -2,13 +2,7 @@
 name: paperless-ngx-metadata-curation
 skill_type: skill
 description: >-
-  Curate the organizing taxonomy of a Paperless-ngx archive — correspondents,
-  tags, document types, storage paths, and custom fields — via the
-  paperless-ngx-mcp MCP server. Use when the agent must list/create/rename these
-  metadata objects, resolve a name to its numeric id, or design the tagging
-  scheme. Do NOT use to search or edit documents themselves (use
-  paperless-ngx-document-management) or to ingest into the knowledge graph (use
-  paperless-ngx-kg-ingestion).
+  Curate the organizing taxonomy of a Paperless-ngx archive — correspondents, tags, document types, storage paths, and custom fields — via the paperless-ngx-mcp MCP server. Use when the agent must list/create/rename these metadata objects, resolve a name to its numeric id, or design the tagging scheme.
 license: MIT
 tags: [paperless-ngx, correspondents, tags, taxonomy, metadata, mcp]
 metadata:
@@ -17,6 +11,8 @@ metadata:
 ---
 
 # Paperless-ngx Metadata Curation
+
+Scope: Curate the organizing taxonomy of a Paperless-ngx archive — correspondents, tags, document types, storage paths, and custom fields — via the paperless-ngx-mcp MCP server. Use when the agent must list/create/rename these metadata objects, resolve a name to its numeric id, or design the tagging scheme. Do NOT use to search or edit documents themselves (use paperless-ngx-document-management) or to ingest into the knowledge graph (use paperless-ngx-kg-ingestion).
 
 Domain-typed access to the metadata objects that organize a Paperless-ngx
 archive: **correspondents**, **tags**, **document types**, **storage paths** and
@@ -33,6 +29,25 @@ then apply them to documents with `paperless-ngx-document-management`.
 - Searching, reading, uploading, or editing documents → `paperless-ngx-document-management`.
 - Pushing the taxonomy + documents into the medulla → `paperless-ngx-kg-ingestion`.
 - Consumption tasks, statistics, system status → `paperless-ngx-system-status`.
+
+## Steps
+
+1. Resolve the object with `paperless_ngx_list_correspondents`, `paperless_ngx_list_tags` or `paperless_ngx_list_document_types` using `name__icontains`.
+   Verify whether a match already exists before creating one.
+2. Create a missing object with `paperless_ngx_create_tag`, `paperless_ngx_create_correspondent` or `paperless_ngx_create_document_type` (`body`).
+   Verify the response carries a numeric id.
+3. Rename or recolor with `paperless_ngx_update_tag` or `paperless_ngx_update_correspondent` (id, `body`).
+   Verify by listing again and checking the new name.
+4. Delete with `paperless_ngx_delete_tag`, `paperless_ngx_delete_correspondent` or `paperless_ngx_delete_document_type` only on explicit request.
+   Verify the id is absent from the next list.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| HTTP 401 | `PAPERLESS_TOKEN` is missing or invalid | Set `PAPERLESS_URL` and `PAPERLESS_TOKEN` for the `paperless-ngx-mcp` server |
+| Create returns a duplicate-name error | An object with that name already exists | List with `name__icontains`, and reuse the existing id or update it with the matching update tool |
+| Name searched but no id found | The name differs in case or spelling | Retry the list with a shorter `name__icontains` fragment, and confirm the id with the requester |
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`paperless-ngx-mcp`** MCP server.

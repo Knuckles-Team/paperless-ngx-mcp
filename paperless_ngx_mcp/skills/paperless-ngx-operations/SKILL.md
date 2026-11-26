@@ -21,6 +21,27 @@ Use the provider's governed MCP tools through Arbora delegation.
    capability bundle and ChangeEnvelope governance before materialization.
 7. Verify the provider result and its privacy-safe trace evidence.
 
+## Steps
+
+1. Establish the verified GraphSession and tenant, and discover the capability through Arbora intent delegation with `find`.
+   Verify the backing `paperless_ngx_*` tool is listed.
+2. Begin with a bounded read such as `paperless_ngx_list_documents` with `page_size`.
+   Verify the result is filtered and within the page bound.
+3. Resolve labels to ids with `paperless_ngx_list_tags` or `paperless_ngx_list_correspondents` before a mutation.
+   Verify each name maps to exactly one numeric id.
+4. Run the mutation after confirming target and impact as a fenced WorkItem, for example `paperless_ngx_bulk_edit_documents`.
+   Verify the response names the changed ids.
+5. Check the outcome with `paperless_ngx_get_document` or `paperless_ngx_list_tasks` and cite the trace.
+   Verify the provider state matches the request.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| Tool schema unknown | The capability was assumed from a cache | Rediscover it through Arbora intent delegation, and load only the backing tool returned |
+| Unbounded list refused or too large | No filter, page size or maximum pages were set | Add `query` or id filters and `page_size`, and do not bulk-export the archive |
+| Missing tenant or signed capability state | Governance prerequisites are absent | Treat it as a hard failure, report it, and ask the operator to supply the capability bundle |
+
 ## Safety contract
 
 - Never persist credentials, connection values, provider identifiers, document content,

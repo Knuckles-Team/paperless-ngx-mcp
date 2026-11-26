@@ -2,14 +2,7 @@
 name: paperless-ngx-kg-ingestion
 skill_type: skill
 description: >-
-  Natively ingest a Paperless-ngx archive into the medulla knowledge
-  graph via the paperless-ngx-mcp MCP server — documents become :Document nodes
-  (with OCR text) linked to :Correspondent / :Tag / :DocumentType / :StoragePath,
-  and the scanned PDF/image bytes become durable :Blob / :MediaAsset. Use when the
-  agent must make the document archive queryable/searchable inside the KG or keep
-  it in sync. Do NOT use for day-to-day document search/edit (use
-  paperless-ngx-document-management) or taxonomy curation (use
-  paperless-ngx-metadata-curation).
+  Natively ingest a Paperless-ngx archive into the medulla knowledge graph via the paperless-ngx-mcp MCP server — documents become :Document nodes (with OCR text) linked to :Correspondent / :Tag / :DocumentType / :StoragePath, and the scanned PDF/image bytes become durable :Blob / :MediaAsset. Use when the agent must make the document archive queryable/searchable inside the KG or keep it in sync.
 license: MIT
 tags: [paperless-ngx, knowledge-graph, ingestion, blob, ocr, mcp]
 metadata:
@@ -18,6 +11,8 @@ metadata:
 ---
 
 # Paperless-ngx Knowledge-Graph Ingestion
+
+Scope: Natively ingest a Paperless-ngx archive into the medulla knowledge graph via the paperless-ngx-mcp MCP server — documents become :Document nodes (with OCR text) linked to :Correspondent / :Tag / :DocumentType / :StoragePath, and the scanned PDF/image bytes become durable :Blob / :MediaAsset. Use when the agent must make the document archive queryable/searchable inside the KG or keep it in sync. Do NOT use for day-to-day document search/edit (use paperless-ngx-document-management) or taxonomy curation (use paperless-ngx-metadata-curation).
 
 Push a Paperless-ngx archive into the ONE medulla engine as typed OWL
 nodes, in every modality: **documents** → `:Document` (carrying OCR text for
@@ -35,6 +30,25 @@ match `paperless_ngx_mcp/ontology/paperless.ttl`.
 - Curating correspondents/tags/types → `paperless-ngx-metadata-curation`.
 - When no medulla engine is reachable — ingestion cleanly no-ops
   (`"ingested": null`); it never blocks the connector.
+
+## Steps
+
+1. Bound the slice with `list_documents` filters in `params_json` (`query`, `created__gte`, `max_pages`).
+   Verify the value is a JSON string, not an object.
+2. Preview with `paperless_ingestion_projection` using those parameters.
+   Verify the projection lists the expected documents and metadata nodes.
+3. Commit with `paperless_ingest_projection` using the same `params_json`.
+   Verify the ingest receipt is returned and `"ingested"` is not null.
+4. Re-run on a later slice to refresh.
+   Verify with the receipt that existing `paperless:document:<id>` nodes were merged, not duplicated.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| `"ingested": null` in the receipt | No medulla engine is reachable, so ingestion no-ops | Report that nothing was written, and rerun `paperless_ingest_projection` once the engine is reachable |
+| Tool rejects `params_json` | The value was passed as an object instead of a JSON string | Pass a JSON string such as `{"query": "invoice", "max_pages": 2}` |
+| HTTP 401 from Paperless | `PAPERLESS_URL` or `PAPERLESS_TOKEN` is missing | Set both variables for the `paperless-ngx-mcp` server, and preview again with `paperless_ingestion_projection` |
 
 ## Prerequisites & environment
 Connect via the `mcp-client` skill against the **`paperless-ngx-mcp`** MCP server.
