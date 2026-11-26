@@ -2,13 +2,7 @@
 name: paperless-ngx-system-status
 skill_type: skill
 description: >-
-  Inspect the health of a Paperless-ngx instance via the paperless-ngx-mcp MCP
-  server - system status, archive statistics, the latest available version, the
-  caller's UI settings and permissions, the live API schema, and background task
-  state. Use when the agent must report whether the archive is healthy, find
-  failed consumption tasks, or check for an update. Do NOT use to search or edit
-  documents (use paperless-ngx-document-management) or for taxonomy changes (use
-  paperless-ngx-metadata-curation).
+  Inspect the health of a Paperless-ngx instance via the paperless-ngx-mcp MCP server - system status, archive statistics, the latest available version, the caller's UI settings and permissions, the live API schema, and background task state. Use when the agent must report whether the archive is healthy, find failed consumption tasks, or check for an update.
 license: MIT
 tags: [paperless-ngx, health, statistics, tasks, mcp]
 metadata:
@@ -18,7 +12,28 @@ metadata:
 
 # Paperless-ngx System Status
 
+Scope: Inspect the health of a Paperless-ngx instance via the paperless-ngx-mcp MCP server - system status, archive statistics, the latest available version, the caller's UI settings and permissions, the live API schema, and background task state. Use when the agent must report whether the archive is healthy, find failed consumption tasks, or check for an update. Do NOT use to search or edit documents (use paperless-ngx-document-management) or for taxonomy changes (use paperless-ngx-metadata-curation).
+
 Read-only health reporting for a Paperless-ngx instance.
+
+## Steps
+
+1. Check overall health with `paperless_ngx_get_system_status`.
+   Verify each component (database, storage, index, classifier) is reported and name any that is unhealthy.
+2. Read totals and the inbox backlog with `paperless_ngx_get_statistics`.
+   Verify the document and inbox counts are present.
+3. Find failed consumption with `paperless_ngx_list_tasks` and a failure status filter.
+   Verify the count and report statuses without filenames.
+4. Check for updates with `paperless_ngx_get_remote_version` when asked.
+   Verify the response states whether an update exists.
+
+## Failure recovery
+
+| Failure | Cause | Recovery |
+|---------|-------|----------|
+| HTTP 401 or 403 | `PAPERLESS_TOKEN` is missing or lacks permission | Set `PAPERLESS_URL` and `PAPERLESS_TOKEN` for the `paperless-ngx-mcp` server, and confirm permissions with `paperless_ngx_get_ui_settings` |
+| Task list is empty | The status filter does not match any task | Call `paperless_ngx_list_tasks` without the filter and read the statuses present |
+| Schema response overwhelms the context | `paperless_ngx_get_schema` returns a large document | Skip it unless an operation's shape is in doubt, and rely on the typed tools instead |
 
 ## Tools
 
