@@ -1,6 +1,32 @@
 # Paperless-ngx MCP
+## MCP
 
-*Version: 2.3.4*
+![PyPI - Version](https://img.shields.io/pypi/v/paperless-ngx-mcp)
+![MCP Server](https://badge.mcpx.dev?type=server 'MCP Server')
+![PyPI - Downloads](https://img.shields.io/pypi/dd/paperless-ngx-mcp)
+![GitHub Repo stars](https://img.shields.io/github/stars/Knuckles-Team/paperless-ngx-mcp)
+![GitHub forks](https://img.shields.io/github/forks/Knuckles-Team/paperless-ngx-mcp)
+![GitHub contributors](https://img.shields.io/github/contributors/Knuckles-Team/paperless-ngx-mcp)
+![PyPI - License](https://img.shields.io/pypi/l/paperless-ngx-mcp)
+![GitHub](https://img.shields.io/github/license/Knuckles-Team/paperless-ngx-mcp)
+![GitHub last commit (by committer)](https://img.shields.io/github/last-commit/Knuckles-Team/paperless-ngx-mcp)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/Knuckles-Team/paperless-ngx-mcp)
+![GitHub closed pull requests](https://img.shields.io/github/issues-pr-closed/Knuckles-Team/paperless-ngx-mcp)
+![GitHub issues](https://img.shields.io/github/issues/Knuckles-Team/paperless-ngx-mcp)
+![GitHub top language](https://img.shields.io/github/languages/top/Knuckles-Team/paperless-ngx-mcp)
+![GitHub language count](https://img.shields.io/github/languages/count/Knuckles-Team/paperless-ngx-mcp)
+![GitHub repo size](https://img.shields.io/github/repo-size/Knuckles-Team/paperless-ngx-mcp)
+![GitHub repo file count (file type)](https://img.shields.io/github/directory-file-count/Knuckles-Team/paperless-ngx-mcp)
+![PyPI - Wheel](https://img.shields.io/pypi/wheel/paperless-ngx-mcp)
+![PyPI - Implementation](https://img.shields.io/pypi/implementation/paperless-ngx-mcp)
+
+> **Documentation** — Installation, deployment, and usage across the API, CLI, MCP,
+> and A2A agent interfaces are maintained in the
+> [official documentation](https://knuckles-team.github.io/paperless-ngx-mcp/).
+
+---
+
+## Overview
 
 `paperless-ngx-mcp` provides a typed Python client, current intent/condensed/verbose MCP
 surfaces, an optional A2A agent, and a governed medulla connector for the standard
@@ -9,7 +35,9 @@ Paperless-ngx API.
 The package is deployment-neutral. It contains no instance profile, connection value,
 credential, certificate, user record, customized taxonomy, or durable source content.
 
-## Capabilities
+---
+
+## Key Features
 
 - Manage documents, notes, correspondents, tags, document types, storage paths, custom
   fields, and saved views.
@@ -24,7 +52,11 @@ credential, certificate, user record, customized taxonomy, or durable source con
 - Contribute one complete `paperless-ngx-operations` skill and data-only ontology,
   source-preset, and prompt providers.
 
-## MCP tools
+---
+
+## MCP
+
+### MCP tools
 
 Each public client method is served as its own typed tool. The generated table is derived
 from the live server surface.
@@ -87,83 +119,7 @@ from the live server surface.
 _36 per-operation tool(s) · 2 ingestion tool(s). Auto-generated — do not edit._
 <!-- MCP-TOOLS-TABLE:END -->
 
-## Install
-
-```bash
-uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp
-```
-
-provides the full Medulla runtime on the current dependency line.
-
-## AgentConfig boundary
-
-The checked-in MCP catalog contains references only:
-
-```json
-{
-  "mcpServers": {
-    "paperless-ngx-mcp": {
-      "command": "uvx",
-      "args": ["--from", "paperless-ngx-mcp[mcp]", "paperless-ngx-mcp"],
-      "env": {
-        "PAPERLESS_URL": "env://PAPERLESS_URL",
-        "PAPERLESS_TOKEN": "env://PAPERLESS_TOKEN",
-        "PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY": "env://PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY",
-        "TLS_PROFILE": "env://TLS_PROFILE",
-        "TLS_PROFILES_REF": "env://TLS_PROFILES_REF",
-        "WORKSPACE_PATH": "env://WORKSPACE_PATH",
-        "MCP_TOOL_MODE": "intent",
-        "LANGFUSE_CAPTURE_CONTENT": "false"
-      }
-    }
-  }
-}
-```
-
-Arbora reads this catalog through `AgentConfig.MCP_CONFIG`. Map the runtime aliases to
-approved `env://`, `vault://`, or `secret://` runtime sources with
-`AgentConfig.MCP_FLEET_SECRET_REFS`. The connector has no packaged URL or credential
-default and requires HTTPS.
-
-TLS is resolved by `resolve_configured_tls_profile("paperless")`. Select system trust or
-a runtime profile with `TLS_PROFILE` / `TLS_PROFILES_REF`; do not add a verification
-boolean or commit trust material.
-
-Validate the reference boundary without displaying resolved values:
-
-```bash
-scion-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
-```
-
-## Privacy-preserving graph synchronization
-
-`paperless_ingestion_projection` transforms provider records in memory into keyed opaque
-references and structural relationships. `paperless_ingest_projection` commits that
-same projection through Scion SDK' governed ChangeEnvelope path.
-
-The durable projection excludes OCR text, titles, notes, names, filenames, storage
-locations, timestamps, URLs, raw bytes, and provider identifiers. It requires a
-deployment-owned pseudonymization key of at least 32 bytes. Activation remains blocked
-until the central capability compiler produces and validates the reviewed signed bundle;
-this repository intentionally does not manufacture signed release artifacts.
-
-## Documentation
-
-- [Configuration](docs/configuration.md)
-- [Installation](docs/installation.md)
-- [Usage](docs/usage.md)
-- [Deployment](docs/deployment.md)
-- [Architecture](docs/overview.md)
-- [Concepts](docs/concepts.md)
-
-## Security
-
-- No arbitrary REST escape hatch or password-to-token action is exposed.
-- Pagination is same-origin and bounded; redirects do not carry provider credentials.
-- HTTP errors omit response bodies, connection values, parameters, and record content.
-- Tool handlers do not echo malformed JSON or provider exception text.
-- Uploads are constrained to a configured workspace root and a fixed size ceiling.
-- Telemetry examples default to content capture disabled.
+---
 
 ## Environment Variables
 
@@ -222,7 +178,112 @@ _19 package + 19 inherited variable(s). Auto-generated from `.env.example` + the
 
 Licensed under the MIT License.
 
+---
 
+## Installation
+
+```bash
+uvx --from "paperless-ngx-mcp[mcp]" paperless-ngx-mcp
+```
+
+provides the full Medulla runtime on the current dependency line.
+
+---
+
+## AgentConfig boundary
+
+The checked-in MCP catalog contains references only:
+
+```json
+{
+  "mcpServers": {
+    "paperless-ngx-mcp": {
+      "command": "uvx",
+      "args": ["--from", "paperless-ngx-mcp[mcp]", "paperless-ngx-mcp"],
+      "env": {
+        "PAPERLESS_URL": "env://PAPERLESS_URL",
+        "PAPERLESS_TOKEN": "env://PAPERLESS_TOKEN",
+        "PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY": "env://PAPERLESS_INGESTION_PSEUDONYMIZATION_KEY",
+        "TLS_PROFILE": "env://TLS_PROFILE",
+        "TLS_PROFILES_REF": "env://TLS_PROFILES_REF",
+        "WORKSPACE_PATH": "env://WORKSPACE_PATH",
+        "MCP_TOOL_MODE": "intent",
+        "LANGFUSE_CAPTURE_CONTENT": "false"
+      }
+    }
+  }
+}
+```
+
+Arbora reads this catalog through `AgentConfig.MCP_CONFIG`. Map the runtime aliases to
+approved `env://`, `vault://`, or `secret://` runtime sources with
+`AgentConfig.MCP_FLEET_SECRET_REFS`. The connector has no packaged URL or credential
+default and requires HTTPS.
+
+TLS is resolved by `resolve_configured_tls_profile("paperless")`. Select system trust or
+a runtime profile with `TLS_PROFILE` / `TLS_PROFILES_REF`; do not add a verification
+boolean or commit trust material.
+
+Validate the reference boundary without displaying resolved values:
+
+```bash
+scion-sdk-doctor --only config transport_security mcp_fleet_secrets mcp_fleet
+```
+
+---
+
+## Privacy-preserving graph synchronization
+
+`paperless_ingestion_projection` transforms provider records in memory into keyed opaque
+references and structural relationships. `paperless_ingest_projection` commits that
+same projection through Scion SDK' governed ChangeEnvelope path.
+
+The durable projection excludes OCR text, titles, notes, names, filenames, storage
+locations, timestamps, URLs, raw bytes, and provider identifiers. It requires a
+deployment-owned pseudonymization key of at least 32 bytes. Activation remains blocked
+until the central capability compiler produces and validates the reviewed signed bundle;
+this repository intentionally does not manufacture signed release artifacts.
+
+---
+
+## Documentation
+
+- [Configuration](docs/configuration.md)
+- [Installation](docs/installation.md)
+- [Usage](docs/usage.md)
+- [Deployment](docs/deployment.md)
+- [Architecture](docs/overview.md)
+- [Concepts](docs/concepts.md)
+
+---
+
+## Security
+
+- No arbitrary REST escape hatch or password-to-token action is exposed.
+- Pagination is same-origin and bounded; redirects do not carry provider credentials.
+- HTTP errors omit response bodies, connection values, parameters, and record content.
+- Tool handlers do not echo malformed JSON or provider exception text.
+- Uploads are constrained to a configured workspace root and a fixed size ceiling.
+- Telemetry examples default to content capture disabled.
+
+---
+
+## Repository Owners
+
+<img width="100%" height="180em" src="https://github-readme-stats.vercel.app/api?username=example&show_icons=true&hide_border=true&&count_private=true&include_all_commits=true" />
+
+![GitHub followers](https://img.shields.io/github/followers/example)
+![GitHub User's stars](https://img.shields.io/github/stars/example)
+
+---
+
+## Contribute
+
+Contributions are welcome! Please ensure code quality by running local checks before submitting pull requests:
+- Format code using `ruff format .`
+- Lint code using `ruff check .`
+- Validate type-safety with `mypy .`
+- Run test suites using `pytest`
 
 <!-- GOVERNED-CAPABILITY:START -->
 ## Governed capability contract
